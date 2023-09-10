@@ -41,7 +41,7 @@ const ChatUI = () => {
 
   const ketnoi = () => {
     const connect = new HubConnectionBuilder()
-      .withUrl('https://localhost:7012/chatHub?name=' + userName)
+      .withUrl('https://bkconnect.azurewebsites.net/chatHub?name=' + userName)
       .withAutomaticReconnect()
       .build()
 
