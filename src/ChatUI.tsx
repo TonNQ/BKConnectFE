@@ -92,7 +92,7 @@ const ChatUI = () => {
         })
         .catch((error) => console.log(error))
     }
-  }, [connection])
+  }, [connection, messages, usersList])
 
   return (
     <Box
