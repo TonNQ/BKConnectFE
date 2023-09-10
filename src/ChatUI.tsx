@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import * as React from 'react'
 import { Box, TextField, Button, Typography, Avatar, Grid, Paper } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'
@@ -5,7 +6,7 @@ import { useState } from 'react'
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr'
 
 interface Message {
-  id: number
+  id: string
   text: string
   sender: string
 }
@@ -30,7 +31,7 @@ const ChatUI = () => {
 
   const handleSend = async () => {
     if (input.trim() !== '') {
-      if (connection) await connection.send('SendMessage', 'Toan', input)
+      if (connection) await connection.send('SendMessage', userName, input)
       setInput('')
     }
   }
@@ -59,7 +60,7 @@ const ChatUI = () => {
         .then(() => {
           connection.on('ReceiveMessage', (user, message) => {
             const mess: Message = {
-              id: messages.length + 1,
+              id: new Date().getTime().toString(),
               text: message,
               sender: user
             }
@@ -92,7 +93,7 @@ const ChatUI = () => {
         })
         .catch((error) => console.log(error))
     }
-  }, [connection, messages, usersList])
+  }, [connection])
 
   return (
     <Box
@@ -149,26 +150,24 @@ const ChatUI = () => {
 }
 
 const Message = ({ message, userName }: { message: Message; userName: string }) => {
-  const isBot = message.sender === 'bot'
-
+  const isBot = message.sender !== userName
+  console.log(message)
   return (
     <Box
       sx={{
         display: 'flex',
-        justifyContent: userName != message.sender ? 'flex-start' : 'flex-end',
+        justifyContent: isBot ? 'flex-start' : 'flex-end',
         mb: 2
       }}
     >
       <Box
         sx={{
           display: 'flex',
-          flexDirection: userName != message.sender ? 'row' : 'row-reverse',
+          flexDirection: isBot ? 'row' : 'row-reverse',
           alignItems: 'center'
         }}
       >
-        <Avatar sx={{ bgcolor: userName != message.sender ? 'primary.main' : 'secondary.main' }}>
-          {userName != message.sender ? 'B' : 'U'}
-        </Avatar>
+        <Avatar sx={{ bgcolor: isBot ? 'primary.main' : 'secondary.main' }}>{isBot ? message.sender[0] : 'U'}</Avatar>
         <Paper
           variant='outlined'
           sx={{
