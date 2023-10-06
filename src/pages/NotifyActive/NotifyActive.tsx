@@ -10,10 +10,10 @@ export default function NotifyActive() {
     <>
       {/* {value && ( */}
       <>
-        <div className='text-center text-lg font-bold uppercase text-primary'>Đăng ký tài khoản thành công</div>
+        <div className='text-center text-xl font-bold uppercase text-primary'>Đăng ký tài khoản thành công</div>
         <div className='text-center'>
-          Vui lòng kiểm tra thư của chúng tôi gửi về email <span className='font-bold text-primary'>{email}</span> để
-          kích hoạt tài khoản.
+          Vui lòng kiểm tra thư đã được gửi về email <span className='font-bold text-primary'>{email}</span> để kích
+          hoạt tài khoản.
         </div>
         <Link
           to={path.login}
