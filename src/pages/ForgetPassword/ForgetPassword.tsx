@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
 
 type FormData = Pick<Schema, 'email'>
-const loginSchema = schema.pick(['email'])
+const emailSchema = schema.pick(['email'])
 
 export default function ForgetPassword() {
   const {
@@ -14,7 +14,7 @@ export default function ForgetPassword() {
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({
-    resolver: yupResolver(loginSchema)
+    resolver: yupResolver(emailSchema)
   })
   const forgetPasswordMutation = useMutation({
     mutationFn: (body: FormData) => authApi.forgetPassword(body)

@@ -13,6 +13,9 @@ const authApi = {
   },
   forgetPassword(body: { email: string }) {
     return http.post('/forgetPassword', body)
+  },
+  setNewPassword(body: { password: string }) {
+    return http.post('/setNewPassword', body)
   }
 }
 

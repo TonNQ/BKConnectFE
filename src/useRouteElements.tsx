@@ -10,6 +10,7 @@ import PageNotFound from './pages/PageNotFound'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import ForgetPassword from './pages/ForgetPassword'
+import SetNewPassword from './pages/SetNewPassword'
 // import ChatUI from './ChatUI'
 
 function ProtectedRoute() {
@@ -72,6 +73,14 @@ export default function useRouteElements() {
           element: (
             <NotifyLayout>
               <ForgetPassword />
+            </NotifyLayout>
+          )
+        },
+        {
+          path: path.set_new_password,
+          element: (
+            <NotifyLayout>
+              <SetNewPassword />
             </NotifyLayout>
           )
         }
