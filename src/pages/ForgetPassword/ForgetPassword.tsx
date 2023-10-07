@@ -4,6 +4,9 @@ import { Schema, schema } from 'src/utils/rules'
 import RegisterInput from 'src/components/RegisterInput'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
+import { toast } from 'react-toastify'
+import { isAxiosBadRequest } from 'src/utils/utils'
+import { ErrorResponse } from 'src/types/utils.type'
 
 type FormData = Pick<Schema, 'email'>
 const emailSchema = schema.pick(['email'])
@@ -24,9 +27,13 @@ export default function ForgetPassword() {
     forgetPasswordMutation.mutate(data, {
       onSuccess: (data) => {
         console.log(data)
+        toast.success(data.data.message)
       },
-      onError: () => {
-        console.log(errors)
+      onError: (error) => {
+        if (isAxiosBadRequest<ErrorResponse<FormData>>(error)) {
+          const formError = error.response?.data
+          toast.error(formError?.message)
+        }
       }
     })
   })

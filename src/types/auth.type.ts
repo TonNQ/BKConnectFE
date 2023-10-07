@@ -5,3 +5,7 @@ export type AuthResponse = SuccessResponse<{
   access_token: string
   user: User
 }>
+
+export interface secretHash {
+  secretHash: string
+}

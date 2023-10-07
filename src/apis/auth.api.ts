@@ -12,9 +12,9 @@ const authApi = {
     return http.post('/logout')
   },
   forgetPassword(body: { email: string }) {
-    return http.post('/forgetPassword', body)
+    return http.post('/forgotPassword', body)
   },
-  setNewPassword(body: { password: string }) {
+  setNewPassword(body: { password: string; secretHash: string | undefined }) {
     return http.post('/setNewPassword', body)
   }
 }

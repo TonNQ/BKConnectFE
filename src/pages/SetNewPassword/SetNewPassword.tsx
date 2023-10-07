@@ -4,11 +4,16 @@ import { Schema, schema } from 'src/utils/rules'
 import RegisterInput from 'src/components/RegisterInput'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
+import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import path from 'src/constants/path'
 
 type FormData = Pick<Schema, 'password' | 'confirm_password'>
 const formSchema = schema.pick(['password', 'confirm_password'])
 
 export default function SetNewPassword() {
+  const { id } = useParams()
+  const navigate = useNavigate()
   const {
     register,
     handleSubmit,
@@ -17,13 +22,22 @@ export default function SetNewPassword() {
     resolver: yupResolver(formSchema)
   })
   const forgetPasswordMutation = useMutation({
-    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.setNewPassword(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => {
+      const newData = { ...body, secretHash: id }
+      console.log(newData)
+      return authApi.setNewPassword(newData)
+    }
   })
   const onSubmit = handleSubmit((data) => {
     console.log(data)
     forgetPasswordMutation.mutate(data, {
       onSuccess: (data) => {
-        console.log(data)
+        toast.success(data.data.message, {
+          autoClose: 3000
+        })
+        setTimeout(() => {
+          navigate(path.login)
+        }, 3000)
       },
       onError: () => {
         console.log(errors)

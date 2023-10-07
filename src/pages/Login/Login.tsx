@@ -72,7 +72,7 @@ export default function Login() {
           errorMessage={errors.password?.message}
         />
         <div className='mt-2 '>
-          <Link to='' className='text-sm font-medium text-primary hover:text-secondary'>
+          <Link to={path.forget_password} className='text-sm font-medium text-primary hover:text-secondary'>
             Quên mật khẩu?
           </Link>
         </div>
