@@ -11,7 +11,6 @@ import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import ForgetPassword from './pages/ForgetPassword'
 import SetNewPassword from './pages/SetNewPassword'
-// import ChatUI from './ChatUI'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
