@@ -51,7 +51,7 @@ export default function SetNewPassword() {
         <RegisterInput
           name='password'
           register={register}
-          type='text'
+          type='password'
           placeholder='Nhập mật khẩu mới của bạn'
           errorMessage={errors.password?.message}
           className='mt-1'
@@ -63,7 +63,7 @@ export default function SetNewPassword() {
         <RegisterInput
           name='confirm_password'
           register={register}
-          type='text'
+          type='password'
           placeholder='Xác nhận mật khẩu mới của bạn'
           errorMessage={errors.confirm_password?.message}
           className='mt-0'
