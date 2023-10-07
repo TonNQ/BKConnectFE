@@ -14,8 +14,11 @@ const authApi = {
   forgetPassword(body: { email: string }) {
     return http.post('/forgotPassword', body)
   },
-  setNewPassword(body: { password: string; secretHash: string | undefined }) {
-    return http.post('/setNewPassword', body)
+  setNewPassword(body: { password: string; temporaryCode: string | null }) {
+    return http.post('/resetPassword', body)
+  },
+  checkToken(seretHash: string) {
+    return http.post('/checkToken?secretHash=' + seretHash)
   }
 }
 
