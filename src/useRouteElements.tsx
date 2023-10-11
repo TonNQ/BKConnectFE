@@ -11,6 +11,7 @@ import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import ForgetPassword from './pages/ForgetPassword'
 import SetNewPassword from './pages/SetNewPassword'
+import MainLayout from './layouts/MainLayout'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -24,20 +25,29 @@ function RejectedRoute() {
 
 export default function useRouteElements() {
   const element = useRoutes([
+    // {
+    //   path: '',
+    //   element: <ProtectedRoute />,
+    //   children: [
+    //     {
+    //       path: '',
+    //       index: true,
+    //       element: (
+    //         <MainLayout>
+    //           <Chatting />
+    //         </MainLayout>
+    //       )
+    //     }
+    //   ]
+    // },
     {
       path: '',
-      element: <ProtectedRoute />,
-      children: [
-        {
-          path: '',
-          index: true,
-          element: (
-            <NotifyLayout>
-              <Chatting />
-            </NotifyLayout>
-          )
-        }
-      ]
+      index: true,
+      element: (
+        <MainLayout>
+          <Chatting />
+        </MainLayout>
+      )
     },
     {
       path: '',
