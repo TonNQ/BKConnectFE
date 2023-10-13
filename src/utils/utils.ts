@@ -12,3 +12,14 @@ export function isAxiosUnprocessableEntity<FormError>(error: unknown): error is 
 export function isAxiosBadRequest<FormError>(error: unknown): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === HttpStatusCode.BadRequest
 }
+
+export function ConvertDateTime(date: string) {
+  const originalDate = new Date(date)
+  const day = originalDate.getDate()
+  const month = originalDate.getMonth() + 1
+  const year = originalDate.getFullYear()
+  const formattedDateString = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year
+    .toString()
+    .padStart(4, '0')}`
+  return formattedDateString
+}

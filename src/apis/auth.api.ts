@@ -9,7 +9,7 @@ const authApi = {
     return http.post<AuthResponse>('/login', body)
   },
   logout() {
-    return http.post('/logout')
+    return http.post<AuthResponse>('/logout')
   },
   forgetPassword(body: { email: string }) {
     return http.post('/forgotPassword', body)

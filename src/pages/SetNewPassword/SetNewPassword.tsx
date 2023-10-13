@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Schema, schema } from 'src/utils/rules'
-import RegisterInput from 'src/components/RegisterInput'
+import Input from 'src/components/Input'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
 import { useNavigate } from 'react-router-dom'
@@ -73,7 +73,7 @@ export default function SetNewPassword() {
         <>
           <div className='text-center text-2xl font-bold uppercase text-primary'>Đổi mật khẩu mới</div>
           <form className='flex flex-col' action='' onSubmit={onSubmit}>
-            <RegisterInput
+            <Input
               name='password'
               register={register}
               type='password'
@@ -85,7 +85,7 @@ export default function SetNewPassword() {
               classNameError='mt-1 text-sm min-h-[1.25rem] font-medium text-red-400'
               labelName='Nhập mật khẩu mới'
             />
-            <RegisterInput
+            <Input
               name='confirm_password'
               register={register}
               type='password'

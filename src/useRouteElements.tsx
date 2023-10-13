@@ -25,30 +25,30 @@ function RejectedRoute() {
 
 export default function useRouteElements() {
   const element = useRoutes([
-    // {
-    //   path: '',
-    //   element: <ProtectedRoute />,
-    //   children: [
-    //     {
-    //       path: '',
-    //       index: true,
-    //       element: (
-    //         <MainLayout>
-    //           <Chatting />
-    //         </MainLayout>
-    //       )
-    //     }
-    //   ]
-    // },
     {
       path: '',
-      index: true,
-      element: (
-        <MainLayout>
-          <Chatting />
-        </MainLayout>
-      )
+      element: <ProtectedRoute />,
+      children: [
+        {
+          path: '',
+          index: true,
+          element: (
+            <MainLayout>
+              <Chatting />
+            </MainLayout>
+          )
+        }
+      ]
     },
+    // {
+    //   path: '',
+    //   index: true,
+    //   element: (
+    //     <MainLayout>
+    //       <Chatting />
+    //     </MainLayout>
+    //   )
+    // },
     {
       path: '',
       element: <RejectedRoute />,

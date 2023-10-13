@@ -6,31 +6,35 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined'
 import ClassIcon from '@mui/icons-material/Class'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import SettingsIcon from '@mui/icons-material/Settings'
-import MessagePage from 'src/pages/Chatting/pages/MessagePage'
-import FriendLists from 'src/pages/Chatting/pages/FriendLists'
-import ClassPage from 'src/pages/Chatting/pages/ClassPage'
-import SettingPage from 'src/pages/Chatting/pages/SettingPage'
+import MessagePage from 'src/pages/Chatting/pages/MainPages/MessagePage'
+import ClassPage from 'src/pages/Chatting/pages/MainPages/ClassPage'
+import SettingPage from 'src/pages/Chatting/pages/MainPages/SettingPage'
+import FriendList from 'src/pages/Chatting/pages/SidePages/FriendList'
+import RoomList from 'src/pages/Chatting/pages/SidePages/RoomList'
+import ClassList from 'src/pages/Chatting/pages/SidePages/ClassList'
+import FriendPage from 'src/pages/Chatting/pages/MainPages/FriendPage/FriendPage'
+import Profile from 'src/pages/Chatting/pages/SidePages/Profile'
 
 export const DashboardOutlinedIcon = [
   {
     index: 0,
     title: 'Tin nhắn',
-    icon: <MessageOutlinedIcon sx={{ color: 'white', fontSize: '30px', fontWeight: '400' }} />
+    icon: <MessageOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
   },
   {
     index: 1,
     title: 'Danh sách bạn bè',
-    icon: <PeopleAltOutlinedIcon sx={{ color: 'white', fontSize: '30px', fontWeight: '400' }} />
+    icon: <PeopleAltOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
   },
   {
     index: 2,
     title: 'Lớp học',
-    icon: <ClassOutlinedIcon sx={{ color: 'white', fontSize: '30px', fontWeight: '400' }} />
+    icon: <ClassOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
   },
   {
     index: 3,
     title: 'Cài đặt',
-    icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px', fontWeight: '400' }} />
+    icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
   }
 ]
 
@@ -60,18 +64,22 @@ export const DashboardFilledIcon = [
 export const DashboardComponent = [
   {
     index: 0,
-    component: <MessagePage />
+    sideComponent: <RoomList />,
+    mainComponent: <MessagePage />
   },
   {
     index: 1,
-    component: <FriendLists />
+    sideComponent: <FriendList />,
+    mainComponent: <FriendPage />
   },
   {
     index: 2,
-    component: <ClassPage />
+    sideComponent: <ClassList />,
+    mainComponent: <ClassPage />
   },
   {
     index: 3,
-    component: <SettingPage />
+    sideComponent: <Profile />,
+    mainComponent: <SettingPage />
   }
 ]

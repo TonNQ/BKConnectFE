@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup'
-import RegisterInput from 'src/components/RegisterInput'
+import Input from 'src/components/Input'
 import path from 'src/constants/path'
 import { Schema, schema } from 'src/utils/rules'
 import authApi from 'src/apis/auth.api'
@@ -55,7 +55,7 @@ export default function Login() {
         </Link>
       </div>
       <form action='' onSubmit={onSubmit}>
-        <RegisterInput
+        <Input
           name='email'
           register={register}
           type='text'
@@ -63,7 +63,7 @@ export default function Login() {
           labelName='Email của bạn'
           errorMessage={errors.email?.message}
         />
-        <RegisterInput
+        <Input
           name='password'
           register={register}
           type='password'
