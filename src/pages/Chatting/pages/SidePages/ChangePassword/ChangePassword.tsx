@@ -10,7 +10,7 @@ import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import profileApi from 'src/apis/users.api'
+import userApi from 'src/apis/users.api'
 import { toast } from 'react-toastify'
 import { ErrorResponse } from 'src/types/utils.type'
 import { isAxiosBadRequest } from 'src/utils/utils'
@@ -31,7 +31,7 @@ export default function ChangePassword() {
     resolver: yupResolver(changePasswordSchema)
   })
   const changePasswordMutation = useMutation({
-    mutationFn: (body: { current_password: string; new_password: string }) => profileApi.changePassword(body)
+    mutationFn: (body: { current_password: string; new_password: string }) => userApi.changePassword(body)
   })
   const onSubmit = handleSubmit((data) => {
     const account = {

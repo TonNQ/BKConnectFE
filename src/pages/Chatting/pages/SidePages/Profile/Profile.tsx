@@ -3,17 +3,17 @@
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import DriveFileRenameOutlineOutlinedIcon from '@mui/icons-material/DriveFileRenameOutlineOutlined'
 import { useContext, useEffect } from 'react'
-import profileApi from 'src/apis/users.api'
+import userApi from 'src/apis/users.api'
 import avatar from 'src/assets/images/avatar.jpg'
 import { AppContext } from 'src/contexts/app.context'
-import { ConvertDateTime } from 'src/utils/utils'
+import { ConvertDMY } from 'src/utils/utils'
 import 'src/index.css'
 import classNames from 'classnames-ts'
 
 export default function Profile() {
   const { profile, setProfile, isProfileVisible, setIsProfileVisible } = useContext(AppContext)
   useEffect(() => {
-    profileApi.getProfile().then((response) => {
+    userApi.getProfile().then((response) => {
       const profileData = response.data
       if (profileData && profileData.data && profile !== profileData.data) {
         setProfile(profileData.data)
@@ -75,9 +75,7 @@ export default function Profile() {
           </div>
           <div className='my-4 grid grid-cols-6 '>
             <span className='col-span-2'>Ngày sinh : </span>
-            <span className='col-span-4 font-semibold text-primary'>
-              {ConvertDateTime(profile?.birthday as string)}
-            </span>
+            <span className='col-span-4 font-semibold text-primary'>{ConvertDMY(profile?.birthday as string)}</span>
           </div>
         </div>
         <div className='flex w-full items-center justify-center rounded-md bg-stone-100 py-2 text-center hover:cursor-pointer hover:bg-stone-200'>

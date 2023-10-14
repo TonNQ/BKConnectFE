@@ -2,12 +2,20 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import { useState } from 'react'
-import Room from 'src/pages/Chatting/components/Room'
+import { useEffect, useState } from 'react'
 import 'src/css/Scroll.css'
+import userApi from 'src/apis/users.api'
+import { RoomType } from 'src/types/room.type'
+import Room from 'src/pages/Chatting/components/Room'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
+  const [rooms, setRooms] = useState<RoomType[] | null>(null)
+  useEffect(() => {
+    userApi.getAllRooms().then((response) => {
+      setRooms(response.data.data)
+    })
+  }, [])
   const handleResetInputSearch = () => {
     setInputSearch('')
   }
@@ -35,21 +43,7 @@ export default function RoomList() {
         </div>
       </div>
       <div className='scrollbar-custom mt-4 w-full overflow-y-scroll scroll-smooth'>
-        <div className=' mx-4 flex flex-col space-y-2 '>
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-          <Room />
-        </div>
+        <div className=' mx-4 flex flex-col space-y-2 '>{rooms?.map((room) => <Room key={room.id} room={room} />)}</div>
       </div>
     </div>
   )

@@ -13,7 +13,8 @@ export function isAxiosBadRequest<FormError>(error: unknown): error is AxiosErro
   return isAxiosError(error) && error.response?.status === HttpStatusCode.BadRequest
 }
 
-export function ConvertDateTime(date: string) {
+// Chuyển sang dạng: DD/MM/YYYY
+export function ConvertDMY(date: string) {
   const originalDate = new Date(date)
   const day = originalDate.getDate()
   const month = originalDate.getMonth() + 1
@@ -22,4 +23,56 @@ export function ConvertDateTime(date: string) {
     .toString()
     .padStart(4, '0')}`
   return formattedDateString
+}
+
+function areDatesInSameWeek(date1: Date, date2: Date): boolean {
+  // Lấy số ngày hiện tại trong tuần
+  const dayOfWeek1 = date1.getDay()
+  const dayOfWeek2 = date2.getDay()
+
+  // Lấy ngày đầu tiên trong tuần của mỗi date
+  const firstDayOfWeek1 = new Date(date1)
+  firstDayOfWeek1.setDate(date1.getDate() - dayOfWeek1)
+
+  const firstDayOfWeek2 = new Date(date2)
+  firstDayOfWeek2.setDate(date2.getDate() - dayOfWeek2)
+
+  // So sánh số tuần và năm của hai ngày
+  return (
+    firstDayOfWeek1.getFullYear() === firstDayOfWeek2.getFullYear() &&
+    firstDayOfWeek1.getMonth() === firstDayOfWeek2.getMonth() &&
+    firstDayOfWeek1.getDate() === firstDayOfWeek2.getDate()
+  )
+}
+
+// Chuyển sang dạng: HH/mm AM/PM nếu trong 1 ngày, thứ nếu trong tuần
+// ngày dạng Jan 1,... nếu trong năm, nếu khác năm thì gọi hàm ConvertDMY
+export function ConvertDateTime(date: string) {
+  const originalDate = new Date(date)
+  const dateNow = new Date()
+  const day = originalDate.getDate()
+  const month = originalDate.getMonth() + 1
+  const year = originalDate.getFullYear()
+  const hours = originalDate.getHours()
+  const minutes = originalDate.getMinutes()
+  const dayNow = dateNow.getDate()
+  const yearNow = dateNow.getFullYear()
+  if (day === dayNow) {
+    if (hours < 12) {
+      return `${hours}:${minutes.toString().padStart(2, '0')} AM`
+    } else {
+      return `${hours - 12}:${minutes.toString().padStart(2, '0')} PM`
+    }
+  }
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  if (areDatesInSameWeek(originalDate, dateNow)) {
+    return daysOfWeek[originalDate.getDay()]
+  } else {
+    if (year === yearNow) {
+      const monthsOfYear = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      return `${monthsOfYear[month - 1]} ${day}`
+    } else {
+      return ConvertDMY(date)
+    }
+  }
 }
