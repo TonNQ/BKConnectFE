@@ -1379,6 +1379,11 @@ classnames-ts@^1.0.2:
   resolved "https://registry.yarnpkg.com/classnames-ts/-/classnames-ts-1.0.2.tgz#b0fd112f3810517a76aaeffbc2de11cc8c955da3"
   integrity sha512-WikCqscK1w0DPOoaS7WIqUIYR0IbVRYRg2LrH1phKXzvy5bn4o4mlKLPyQCcMJxvXtAIHOO91Dhe5KBIexKZDQ==
 
+classnames@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.2.tgz#351d813bf0137fcc6a76a16b88208d2560a0d924"
+  integrity sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==
+
 clsx@^1.1.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/clsx/-/clsx-1.2.1.tgz"

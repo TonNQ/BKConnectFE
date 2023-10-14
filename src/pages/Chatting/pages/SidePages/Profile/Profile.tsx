@@ -8,7 +8,7 @@ import avatar from 'src/assets/images/avatar.jpg'
 import { AppContext } from 'src/contexts/app.context'
 import { ConvertDMY } from 'src/utils/utils'
 import 'src/index.css'
-import classNames from 'classnames-ts'
+import classNames from 'classnames'
 
 export default function Profile() {
   const { profile, setProfile, isProfileVisible, setIsProfileVisible } = useContext(AppContext)

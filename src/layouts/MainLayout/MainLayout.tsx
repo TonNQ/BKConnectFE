@@ -3,7 +3,6 @@
 import logo from 'src/assets/images/logo.jpg'
 import avatar from 'src/assets/images/avatar.jpg'
 import { DashboardFilledIcon, DashboardOutlinedIcon } from 'src/constants/items'
-import classNames from 'classnames-ts'
 import Tooltip from '@mui/material/Tooltip'
 import { AppContext } from 'src/contexts/app.context'
 import { useContext, useEffect, useRef, useState } from 'react'
@@ -14,6 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import path from 'src/constants/path'
 import Profile from 'src/pages/Chatting/pages/SidePages/Profile'
 import ChangePassword from 'src/pages/Chatting/pages/SidePages/ChangePassword'
+import classNames from 'classnames'
 
 interface Props {
   children?: React.ReactNode
