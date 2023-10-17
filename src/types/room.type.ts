@@ -5,4 +5,5 @@ export interface RoomType {
   avatar: string
   last_message: string
   last_message_time: string
+  is_read: boolean
 }

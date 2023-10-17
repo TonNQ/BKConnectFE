@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
@@ -7,15 +8,26 @@ import 'src/css/Scroll.css'
 import userApi from 'src/apis/users.api'
 import { RoomType } from 'src/types/room.type'
 import Room from 'src/pages/Chatting/components/Room'
+import { debounce } from 'lodash'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
-  const [rooms, setRooms] = useState<RoomType[] | null>(null)
+  const [rooms, setRooms] = useState<RoomType[]>([])
+  const debouncedSearch = debounce((textSearch: string) => {
+    if (textSearch === '') {
+      userApi.getAllRooms().then((response) => {
+        setRooms(response.data.data)
+      })
+    } else {
+      userApi.getRoomsByName({ searchKey: textSearch }).then((response) => {
+        setRooms(response.data.data)
+      })
+    }
+  }, 500)
   useEffect(() => {
-    userApi.getAllRooms().then((response) => {
-      setRooms(response.data.data)
-    })
-  }, [])
+    debouncedSearch(inputSearch)
+    return () => debouncedSearch.cancel()
+  }, [inputSearch])
   const handleResetInputSearch = () => {
     setInputSearch('')
   }
@@ -30,7 +42,7 @@ export default function RoomList() {
           <input
             type='text'
             className='text-md ml-1 grow border-none bg-stone-100 focus:outline-none'
-            placeholder='Search'
+            placeholder='Tìm kiếm chat'
             value={inputSearch}
             onChange={(e) => setInputSearch(e.target.value)}
           />
@@ -43,7 +55,10 @@ export default function RoomList() {
         </div>
       </div>
       <div className='scrollbar-custom mt-4 w-full overflow-y-scroll scroll-smooth'>
-        <div className=' mx-4 flex flex-col space-y-2 '>{rooms?.map((room) => <Room key={room.id} room={room} />)}</div>
+        <div className=' mx-4 flex flex-col space-y-2 '>
+          {rooms?.map((room) => <Room key={room.id} room={room} />)}
+          {rooms?.length === 0 && <div className='w-full text-center text-sm'>Không tìm thấy kết quả</div>}
+        </div>
       </div>
     </div>
   )

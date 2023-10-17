@@ -83,3 +83,42 @@ export const DashboardComponent = [
     mainComponent: <SettingPage />
   }
 ]
+
+export const data = [
+  {
+    facultyId: 1,
+    facultyName: 'CNTT',
+    classes: [
+      {
+        classId: 1,
+        className: '21T_DT'
+      },
+      {
+        classId: 2,
+        className: '21T_DT2'
+      },
+      {
+        classId: 3,
+        className: '21TCLC_DT2'
+      }
+    ]
+  },
+  {
+    facultyId: 2,
+    facultyName: 'Điện',
+    classes: [
+      {
+        classId: 4,
+        className: '20DT'
+      },
+      {
+        classId: 5,
+        className: '21DT'
+      },
+      {
+        classId: 6,
+        className: '22DT'
+      }
+    ]
+  }
+]

@@ -74,12 +74,7 @@ export default function Register() {
           labelName='Nhập lại mật khẩu'
           errorMessage={errors.confirm_password?.message}
         />
-
-        <div className='mt-4 w-full'>
-          <button className='w-full rounded-md bg-primary px-2 py-2 text-center text-lg uppercase text-white hover:border-secondary hover:bg-secondary'>
-            Đăng ký
-          </button>
-        </div>
+        =
         <div className='mt-4 text-center'>
           <span>Bạn đã có tài khoản?</span>
           <Link to={path.login} className='ml-2'>

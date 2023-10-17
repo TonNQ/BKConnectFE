@@ -18,12 +18,12 @@ export default function Room({ room }: Props) {
         />
       </div>
       <div className='ml-2 flex grow flex-col justify-center truncate'>
-        <div className='text-md truncate font-semibold'>{room.name}</div>
+        <div className='truncate text-base font-semibold'>{room.name}</div>
         <div className='mt-[1px] truncate text-sm text-textColor'>{room.last_message}</div>
       </div>
       <div className='ml-2 flex min-w-[50px] flex-col justify-center'>
-        <div className='text-md mr-1 text-right text-primary'>
-          <CircleIcon sx={{ weight: '12px', height: '12px' }} />
+        <div className='mr-1 min-h-[24px] text-right text-base text-primary'>
+          {!room.is_read && <CircleIcon sx={{ weight: '12px', height: '12px' }} />}
         </div>
         <div className='mt-[1px] text-sm text-textColor'>{ConvertDateTime(room.last_message_time)}</div>
       </div>

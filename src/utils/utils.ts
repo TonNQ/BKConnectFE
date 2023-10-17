@@ -13,7 +13,7 @@ export function isAxiosBadRequest<FormError>(error: unknown): error is AxiosErro
   return isAxiosError(error) && error.response?.status === HttpStatusCode.BadRequest
 }
 
-// Chuyển sang dạng: DD/MM/YYYY
+// Chuyển sang dạng: dd/mm/yyyy
 export function ConvertDMY(date: string) {
   const originalDate = new Date(date)
   const day = originalDate.getDate()
@@ -22,6 +22,18 @@ export function ConvertDMY(date: string) {
   const formattedDateString = `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year
     .toString()
     .padStart(4, '0')}`
+  return formattedDateString
+}
+
+// Chuyển sang dạng: yyyy-mm-dd
+export function ConvertYMD(date: string) {
+  const originalDate = new Date(date)
+  const day = originalDate.getDate()
+  const month = originalDate.getMonth() + 1
+  const year = originalDate.getFullYear()
+  const formattedDateString = `${year.toString().padStart(4, '0')}-${month.toString().padStart(2, '0')}-${day
+    .toString()
+    .padStart(2, '0')}`
   return formattedDateString
 }
 
