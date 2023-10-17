@@ -44,10 +44,10 @@ export default function Register() {
   return (
     <>
       <div className='align-center mb-12 flex justify-between'>
-        <div className='ml-5 text-3xl font-bold uppercase text-primary'>Đăng ký</div>
-        <Link to={path.login} className='mr-5 text-3xl font-bold uppercase text-slate-600 hover:text-primary'>
+        <Link to={path.login} className='ml-5 text-3xl font-bold uppercase text-slate-600 hover:text-primary'>
           Đăng nhập
         </Link>
+        <div className='mr-5 text-3xl font-bold uppercase text-primary'>Đăng ký</div>
       </div>
       <form action='' onSubmit={onSubmit}>
         <Input
@@ -74,7 +74,11 @@ export default function Register() {
           labelName='Nhập lại mật khẩu'
           errorMessage={errors.confirm_password?.message}
         />
-        =
+        <div className='mt-4 w-full'>
+          <button className='w-full rounded-md bg-primary px-2 py-2 text-center text-lg uppercase text-white hover:border-secondary hover:bg-secondary'>
+            Đăng ký
+          </button>
+        </div>
         <div className='mt-4 text-center'>
           <span>Bạn đã có tài khoản?</span>
           <Link to={path.login} className='ml-2'>
