@@ -73,3 +73,46 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Animation */
+.slide-in {
+  animation: slideIn 0.5s forwards;
+  transform: translateX(-50%);
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
+}
+
+.slide-out {
+  animation: slideOut 0.5s forwards;
+  transform: translateX(0);
+}
+
+@keyframes slideOut {
+  to {
+    transform: translateX(-100%);
+  }
+}

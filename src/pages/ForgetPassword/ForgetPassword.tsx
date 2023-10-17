@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Schema, schema } from 'src/utils/rules'
-import RegisterInput from 'src/components/RegisterInput'
+import Input from 'src/components/Input'
 import { useMutation } from '@tanstack/react-query'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
@@ -42,7 +42,7 @@ export default function ForgetPassword() {
       <div className='text-center text-2xl font-bold uppercase text-primary'>Quên mật khẩu</div>
       <div className='text-center'>Vui lòng nhập email của bạn vào ô bên dưới</div>
       <form className='flex flex-col' action='' onSubmit={onSubmit}>
-        <RegisterInput
+        <Input
           name='email'
           register={register}
           type='text'

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { yupResolver } from '@hookform/resolvers/yup'
-import RegisterInput from 'src/components/RegisterInput'
+import Input from 'src/components/Input'
 import path from 'src/constants/path'
 import { Schema, schema } from 'src/utils/rules'
 import { useMutation } from '@tanstack/react-query'
@@ -50,7 +50,7 @@ export default function Register() {
         </Link>
       </div>
       <form action='' onSubmit={onSubmit}>
-        <RegisterInput
+        <Input
           name='email'
           register={register}
           type='text'
@@ -58,7 +58,7 @@ export default function Register() {
           labelName='Email của bạn'
           errorMessage={errors.email?.message}
         />
-        <RegisterInput
+        <Input
           name='password'
           register={register}
           type='password'
@@ -66,7 +66,7 @@ export default function Register() {
           labelName='Mật khẩu của bạn'
           errorMessage={errors.password?.message}
         />
-        <RegisterInput
+        <Input
           name='confirm_password'
           register={register}
           type='password'
@@ -74,12 +74,7 @@ export default function Register() {
           labelName='Nhập lại mật khẩu'
           errorMessage={errors.confirm_password?.message}
         />
-
-        <div className='mt-4 w-full'>
-          <button className='w-full rounded-md bg-primary px-2 py-2 text-center text-lg uppercase text-white hover:border-secondary hover:bg-secondary'>
-            Đăng ký
-          </button>
-        </div>
+        =
         <div className='mt-4 text-center'>
           <span>Bạn đã có tài khoản?</span>
           <Link to={path.login} className='ml-2'>

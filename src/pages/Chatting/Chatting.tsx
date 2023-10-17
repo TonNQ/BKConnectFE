@@ -1,25 +1,25 @@
 import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
-import path from 'src/constants/path'
+import { DashboardComponent } from 'src/constants/items'
 import { AppContext } from 'src/contexts/app.context'
-import { clearLocalStorage, getAccessTokenFromLocalStorage } from 'src/utils/auth'
 
 export default function Chatting() {
-  const { setIsAuthenticated, setProfile, profile, isAuthenticated } = useContext(AppContext)
-  const navigate = useNavigate()
-  const handleLogout = () => {
-    setIsAuthenticated(false)
-    setProfile(null)
-    clearLocalStorage()
-    navigate(path.login)
-  }
-  console.log(isAuthenticated)
-  console.log(profile)
-  console.log(Boolean(getAccessTokenFromLocalStorage()))
+  const { indexPage } = useContext(AppContext)
   return (
-    <div>
-      Chatting {profile?.email}
-      <button onClick={handleLogout}>Logout</button>
+    <div className='flex'>
+      <div className='h-[100vh] w-[320px] min-w-[320px] shadow-md'>
+        {DashboardComponent.map((element) => {
+          if (element.index === indexPage) {
+            return <div key={element.index}>{element.sideComponent}</div>
+          }
+        })}
+      </div>
+      <div className='w-[calc(100vh-70px-320px]) h-[100vh]'>
+        {DashboardComponent.map((element) => {
+          if (element.index === indexPage) {
+            return <div key={element.index}>{element.mainComponent}</div>
+          }
+        })}
+      </div>
     </div>
   )
 }

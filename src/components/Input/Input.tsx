@@ -13,7 +13,7 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   rules?: RegisterOptions
 }
 
-export default function RegisterInput({
+export default function Input({
   className = 'mt-2',
   classNameLabel = 'text-md mt-2 font-semibold',
   classNameInput = 'mt-1 w-full border-b-2 border-black px-2 py-2 outline-none focus:bg-slate-50',
