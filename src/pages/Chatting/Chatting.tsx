@@ -13,7 +13,7 @@ export default function Chatting() {
           }
         })}
       </div>
-      <div className='w-[calc(100vh-70px-320px]) h-[100vh]'>
+      <div className='h-[100vh] w-[calc(100vw-70px-320px)]'>
         {DashboardComponent.map((element) => {
           if (element.index === indexPage) {
             return <div key={element.index}>{element.mainComponent}</div>

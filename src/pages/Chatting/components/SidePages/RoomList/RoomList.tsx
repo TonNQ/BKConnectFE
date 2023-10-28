@@ -7,8 +7,9 @@ import { useEffect, useState } from 'react'
 import 'src/css/Scroll.css'
 import userApi from 'src/apis/users.api'
 import { RoomType } from 'src/types/room.type'
-import Room from 'src/pages/Chatting/components/Room'
+
 import { debounce } from 'lodash'
+import Room from '../../Room'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')

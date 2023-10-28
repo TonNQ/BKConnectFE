@@ -11,8 +11,8 @@ import { clearLocalStorage } from 'src/utils/auth'
 import authApi from 'src/apis/auth.api'
 import { useNavigate } from 'react-router-dom'
 import path from 'src/constants/path'
-import Profile from 'src/pages/Chatting/pages/SidePages/Profile'
-import ChangePassword from 'src/pages/Chatting/pages/SidePages/ChangePassword'
+import Profile from 'src/pages/Chatting/components/SidePages/Profile'
+import ChangePassword from 'src/pages/Chatting/components/SidePages/ChangePassword'
 import classNames from 'classnames'
 
 interface Props {

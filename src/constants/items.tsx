@@ -6,14 +6,14 @@ import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined'
 import ClassIcon from '@mui/icons-material/Class'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import SettingsIcon from '@mui/icons-material/Settings'
-import MessagePage from 'src/pages/Chatting/pages/MainPages/MessagePage'
-import ClassPage from 'src/pages/Chatting/pages/MainPages/ClassPage'
-import SettingPage from 'src/pages/Chatting/pages/MainPages/SettingPage'
-import FriendList from 'src/pages/Chatting/pages/SidePages/FriendList'
-import RoomList from 'src/pages/Chatting/pages/SidePages/RoomList'
-import ClassList from 'src/pages/Chatting/pages/SidePages/ClassList'
-import FriendPage from 'src/pages/Chatting/pages/MainPages/FriendPage/FriendPage'
-import Profile from 'src/pages/Chatting/pages/SidePages/Profile'
+import ClassPage from 'src/pages/Chatting/components/MainPages/ClassPage'
+import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
+import FriendList from 'src/pages/Chatting/components/SidePages/FriendList'
+import RoomList from 'src/pages/Chatting/components/SidePages/RoomList'
+import ClassList from 'src/pages/Chatting/components/SidePages/ClassList'
+import FriendPage from 'src/pages/Chatting/components/MainPages/FriendPage/FriendPage'
+import Profile from 'src/pages/Chatting/components/SidePages/Profile'
+import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessagePage/MessageWrapper'
 
 export const DashboardOutlinedIcon = [
   {
@@ -65,7 +65,7 @@ export const DashboardComponent = [
   {
     index: 0,
     sideComponent: <RoomList />,
-    mainComponent: <MessagePage />
+    mainComponent: <MessageWrapper />
   },
   {
     index: 1,

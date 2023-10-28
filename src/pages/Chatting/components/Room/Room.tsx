@@ -25,7 +25,7 @@ export default function Room({ room }: Props) {
         <div className='mr-1 min-h-[24px] text-right text-base text-primary'>
           {!room.is_read && <CircleIcon sx={{ weight: '12px', height: '12px' }} />}
         </div>
-        <div className='mt-[1px] text-sm text-textColor'>{ConvertDateTime(room.last_message_time)}</div>
+        <div className='mt-[1px] text-sm text-textColor'>{ConvertDateTime(room.last_message_time, false)}</div>
       </div>
     </div>
   )

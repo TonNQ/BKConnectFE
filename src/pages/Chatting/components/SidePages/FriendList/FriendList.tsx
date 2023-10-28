@@ -8,8 +8,9 @@ import 'src/css/Scroll.css'
 import userApi from 'src/apis/users.api'
 import { debounce } from 'lodash'
 import { SearchFriend, SearchUser } from 'src/types/user.type'
-import User from 'src/pages/Chatting/components/User/User'
+
 import classNames from 'classnames'
+import User from '../../User'
 
 export default function FriendList() {
   const [inputSearch, setInputSearch] = useState('')
