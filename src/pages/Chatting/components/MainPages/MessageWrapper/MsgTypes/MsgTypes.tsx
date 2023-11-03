@@ -1,18 +1,21 @@
 import dut from 'src/assets/images/logo.jpg'
-import classnames from 'classnames-ts/src/classNames'
+import classnames from 'classnames'
 import { ConvertDateTime } from 'src/utils/utils'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
+import { Message } from 'src/types/room.type'
 
-interface Message {
-  id?: string
-  type?: 'text' | 'img' | 'reply'
-  content?: string
-  send_time?: string
-  sender_id?: string
-  sender_name?: string
-  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom'
-  reply_message_sender?: string
-  reply_message_content?: string
-}
+// interface Message {
+//   id?: string
+//   type?: 'text' | 'img' | 'reply'
+//   content?: string
+//   send_time?: string
+//   sender_id?: string
+//   sender_name?: string
+//   room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom'
+//   reply_message_sender?: string
+//   reply_message_content?: string
+// }
 
 const Timeline = ({ date }: { date: string }) => {
   return (
@@ -22,22 +25,30 @@ const Timeline = ({ date }: { date: string }) => {
   )
 }
 
-const TextMsg = ({ sender, msg }: { sender: boolean; msg: Message }) => {
-  if (msg.room_type === 'PrivateRoom') {
+const TextMsg = ({
+  msg,
+  room_type
+}: {
+  msg: Message
+  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
+}) => {
+  const { profile } = useContext(AppContext)
+  const isSender = msg.sender_id === profile?.user_id
+  if (room_type === 'PrivateRoom') {
     return (
       <div
         className={classnames('mx-4 mb-2 flex flex-row', {
-          'justify-end': sender,
-          'justify-start': !sender
+          'justify-end': isSender,
+          'justify-start': !isSender
         })}
       >
         <div
           className={classnames('w-max max-w-[40vw] rounded-2xl px-3 py-1 text-lg', {
-            'bg-primary text-white': sender,
-            'bg-grayColor text-black': !sender
+            'bg-primary text-white': isSender,
+            'bg-grayColor text-black': !isSender
           })}
         >
-          Đây là tin nhắn room
+          {msg.content}
         </div>
       </div>
     )
@@ -45,34 +56,32 @@ const TextMsg = ({ sender, msg }: { sender: boolean; msg: Message }) => {
     return (
       <div
         className={classnames('mx-4 mb-2  flex flex-row  items-end', {
-          'justify-end': sender,
-          'justify-start': !sender
+          'justify-end': isSender,
+          'justify-start': !isSender
         })}
       >
         <img
           src={dut}
           alt=''
           className={classnames('h-[35px] w-[35px] rounded-full', {
-            hidden: sender
+            hidden: isSender
           })}
         />
         <div className='ml-3 flex flex-col'>
           <div
             className={classnames('mb-1 ml-2 text-sm text-textColor', {
-              hidden: sender
+              hidden: isSender
             })}
           >
             {msg.sender_name}
           </div>
           <div
             className={classnames('w-max max-w-[500px] rounded-2xl px-3 py-1 text-lg', {
-              'bg-primary text-white': sender,
-              'bg-grayColor text-black': !sender
+              'bg-primary text-white': isSender,
+              'bg-grayColor text-black': !isSender
             })}
           >
-            Yêu anh an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihiiYêu
-            anh an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihiiYêu anh
-            an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihiiYêu anh an nhiều lắm lắm ahihihihii
+            {msg.content}
           </div>
         </div>
       </div>

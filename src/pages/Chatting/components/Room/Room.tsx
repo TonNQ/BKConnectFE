@@ -1,15 +1,29 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import dut from 'src/assets/images/logo.jpg'
 import CircleIcon from '@mui/icons-material/Circle'
 import { RoomType } from 'src/types/room.type'
 import { ConvertDateTime } from 'src/utils/utils'
+import messageApi from 'src/apis/messages.api'
+import { useContext } from 'react'
+import { MessageContext } from 'src/contexts/message.context'
 
 interface Props {
   room: RoomType
 }
 
 export default function Room({ room }: Props) {
+  const { messages, setMessages, setRoom } = useContext(MessageContext)
+  const handleClick = () => {
+    messageApi.getMessagesByRoom({ SearchKey: room.id }).then((response) => {
+      console.log(response.data.data)
+      setMessages(response.data.data)
+      setRoom(room)
+    })
+  }
+  console.log(messages)
   return (
-    <div className='flex w-full rounded-md bg-stone-50 px-3 py-2'>
+    <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>
       <div className='min-w-[50px]'>
         <img
           src={room.avatar || dut}

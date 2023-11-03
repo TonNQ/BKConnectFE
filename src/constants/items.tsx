@@ -13,7 +13,7 @@ import RoomList from 'src/pages/Chatting/components/SidePages/RoomList'
 import ClassList from 'src/pages/Chatting/components/SidePages/ClassList'
 import FriendPage from 'src/pages/Chatting/components/MainPages/FriendPage/FriendPage'
 import Profile from 'src/pages/Chatting/components/SidePages/Profile'
-import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessagePage/MessageWrapper'
+import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessageWrapper/MessageWrapper'
 
 export const DashboardOutlinedIcon = [
   {
