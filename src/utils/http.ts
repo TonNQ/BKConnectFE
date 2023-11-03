@@ -1,7 +1,7 @@
 import axios, { AxiosError, HttpStatusCode, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import { AuthResponse } from 'src/types/auth.type'
-import { clearLocalStorage, getAccessTokenFromLocalStorage, setAccessTokenToLocalStorage } from './auth'
+import { clearLocalStorage, getAccessTokenFromLocalStorage, refreshToken, setAccessTokenToLocalStorage } from './auth'
 import path from 'src/constants/path'
 
 class Http {
@@ -42,12 +42,25 @@ class Http {
         }
         return response
       },
-      function (error: AxiosError) {
+      (error: AxiosError<AuthResponse>) => {
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const data: any | undefined = error.response?.data
-          const message = data.message || error.message
-          toast.error(message)
+          if (
+            error.response?.status === HttpStatusCode.Unauthorized &&
+            error.response.data.message === 'Vui lòng đăng nhập để tiếp tục'
+          ) {
+            refreshToken().then(() => {
+              if (error.response) {
+                error.response.config.headers.Authorization = getAccessTokenFromLocalStorage()
+              }
+            })
+            this.instance(error.response.config)
+            return
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const data: any | undefined = error.response?.data
+            const message = data.message || error.message
+            toast.error(message)
+          }
         }
         return Promise.reject(error)
       }

@@ -133,7 +133,6 @@ export default function UpdateProfile({ isUpdatePage, setIsUpdatePage }: Props) 
             defaultValue={profile?.gender === true ? 'Nam' : 'Nữ'}
             {...register('gender')}
           >
-            <option value=''>Tất cả</option>
             <option value='Nam'>Nam</option>
             <option value='Nữ'>Nữ</option>
           </select>
@@ -146,11 +145,13 @@ export default function UpdateProfile({ isUpdatePage, setIsUpdatePage }: Props) 
             {...register('faculty_id', { onChange: handleChangeFaculty })}
           >
             {getValues().faculty_id === null ? (
-              <option value='' selected>
-                Tất cả
+              <option value='' selected disabled>
+                Vui lòng chọn một khoa
               </option>
             ) : (
-              <option value=''>Tất cả</option>
+              <option value='' disabled>
+                Vui lòng chọn một khoa
+              </option>
             )}
             {faculties.map((element) => {
               if (element.faculty_id === getValues().faculty_id)
@@ -175,7 +176,9 @@ export default function UpdateProfile({ isUpdatePage, setIsUpdatePage }: Props) 
             className='mt-1 w-full rounded-md border-[1px] border-stone-300 px-2 py-2 outline-1 focus:bg-slate-100'
             {...register('class_id', { onChange: handleChangeClass })}
           >
-            <option value={0}>Tất cả</option>
+            <option value={0} disabled>
+              Vui lòng chọn một lớp
+            </option>
             {viewedClasses.map((element) => {
               if (element.class_id === getValues().class_id)
                 return (

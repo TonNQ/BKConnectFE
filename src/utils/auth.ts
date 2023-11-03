@@ -1,3 +1,4 @@
+import authApi from 'src/apis/auth.api'
 import { User } from 'src/types/user.type'
 
 // Lấy access token từ local storage
@@ -22,4 +23,15 @@ export const getProfileFromLocalStorage = () => {
 
 export const setProfileToLocalStorage = (profile: User) => {
   localStorage.setItem('profile', JSON.stringify(profile))
+}
+
+export const refreshToken = async () => {
+  try {
+    const response = await authApi.getToken()
+    console.log(response)
+    const { access_token } = response.data.data.access_token
+    setAccessTokenToLocalStorage(access_token)
+  } catch (error) {
+    console.log(error)
+  }
 }

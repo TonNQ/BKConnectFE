@@ -19,6 +19,9 @@ const authApi = {
   },
   checkToken(seretHash: string) {
     return http.post('/checkToken?secretHash=' + seretHash)
+  },
+  getToken() {
+    return http.get('/getToken')
   }
 }
 
