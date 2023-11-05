@@ -11,6 +11,7 @@ import { ErrorResponse } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
+import { setProfileToLocalStorage } from 'src/utils/auth'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
@@ -35,6 +36,7 @@ export default function Login() {
         setIsAuthenticated(true)
         console.log(data.data.data)
         setProfile(data.data.data.user)
+        setProfileToLocalStorage(data.data.data.user)
         navigate(path.home)
       },
       onError: (error) => {

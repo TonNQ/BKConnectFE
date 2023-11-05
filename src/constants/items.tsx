@@ -11,9 +11,9 @@ import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
 import FriendList from 'src/pages/Chatting/components/SidePages/FriendList'
 import RoomList from 'src/pages/Chatting/components/SidePages/RoomList'
 import ClassList from 'src/pages/Chatting/components/SidePages/ClassList'
-import FriendPage from 'src/pages/Chatting/components/MainPages/FriendPage/FriendPage'
 import Profile from 'src/pages/Chatting/components/SidePages/Profile'
 import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessageWrapper/MessageWrapper'
+import FriendWrapper from 'src/pages/Chatting/components/MainPages/FriendWrapper/FriendWrapper'
 
 export const DashboardOutlinedIcon = [
   {
@@ -70,7 +70,7 @@ export const DashboardComponent = [
   {
     index: 1,
     sideComponent: <FriendList />,
-    mainComponent: <FriendPage />
+    mainComponent: <FriendWrapper />
   },
   {
     index: 2,

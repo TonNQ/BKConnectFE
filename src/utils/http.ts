@@ -48,12 +48,13 @@ class Http {
             error.response?.status === HttpStatusCode.Unauthorized &&
             error.response.data.message === 'Vui lòng đăng nhập để tiếp tục'
           ) {
+            console.log('Login')
             refreshToken().then(() => {
               if (error.response) {
                 error.response.config.headers.Authorization = getAccessTokenFromLocalStorage()
               }
             })
-            this.instance(error.response.config)
+            // this.instance(error.response.config)
             return
           } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

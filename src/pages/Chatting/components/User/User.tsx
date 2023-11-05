@@ -61,10 +61,10 @@ export default function User({ user, searchObject }: Props) {
         <div className='mt-1 grid flex-1 grid-cols-12'>
           {user.class_name && (
             <>
-              <div className='col-span-8 truncate'>
+              <div className='col-span-7 truncate'>
                 <div className='truncate text-xs text-textColor'>MSSV: {user.user_id}</div>
               </div>
-              <div className='col-span-4 truncate'>
+              <div className='col-span-5 truncate'>
                 <div className='truncate text-xs text-textColor'>Lớp: {user.class_name}</div>
               </div>
             </>

@@ -2483,6 +2483,11 @@ hermes-channel@^2.1.2:
   resolved "https://registry.npmjs.org/hermes-channel/-/hermes-channel-2.1.2.tgz"
   integrity sha512-PVH+X8/S9J6XItQgIRLlsrwXUmb/v13wxvcZgqohnnlUZZOEWbWZ07bLsuQ9dEMnNpT9APvBuVV50W5QmDt4pA==
 
+history-api-fallback@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/history-api-fallback/-/history-api-fallback-0.0.0.tgz#379d5c946899be9f2526e9b7b6537a84452a8844"
+  integrity sha512-QphbwvI3mqLVTf2os3/AcfPE3hlB8SnDCbMav7uThA1ReCAbgYLES6mwe0mtNe6l1NYSBUO0rdgCSQQ/6tuJxw==
+
 hoist-non-react-statics@^3.3.1:
   version "3.3.2"
   resolved "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz"
