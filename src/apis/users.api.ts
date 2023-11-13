@@ -19,14 +19,6 @@ const userApi = {
   getRoomsByName(params: { searchKey: string }) {
     return http.get<SuccessResponse<RoomType[]>>('/rooms/searchRoomsOfUser', { params })
   },
-  getAllFriends() {
-    return http.get<SuccessResponse<SearchFriend[]>>('/relationships/getFriends')
-  },
-  searchFriends(params: { SearchKey: string }) {
-    return http.get<SuccessResponse<SearchFriend[]>>('/relationships/searchFriends', {
-      params
-    })
-  },
   searchUsers(params: { searchKey: string; pageIndex: number }) {
     return http.get<SuccessResponse<SearchUser[]>>('/users/searchUsers', {
       params

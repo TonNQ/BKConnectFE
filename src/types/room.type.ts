@@ -10,11 +10,11 @@ export interface RoomType {
 
 export interface Message {
   message_id: number
-  sender_id: string
-  sender_name: string
+  sender_id: string | null
+  sender_name: string | null
   send_time: string
   type_message: string
   content: string
-  root_message_id: number
+  root_message_id: number | null
   root_message_content: string | null
 }

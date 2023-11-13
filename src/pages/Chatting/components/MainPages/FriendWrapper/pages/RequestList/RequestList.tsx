@@ -7,20 +7,16 @@ import FriendItem from '../../components/FriendItem'
 import { useEffect, useState } from 'react'
 import { SearchFriend } from 'src/types/user.type'
 import { debounce } from 'lodash'
-import classNames from 'classnames'
 import { relationshipApi } from 'src/apis/relationship.api'
 
-export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
+export default function RequestList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
   const [inputSearch, setInputSearch] = useState('')
   const [friends, setFriends] = useState<SearchFriend[]>([])
   // mode = 0: All friend, mode = 1: Recently
-  const [mode, setMode] = useState<number>(0)
-
-  // Tìm kiếm
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
       relationshipApi.getAllFriends().then((response) => {
-        setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+        setFriends(response.data.data)
       })
     } else {
       relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
@@ -28,30 +24,16 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
       })
     }
   }, 500)
-
-  // Hàm truyền vào FriendItem để hiển thị UI khi người dùng hủy kết bạn
-  const updateFriend = (updatedFriend: SearchFriend) => {
-    const updatedFriends = friends.map((friend) => {
-      if (friend.user_id === updatedFriend.user_id) {
-        return updatedFriend
-      }
-      return friend
-    })
-
-    setFriends(updatedFriends) // setFriends là hàm để cập nhật state friends
-  }
-
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
-  }, [inputSearch])
-
+  }, [debouncedSearch, inputSearch])
   return (
     <div className='flex h-[100vh] flex-col bg-white p-4'>
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center'>
           <PeopleAltOutlinedIcon sx={{ fontSize: '28px' }} />
-          <span className='ml-3 text-xl font-bold'>Bạn bè ({friends.length})</span>
+          <span className='ml-3 text-xl font-bold'>Lời mời kết bạn ({friends.length})</span>
         </div>
         <div className='flex flex-row items-center'>
           {/* Khung tìm kiếm */}
@@ -77,48 +59,22 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
           </div> */}
           <div
             className='mx-1 rounded-2xl bg-white px-3 py-2 text-base font-semibold text-primary hover:cursor-pointer hover:bg-gray-100 hover:text-blue-700'
+            onClick={() => setPageIndex(0)}
+          >
+            Danh sách bạn bè
+          </div>
+          <div
+            className='mx-1 rounded-2xl bg-white px-3 py-2 text-base font-semibold text-primary hover:cursor-pointer hover:bg-gray-100 hover:text-blue-700'
             onClick={() => setPageIndex(1)}
           >
             Danh sách nhóm
           </div>
-          <div
-            className='mx-1 rounded-2xl bg-white px-3 py-2 text-base font-semibold text-primary hover:cursor-pointer hover:bg-gray-100 hover:text-blue-700'
-            onClick={() => setPageIndex(2)}
-          >
-            Lời mời kết bạn
-          </div>
-        </div>
-      </div>
-      {/* Navbar */}
-      <div className='mt-4 flex flex-row'>
-        <div
-          className={classNames('px-4 py-2 text-base font-medium ', {
-            'border-b-[4px] border-b-primary text-primary': mode === 0,
-            'rounded-md text-textColor hover:cursor-pointer hover:bg-grayColor hover:text-gray-600': mode !== 0
-          })}
-          onClick={() => setMode(0)}
-        >
-          Tất cả bạn bè
-        </div>
-        <div
-          className={classNames('px-4 py-2 text-base font-medium ', {
-            'border-b-[4px] border-b-primary text-primary': mode === 1,
-            'rounded-md text-textColor hover:cursor-pointer hover:bg-grayColor hover:text-gray-600': mode !== 1
-          })}
-          onClick={() => setMode(1)}
-        >
-          Đã thêm gần đây
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {mode === 0 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
-        {mode === 1 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
+        {friends.map((friend) => (
+          <FriendItem key={friend.user_id} type='friend' friend={friend} />
+        ))}
       </div>
     </div>
   )

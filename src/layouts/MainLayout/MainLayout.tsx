@@ -75,6 +75,7 @@ export default function MainLayout({ children }: Props) {
       setIsAuthenticated(false)
       setProfile(null)
       clearLocalStorage()
+      // closeWs()
       navigate(path.login)
     }
   })

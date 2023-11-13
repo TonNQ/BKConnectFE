@@ -30,6 +30,7 @@ export interface SearchFriend {
   name: string
   class_name: string
   avatar: string
+  isFriend: boolean
 }
 
 export interface SearchUser {

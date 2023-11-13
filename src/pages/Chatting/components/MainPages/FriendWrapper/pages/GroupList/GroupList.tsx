@@ -15,12 +15,10 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   const [friends, setFriends] = useState<SearchFriend[]>([])
   // mode = 0: All friend, mode = 1: Recently
   const [mode, setMode] = useState<number>(0)
-
-  // Tìm kiếm
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
       relationshipApi.getAllFriends().then((response) => {
-        setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+        setFriends(response.data.data)
       })
     } else {
       relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
@@ -28,30 +26,16 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
       })
     }
   }, 500)
-
-  // Hàm truyền vào FriendItem để hiển thị UI khi người dùng hủy kết bạn
-  const updateFriend = (updatedFriend: SearchFriend) => {
-    const updatedFriends = friends.map((friend) => {
-      if (friend.user_id === updatedFriend.user_id) {
-        return updatedFriend
-      }
-      return friend
-    })
-
-    setFriends(updatedFriends) // setFriends là hàm để cập nhật state friends
-  }
-
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
-  }, [inputSearch])
-
+  }, [debouncedSearch, inputSearch])
   return (
     <div className='flex h-[100vh] flex-col bg-white p-4'>
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center'>
           <PeopleAltOutlinedIcon sx={{ fontSize: '28px' }} />
-          <span className='ml-3 text-xl font-bold'>Bạn bè ({friends.length})</span>
+          <span className='ml-3 text-xl font-bold'>Nhóm của bạn ({friends.length})</span>
         </div>
         <div className='flex flex-row items-center'>
           {/* Khung tìm kiếm */}
@@ -77,9 +61,9 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
           </div> */}
           <div
             className='mx-1 rounded-2xl bg-white px-3 py-2 text-base font-semibold text-primary hover:cursor-pointer hover:bg-gray-100 hover:text-blue-700'
-            onClick={() => setPageIndex(1)}
+            onClick={() => setPageIndex(0)}
           >
-            Danh sách nhóm
+            Danh sách bạn bè
           </div>
           <div
             className='mx-1 rounded-2xl bg-white px-3 py-2 text-base font-semibold text-primary hover:cursor-pointer hover:bg-gray-100 hover:text-blue-700'
@@ -98,7 +82,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
           })}
           onClick={() => setMode(0)}
         >
-          Tất cả bạn bè
+          Tất cả các nhóm
         </div>
         <div
           className={classNames('px-4 py-2 text-base font-medium ', {
@@ -107,18 +91,12 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
           })}
           onClick={() => setMode(1)}
         >
-          Đã thêm gần đây
+          Tham gia gần đây
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {mode === 0 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
-        {mode === 1 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
+        {mode === 0 && friends.map((friend) => <FriendItem key={friend.user_id} type='friend' friend={friend} />)}
+        {mode === 1 && friends.map((friend) => <FriendItem key={friend.user_id} type='friend' friend={friend} />)}
       </div>
     </div>
   )

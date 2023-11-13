@@ -96,3 +96,10 @@ export function ConvertDateTime(date: string, showTime: boolean) {
     }
   }
 }
+
+// Tính khoảng cách thời gian (đơn vị ms)
+export function TimeDifference(date1: string, date2: string) {
+  const time1: Date = new Date(date1)
+  const time2: Date = new Date(date2)
+  return Math.abs(time1.getTime() - time2.getTime())
+}

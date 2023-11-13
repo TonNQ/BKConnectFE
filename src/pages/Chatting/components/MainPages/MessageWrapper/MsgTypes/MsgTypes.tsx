@@ -25,6 +25,14 @@ const Timeline = ({ date }: { date: string }) => {
   )
 }
 
+const SystemMsg = ({ contentMsg }: { contentMsg: string }) => {
+  return (
+    <div className='mx-4 mb-4 flex flex-row items-center justify-center text-base font-normal text-textColor'>
+      {contentMsg}
+    </div>
+  )
+}
+
 const TextMsg = ({
   msg,
   room_type
@@ -89,4 +97,4 @@ const TextMsg = ({
   }
 }
 
-export { TextMsg, Timeline }
+export { TextMsg, Timeline, SystemMsg }

@@ -69,7 +69,7 @@ export const DashboardComponent = [
   },
   {
     index: 1,
-    sideComponent: <FriendList />,
+    sideComponent: <RoomList />,
     mainComponent: <FriendWrapper />
   },
   {

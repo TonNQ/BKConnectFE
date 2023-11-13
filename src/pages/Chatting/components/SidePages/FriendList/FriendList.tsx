@@ -8,9 +8,9 @@ import 'src/css/Scroll.css'
 import userApi from 'src/apis/users.api'
 import { debounce } from 'lodash'
 import { SearchFriend, SearchUser } from 'src/types/user.type'
-
 import classNames from 'classnames'
 import User from '../../User'
+import { relationshipApi } from 'src/apis/relationship.api'
 
 export default function FriendList() {
   const [inputSearch, setInputSearch] = useState('')
@@ -22,11 +22,11 @@ export default function FriendList() {
     switch (mode) {
       case 0: {
         if (textSearch === '') {
-          userApi.getAllFriends().then((response) => {
+          relationshipApi.getAllFriends().then((response) => {
             setFriends(response.data.data)
           })
         } else {
-          userApi.searchFriends({ SearchKey: textSearch }).then((response) => {
+          relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
             setFriends(response.data.data)
           })
         }

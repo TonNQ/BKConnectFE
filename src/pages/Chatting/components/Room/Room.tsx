@@ -13,15 +13,13 @@ interface Props {
 }
 
 export default function Room({ room }: Props) {
-  const { messages, setMessages, setRoom } = useContext(MessageContext)
+  const { setMessages, setRoom } = useContext(MessageContext)
   const handleClick = () => {
     messageApi.getMessagesByRoom({ SearchKey: room.id }).then((response) => {
-      console.log(response.data.data)
       setMessages(response.data.data)
       setRoom(room)
     })
   }
-  console.log(messages)
   return (
     <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>
       <div className='min-w-[50px]'>
