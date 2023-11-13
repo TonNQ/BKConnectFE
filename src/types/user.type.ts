@@ -41,6 +41,13 @@ export interface SearchUser {
   is_friend: boolean
 }
 
+export interface MemberOfRoom {
+  id: string
+  name: string
+  avatar: string
+  is_admin: boolean
+}
+
 export interface Faculty {
   faculty_id: string
   faculty_name: string

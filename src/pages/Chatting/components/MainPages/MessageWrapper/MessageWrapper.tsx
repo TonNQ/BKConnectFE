@@ -1,4 +1,4 @@
-import { Fragment, useContext, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import Header from './Header'
 import RoomInformation from './RoomInformation'
 import Footer from './Footer'
@@ -49,7 +49,7 @@ export default function MessageWrapper() {
         </div>
         <Footer />
       </div>
-      {showRoomInfo && <RoomInformation />}
+      {showRoomInfo && <RoomInformation key={room?.id} />}
     </div>
   )
 }
