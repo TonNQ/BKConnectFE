@@ -8,6 +8,7 @@ import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 import classNames from 'classnames'
 import { useContext } from 'react'
 import { MessageContext } from 'src/contexts/message.context'
+import { ShowTimeDifference } from 'src/utils/utils'
 
 interface Props {
   showRoomInfo: boolean
@@ -18,15 +19,17 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
   const handleShowRoomInfo = () => {
     setShowRoomInfo(!showRoomInfo)
   }
-  const { room } = useContext(MessageContext)
+  const { roomInfo } = useContext(MessageContext)
   return (
     <div className='flex min-h-[65px] w-full grow-0 items-center justify-between bg-white px-4 shadow-sm shadow-stone-200'>
       <div className='flex items-center'>
-        {room?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={room.avatar} alt='ảnh' />}
-        {!room?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={dut} alt='ảnh' />}
+        {roomInfo?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={roomInfo.avatar} alt='ảnh' />}
+        {!roomInfo?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={dut} alt='ảnh' />}
         <div className='ml-4'>
-          <div className='text-lg font-semibold'>{room?.name}</div>
-          <div className='text-sm font-extralight text-textColor'>Hoạt động 5 giờ trước</div>
+          <div className='text-lg font-semibold'>{roomInfo?.name}</div>
+          <div className='text-sm font-extralight text-textColor'>
+            {roomInfo?.is_online ? 'Đang hoạt động' : ShowTimeDifference(roomInfo?.last_online || '')}
+          </div>
         </div>
       </div>
       <div className='flex items-center space-x-4'>

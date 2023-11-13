@@ -35,9 +35,6 @@ export default function MessageWrapper() {
                     <SystemMsg key={message.message_id} contentMsg={message.content} />
                   )
                 } else {
-                  if (showTimeLine) {
-                    console.log('Timeline: ', message.message_id, ' ', message.send_time)
-                  }
                   return showTimeLine ? (
                     <Fragment key={message.message_id}>
                       <TextMsg key={message.message_id} msg={message} room_type={room?.room_type} />

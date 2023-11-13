@@ -13,12 +13,7 @@ const userApi = {
   changePassword(body: { current_password: string; new_password: string }) {
     return http.put<SuccessResponse<string>>('/users/changePassword', body)
   },
-  getAllRooms() {
-    return http.get<SuccessResponse<RoomType[]>>('/rooms/getRoomsOfUser')
-  },
-  getRoomsByName(params: { searchKey: string }) {
-    return http.get<SuccessResponse<RoomType[]>>('/rooms/searchRoomsOfUser', { params })
-  },
+
   searchUsers(params: { searchKey: string; pageIndex: number }) {
     return http.get<SuccessResponse<SearchUser[]>>('/users/searchUsers', {
       params

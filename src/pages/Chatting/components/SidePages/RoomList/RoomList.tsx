@@ -5,22 +5,22 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import { useEffect, useState } from 'react'
 import 'src/css/Scroll.css'
-import userApi from 'src/apis/users.api'
 import { RoomType } from 'src/types/room.type'
 
 import { debounce } from 'lodash'
 import Room from '../../Room'
+import roomApi from 'src/apis/rooms.api'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
   const [rooms, setRooms] = useState<RoomType[]>([])
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
-      userApi.getAllRooms().then((response) => {
+      roomApi.getAllRooms().then((response) => {
         setRooms(response.data.data)
       })
     } else {
-      userApi.getRoomsByName({ searchKey: textSearch }).then((response) => {
+      roomApi.getRoomsByName({ searchKey: textSearch }).then((response) => {
         setRooms(response.data.data)
       })
     }

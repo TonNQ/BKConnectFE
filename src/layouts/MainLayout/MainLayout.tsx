@@ -24,6 +24,7 @@ export default function MainLayout({ children }: Props) {
     indexPage,
     setIndexPage,
     setIsAuthenticated,
+    profile,
     setProfile,
     isProfileVisible,
     setIsProfileVisible,
@@ -107,7 +108,7 @@ export default function MainLayout({ children }: Props) {
 
         <div className='mb-[15px] hover:cursor-pointer' onClick={toggleSettingMenu}>
           <img
-            src={avatar}
+            src={profile?.avatar}
             alt='avatar'
             className='h-[50px] w-[50px] rounded-full border-[2px] border-solid border-white'
           />

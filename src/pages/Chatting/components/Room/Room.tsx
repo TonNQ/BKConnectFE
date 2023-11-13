@@ -7,18 +7,33 @@ import { ConvertDateTime } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
 import { useContext } from 'react'
 import { MessageContext } from 'src/contexts/message.context'
+import roomApi from 'src/apis/rooms.api'
+import { toast } from 'react-toastify'
 
 interface Props {
   room: RoomType
 }
 
 export default function Room({ room }: Props) {
-  const { setMessages, setRoom } = useContext(MessageContext)
+  const { setMessages, setRoom, setRoomInfo } = useContext(MessageContext)
   const handleClick = () => {
-    messageApi.getMessagesByRoom({ SearchKey: room.id }).then((response) => {
-      setMessages(response.data.data)
-      setRoom(room)
-    })
+    roomApi
+      .getInformationOfRoom({ SearchKey: room.id })
+      .then((response) => {
+        setRoomInfo(response.data.data)
+      })
+      .catch((error) => {
+        toast.error(error.message)
+      })
+    messageApi
+      .getMessagesByRoom({ SearchKey: room.id })
+      .then((response) => {
+        setMessages(response.data.data)
+        setRoom(room)
+      })
+      .catch((error) => {
+        toast.error(error.message)
+      })
   }
   return (
     <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>

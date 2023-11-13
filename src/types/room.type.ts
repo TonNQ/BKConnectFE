@@ -8,6 +8,16 @@ export interface RoomType {
   is_read: boolean
 }
 
+export interface RoomInfo {
+  id: number
+  name: string
+  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom'
+  avatar: string
+  last_online: string | null
+  total_member: number
+  is_online: boolean
+}
+
 export interface Message {
   message_id: number
   sender_id: string | null
