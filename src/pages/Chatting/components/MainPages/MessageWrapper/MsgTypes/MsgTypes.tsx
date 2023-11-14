@@ -51,7 +51,7 @@ const TextMsg = ({
         })}
       >
         <div
-          className={classnames('w-max max-w-[40vw] rounded-2xl px-3 py-1 text-lg', {
+          className={classnames('max-w-[40vw] whitespace-normal rounded-2xl px-3 py-1 text-lg', {
             'bg-primary text-white': isSender,
             'bg-grayColor text-black': !isSender
           })}
@@ -69,7 +69,7 @@ const TextMsg = ({
         })}
       >
         <img
-          src={dut}
+          src={msg.sender_avatar}
           alt=''
           className={classnames('h-[35px] w-[35px] rounded-full', {
             hidden: isSender
@@ -84,7 +84,7 @@ const TextMsg = ({
             {msg.sender_name}
           </div>
           <div
-            className={classnames('w-max max-w-[500px] rounded-2xl px-3 py-1 text-lg', {
+            className={classnames('w-max max-w-[500px] whitespace-normal rounded-2xl px-3 py-1 text-lg', {
               'bg-primary text-white': isSender,
               'bg-grayColor text-black': !isSender
             })}

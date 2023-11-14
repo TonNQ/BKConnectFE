@@ -6,16 +6,16 @@ import Member from '../Member'
 import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
 import { useContext, useEffect, useState } from 'react'
-import { MessageContext } from 'src/contexts/message.context'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { MemberOfRoom } from 'src/types/user.type'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
+import { SocketContext } from 'src/contexts/socket.context'
 
 export default function RoomInformation() {
   const { profile } = useContext(AppContext)
-  const { roomInfo } = useContext(MessageContext)
+  const { roomInfo } = useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)

@@ -20,7 +20,12 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
       relationshipApi.getAllFriends().then((response) => {
-        setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+        if (mode === 0) {
+          setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+        } else if (mode === 1) {
+          // chờ API lấy thời gian kết bạn
+          setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+        }
       })
     } else {
       relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
@@ -68,7 +73,10 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
                 onChange={(e) => setInputSearch(e.target.value)}
               />
             </div>
-            <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'>
+            <div
+              className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'
+              onClick={() => setInputSearch('')}
+            >
               <CloseOutlinedIcon sx={{ fontSize: '18px' }} />
             </div>
           </div>
@@ -96,7 +104,12 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
             'border-b-[4px] border-b-primary text-primary': mode === 0,
             'rounded-md text-textColor hover:cursor-pointer hover:bg-grayColor hover:text-gray-600': mode !== 0
           })}
-          onClick={() => setMode(0)}
+          onClick={() => {
+            if (mode === 1) {
+              setMode(0)
+              setInputSearch('')
+            }
+          }}
         >
           Tất cả bạn bè
         </div>
@@ -105,7 +118,12 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
             'border-b-[4px] border-b-primary text-primary': mode === 1,
             'rounded-md text-textColor hover:cursor-pointer hover:bg-grayColor hover:text-gray-600': mode !== 1
           })}
-          onClick={() => setMode(1)}
+          onClick={() => {
+            if (mode === 0) {
+              setMode(1)
+              setInputSearch('')
+            }
+          }}
         >
           Đã thêm gần đây
         </div>

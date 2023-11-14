@@ -22,9 +22,11 @@ export interface Message {
   message_id: number
   sender_id: string | null
   sender_name: string | null
+  sender_avatar: string
   send_time: string
-  type_message: string
+  message_type: string
   content: string
   root_message_id: number | null
   root_message_content: string | null
+  temp_id: string | null
 }

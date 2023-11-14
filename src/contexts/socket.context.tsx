@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { createContext, useState, useRef, useEffect } from 'react'
 // import { SocketData } from 'src/types/socket.type'
-import { createContext, useState, useRef } from 'react'
+import { createContext, useState, useRef, useContext } from 'react'
+import { ReceiveSocketData, WebSocketDataType } from 'src/types/socket.type'
+import { Message, RoomInfo, RoomType } from 'src/types/room.type'
+import { AppContext } from './app.context'
 
 // interface SocketContextInterface {
 //   // socket: WebSocket | null
@@ -17,7 +20,13 @@ interface SocketContextInterface {
   connectWs: () => void
   closeWs: () => void
   wsState: number
-  message: any[]
+  messages: Message[]
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  wsRef: React.MutableRefObject<WebSocket | null>
+  room: RoomType | null
+  setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
+  roomInfo: RoomInfo | null
+  setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
 }
 
 interface Props {
@@ -39,7 +48,13 @@ const initialSocketContext: SocketContextInterface = {
   connectWs: () => null,
   closeWs: () => null,
   wsState: 0,
-  message: []
+  messages: [],
+  setMessages: () => [],
+  wsRef: { current: null },
+  room: null,
+  setRoom: () => null,
+  roomInfo: null,
+  setRoomInfo: () => null
 }
 
 const BaseConfig = {
@@ -56,82 +71,15 @@ const BaseConfig = {
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
 
 export const SocketProvider = ({ url, accessToken, children }: Props) => {
-  // const [socket, setSocket] = useState<WebSocket | null>(initialSocketContext.socket)
-  // const [socketData, setSocketData] = useState<SocketData | null>(initialSocketContext.socketData)
-  // return (
-  //   <SocketContext.Provider
-  //     value={{
-  //       socket,
-  //       setSocket,
-  //       socketData,
-  //       setSocketData
-  //     }}
-  //   >
-  //     {children}
-  //   </SocketContext.Provider>
-  // )
-  // const socketRef = useRef<WebSocket | null>(null)
-  // const [socketData, setSocketData] = useState<SocketData | null>(null)
-  // const reconnectCount = useRef<number>(0)
-  // const maxReconnectAttempts = 5 // Số lần tái kết nối tối đa
-  // const reconnectInterval = 3000 // Thời gian giữa các lần tái kết nối (ms)
-
-  // useEffect(() => {
-  //   socketRef.current = new WebSocket(url + accessToken)
-  //   console.log(socketRef)
-
-  //   // Xử lý khi mở kết nối
-  //   socketRef.current.onopen = (event) => {
-  //     console.log('WebSocket connected:', event)
-  //     reconnectCount.current = 0
-  //   }
-
-  //   // Xử lý khi nhận được dữ liệu từ máy chủ
-  //   socketRef.current.onmessage = (event) => {
-  //     console.log('WebSocket message:', event.data)
-  //     const receivedData = JSON.parse(event.data)
-  //     setSocketData(receivedData)
-  //   }
-
-  //   // Xử lý khi có lỗi kết nối
-  //   socketRef.current.onerror = (error) => {
-  //     console.error('WebSocket error:', error)
-  //   }
-
-  //   // Xử lý khi đóng kết nối
-  //   socketRef.current.onclose = (event) => {
-  //     console.log('WebSocket closed:', event)
-  //     if (event.code === 1000) {
-  //       // Mã lỗi 1000 thường là mã đóng chuẩn, có thể là do máy khách đóng
-  //       console.log('Kết nối đã được đóng bởi máy khách:', event.reason)
-  //     } else {
-  //       // Mã lỗi khác có thể là do máy chủ đóng
-  //       console.log('Kết nối đã được đóng bởi máy chủ:', event.reason)
-  //     }
-  //     // if (reconnectCount.current < maxReconnectAttempts) {
-  //     //   // Thử kết nối lại sau một khoảng thời gian
-  //     //   setTimeout(() => {
-  //     //     reconnectCount.current++
-  //     //     connectSocket()
-  //     //   }, reconnectInterval)
-  //     // } else {
-  //     //   console.error('WebSocket reconnect attempts exceeded.')
-  //     // }
-  //   }
-
-  //   // return () => {
-  //   //   if (socketRef.current) {
-  //   //     socketRef.current.close()
-  //   //   }
-  //   // }
-  // }, [])
   const [wsState, setWsState] = useState<number>(BaseConfig.webSocketState.NOTCONNECTED)
-  const [message, setMessages] = useState<any>([])
+  const [messages, setMessages] = useState<Message[]>(initialSocketContext.messages)
+  const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
+  const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 5 // Số lần tái kết nối tối đa
   const reconnectInterval = 3000 // Thời gian giữa các lần tái kết nối (ms)
-
+  const { profile } = useContext(AppContext)
   // start web socket connection in this function
   const connectWs = () => {
     setWsState(BaseConfig.webSocketState.CONNECTING)
@@ -144,9 +92,35 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
     }
 
     wsRef.current.onmessage = (e) => {
-      console.log('message')
-      console.log(e.data)
-      setMessages(JSON.parse(e.data))
+      const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
+      setMessages((prevMessages) => {
+        switch (receiveMsg.data_type) {
+          case WebSocketDataType.IsMessage: {
+            if (receiveMsg.message.sender_id !== profile?.user_id) {
+              // Sử dụng prevMessages để đảm bảo rằng bạn đang cập nhật trên trạng thái mới nhất
+              return [receiveMsg.message, ...prevMessages]
+            } else {
+              const indexToUpdate = prevMessages.findIndex(
+                (message) => message.message_id === 0 && message.temp_id === receiveMsg.message.temp_id
+              )
+              if (indexToUpdate !== -1) {
+                const updatedMessages = [
+                  ...prevMessages.slice(0, indexToUpdate),
+                  receiveMsg.message,
+                  ...prevMessages.slice(indexToUpdate + 1)
+                ]
+                return updatedMessages
+              } else {
+                return prevMessages
+              }
+            }
+          }
+          default: {
+          }
+        }
+        // Nếu không thay đổi state, trả về state hiện tại
+        return prevMessages
+      })
     }
 
     wsRef.current.onclose = () => {
@@ -169,5 +143,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
     console.log('socket closed by client')
     setWsState(BaseConfig.webSocketState.CLOSED)
   }
-  return <SocketContext.Provider value={{ connectWs, closeWs, wsState, message }}>{children}</SocketContext.Provider>
+  return (
+    <SocketContext.Provider
+      value={{ connectWs, closeWs, wsState, wsRef, messages, setMessages, room, setRoom, roomInfo, setRoomInfo }}
+    >
+      {children}
+    </SocketContext.Provider>
+  )
 }

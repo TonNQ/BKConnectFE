@@ -6,16 +6,16 @@ import { RoomType } from 'src/types/room.type'
 import { ConvertDateTime } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
 import { useContext } from 'react'
-import { MessageContext } from 'src/contexts/message.context'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
+import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
   room: RoomType
 }
 
 export default function Room({ room }: Props) {
-  const { setMessages, setRoom, setRoomInfo } = useContext(MessageContext)
+  const { messages, setMessages, setRoom, setRoomInfo } = useContext(SocketContext)
   const handleClick = () => {
     roomApi
       .getInformationOfRoom({ SearchKey: room.id })
@@ -28,7 +28,7 @@ export default function Room({ room }: Props) {
     messageApi
       .getMessagesByRoom({ SearchKey: room.id })
       .then((response) => {
-        setMessages(response.data.data)
+        setMessages([...response.data.data])
         setRoom(room)
       })
       .catch((error) => {
@@ -48,11 +48,13 @@ export default function Room({ room }: Props) {
         <div className='truncate text-base font-semibold'>{room.name}</div>
         <div className='mt-[1px] truncate text-sm text-textColor'>{room.last_message}</div>
       </div>
-      <div className='ml-2 flex min-w-[50px] flex-col justify-center'>
+      <div className='ml-1 flex min-w-[60px] flex-col justify-center'>
         <div className='mr-1 min-h-[24px] text-right text-base text-primary'>
           {!room.is_read && <CircleIcon sx={{ weight: '12px', height: '12px' }} />}
         </div>
-        <div className='mt-[1px] text-sm text-textColor'>{ConvertDateTime(room.last_message_time, false)}</div>
+        <div className='mt-[1px] text-right text-sm text-textColor'>
+          {ConvertDateTime(room.last_message_time, false)}
+        </div>
       </div>
     </div>
   )

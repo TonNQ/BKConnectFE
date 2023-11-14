@@ -2,8 +2,8 @@ import { createContext, useState } from 'react'
 import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 
 interface MessageContextInterface {
-  messages: Message[]
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  // messages: Message[]
+  // setMessages: React.Dispatch<React.SetStateAction<Message[]>>
   room: RoomType | null
   setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
   roomInfo: RoomInfo | null
@@ -11,8 +11,8 @@ interface MessageContextInterface {
 }
 
 const initialMessageContext: MessageContextInterface = {
-  messages: [],
-  setMessages: () => [],
+  // messages: [],
+  // setMessages: () => [],
   room: null,
   setRoom: () => null,
   roomInfo: null,
@@ -22,14 +22,14 @@ const initialMessageContext: MessageContextInterface = {
 export const MessageContext = createContext<MessageContextInterface>(initialMessageContext)
 
 export const MessageProvider = ({ children }: { children: React.ReactNode }) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessageContext.messages)
+  // const [messages, setMessages] = useState<Message[]>(initialMessageContext.messages)
   const [room, setRoom] = useState<RoomType | null>(initialMessageContext.room)
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialMessageContext.roomInfo)
   return (
     <MessageContext.Provider
       value={{
-        messages,
-        setMessages,
+        // messages,
+        // setMessages,
         room,
         setRoom,
         roomInfo,

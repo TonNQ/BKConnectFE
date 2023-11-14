@@ -10,7 +10,8 @@ class Http {
   constructor() {
     this.accessToken = getAccessTokenFromLocalStorage()
     this.instance = axios.create({
-      baseURL: 'https://bkconnect.azurewebsites.net/',
+      // baseURL: 'https://bkconnect.azurewebsites.net/',
+      baseURL: 'https://localhost:7012/',
       timeout: 10 * 1000,
       headers: {
         'Content-Type': 'application/json'
@@ -59,7 +60,8 @@ class Http {
           } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const data: any | undefined = error.response?.data
-            const message = data.message || error.message
+            // const message = data.message || error.message
+            const message = error.message
             toast.error(message)
           }
         }

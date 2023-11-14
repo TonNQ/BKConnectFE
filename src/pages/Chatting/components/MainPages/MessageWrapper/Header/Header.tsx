@@ -7,8 +7,8 @@ import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 import classNames from 'classnames'
 import { useContext } from 'react'
-import { MessageContext } from 'src/contexts/message.context'
 import { ShowTimeDifference } from 'src/utils/utils'
+import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
   showRoomInfo: boolean
@@ -19,7 +19,7 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
   const handleShowRoomInfo = () => {
     setShowRoomInfo(!showRoomInfo)
   }
-  const { roomInfo } = useContext(MessageContext)
+  const { roomInfo } = useContext(SocketContext)
   return (
     <div className='flex min-h-[65px] w-full grow-0 items-center justify-between bg-white px-4 shadow-sm shadow-stone-200'>
       <div className='flex items-center'>

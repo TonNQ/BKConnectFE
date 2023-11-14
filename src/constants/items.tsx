@@ -8,12 +8,12 @@ import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
 import SettingsIcon from '@mui/icons-material/Settings'
 import ClassPage from 'src/pages/Chatting/components/MainPages/ClassPage'
 import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
-import FriendList from 'src/pages/Chatting/components/SidePages/FriendList'
 import RoomList from 'src/pages/Chatting/components/SidePages/RoomList'
 import ClassList from 'src/pages/Chatting/components/SidePages/ClassList'
 import Profile from 'src/pages/Chatting/components/SidePages/Profile'
 import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessageWrapper/MessageWrapper'
 import FriendWrapper from 'src/pages/Chatting/components/MainPages/FriendWrapper/FriendWrapper'
+import SearchUsers from 'src/pages/Chatting/components/SidePages/SearchUsers'
 
 export const DashboardOutlinedIcon = [
   {
@@ -69,7 +69,7 @@ export const DashboardComponent = [
   },
   {
     index: 1,
-    sideComponent: <RoomList />,
+    sideComponent: <SearchUsers />,
     mainComponent: <FriendWrapper />
   },
   {
@@ -81,44 +81,5 @@ export const DashboardComponent = [
     index: 3,
     sideComponent: <Profile />,
     mainComponent: <SettingPage />
-  }
-]
-
-export const data = [
-  {
-    facultyId: 1,
-    facultyName: 'CNTT',
-    classes: [
-      {
-        classId: 1,
-        className: '21T_DT'
-      },
-      {
-        classId: 2,
-        className: '21T_DT2'
-      },
-      {
-        classId: 3,
-        className: '21TCLC_DT2'
-      }
-    ]
-  },
-  {
-    facultyId: 2,
-    facultyName: 'Điện',
-    classes: [
-      {
-        classId: 4,
-        className: '20DT'
-      },
-      {
-        classId: 5,
-        className: '21DT'
-      },
-      {
-        classId: 6,
-        className: '22DT'
-      }
-    ]
   }
 ]
