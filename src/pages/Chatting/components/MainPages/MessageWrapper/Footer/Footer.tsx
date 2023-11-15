@@ -7,8 +7,25 @@ import { AppContext } from 'src/contexts/app.context'
 import { convertToDateTimeServer } from 'src/utils/utils'
 
 export default function Footer() {
-  const { wsRef, messages, setMessages, room } = useContext(SocketContext)
-  const { profile } = useContext(AppContext)
+  // const { wsRef, messages, setMessages, room } = useContext(SocketContext)
+  // const { profile } = useContext(AppContext)
+  const { wsRef } = useContext(SocketContext)
+  const fileInputRef = useRef(null);
+  // const handleFileChange = (event) => {
+  //   const file = event.target.files[0];
+
+  //   if (file) {
+  //     const reader = new FileReader();
+
+  //     reader.onload = () => {
+  //       const imageDataUrl = reader.result;
+  //       setImage(imageDataUrl);
+  //     };
+
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+  const { profile, messages, setMessages, room } = useContext(AppContext)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const [text, setText] = useState('')
   const [height, setHeight] = useState<number>(65)
@@ -60,6 +77,7 @@ export default function Footer() {
           sender_name: 'Bạn',
           sender_avatar: profile?.avatar as string,
           send_time: message.message.temp_id,
+          room_id: room?.id as number,
           message_type: message.message.message_type,
           content: message.message.content,
           root_message_id: message.message.root_message_id,
@@ -88,9 +106,16 @@ export default function Footer() {
           onKeyDown={handleKeyDown}
         ></textarea>
       </div>
-      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-700' onClick={handleSubmit}>
+      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-700' onClick={handleSubmit} ref={fileInputRef}>
         <SendRoundedIcon sx={{ fontSize: '28px' }} />
       </div>
+      <input
+        type="file"
+        accept="image/*"
+        // onChange={handleFileChange}
+        ref={fileInputRef}
+        className='invisible'
+      />
     </div>
   )
 }

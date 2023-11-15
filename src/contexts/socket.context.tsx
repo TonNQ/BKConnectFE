@@ -1,61 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // import { createContext, useState, useRef, useEffect } from 'react'
 // import { SocketData } from 'src/types/socket.type'
-import { createContext, useState, useRef, useContext } from 'react'
+import { createContext, useState, useRef, useContext, useEffect } from 'react'
 import { ReceiveSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { AppContext } from './app.context'
-
-// interface SocketContextInterface {
-//   // socket: WebSocket | null
-//   // setSocket: React.Dispatch<React.SetStateAction<WebSocket | null>>
-//   // socketRef: React.MutableRefObject<WebSocket | null>
-//   // socketData: SocketData | null
-//   // setSocketData: React.Dispatch<React.SetStateAction<SocketData | null>>
-//   socket: WebSocket | null
-//   data: any
-// }
-
-interface SocketContextInterface {
-  connectWs: () => void
-  closeWs: () => void
-  wsState: number
-  messages: Message[]
-  setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  wsRef: React.MutableRefObject<WebSocket | null>
-  room: RoomType | null
-  setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
-  roomInfo: RoomInfo | null
-  setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
-}
-
-interface Props {
-  url: string
-  accessToken: string
-  children: React.ReactNode
-}
-
-// const initialSocketContext: SocketContextInterface = {
-//   // socket: null,
-//   // setSocket: () => null,
-//   // socketRef:
-//   // socketData: null,
-//   // setSocketData: () => null
-//   socket: null,
-//   data: null
-// }
-const initialSocketContext: SocketContextInterface = {
-  connectWs: () => null,
-  closeWs: () => null,
-  wsState: 0,
-  messages: [],
-  setMessages: () => [],
-  wsRef: { current: null },
-  room: null,
-  setRoom: () => null,
-  roomInfo: null,
-  setRoomInfo: () => null
-}
 
 const BaseConfig = {
   // socket has four state
@@ -68,18 +17,59 @@ const BaseConfig = {
   }
 }
 
+interface Props {
+  url: string
+  accessToken: string
+  children: React.ReactNode
+}
+interface SocketContextInterface {
+  connectWs: () => void
+  closeWs: () => void
+  wsState: number
+  wsRef: React.MutableRefObject<WebSocket | null>
+  // messages: Message[]
+  // setMessages: React.Dispatch<React.SetStateAction<Message[]>>
+  // room: RoomType | null
+  // setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
+  // roomInfo: RoomInfo | null
+  // setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
+}
+
+const initialSocketContext: SocketContextInterface = {
+  connectWs: () => null,
+  closeWs: () => null,
+  wsState: 0,
+  wsRef: { current: null }
+  // messages: [],
+  // setMessages: () => [],
+  // room: null,
+  // setRoom: () => null,
+  // roomInfo: null,
+  // setRoomInfo: () => null
+}
+
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
 
 export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [wsState, setWsState] = useState<number>(BaseConfig.webSocketState.NOTCONNECTED)
-  const [messages, setMessages] = useState<Message[]>(initialSocketContext.messages)
-  const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
-  const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
+  // const [messages, setMessages] = useState<Message[]>(initialSocketContext.messages)
+  // const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
+  // const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 5 // Số lần tái kết nối tối đa
   const reconnectInterval = 3000 // Thời gian giữa các lần tái kết nối (ms)
-  const { profile } = useContext(AppContext)
+  const { profile, room, messages, setMessages } = useContext(AppContext)
+
+  useEffect(() => {
+    // Clean up the WebSocket connection on unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close()
+      }
+    }
+  }, [AppContext])
+
   // start web socket connection in this function
   const connectWs = () => {
     setWsState(BaseConfig.webSocketState.CONNECTING)
@@ -93,9 +83,13 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
 
     wsRef.current.onmessage = (e) => {
       const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
+      console.log(receiveMsg.message)
+      console.log('room in context: ', room)
+      console.log('message in context: ', messages)
       setMessages((prevMessages) => {
         switch (receiveMsg.data_type) {
           case WebSocketDataType.IsMessage: {
+            if (receiveMsg.message.room_id === room?.id) return prevMessages
             if (receiveMsg.message.sender_id !== profile?.user_id) {
               // Sử dụng prevMessages để đảm bảo rằng bạn đang cập nhật trên trạng thái mới nhất
               return [receiveMsg.message, ...prevMessages]
@@ -118,7 +112,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           default: {
           }
         }
-        // Nếu không thay đổi state, trả về state hiện tại
+        // When unchanging state, return current state
         return prevMessages
       })
     }
@@ -143,11 +137,5 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
     console.log('socket closed by client')
     setWsState(BaseConfig.webSocketState.CLOSED)
   }
-  return (
-    <SocketContext.Provider
-      value={{ connectWs, closeWs, wsState, wsRef, messages, setMessages, room, setRoom, roomInfo, setRoomInfo }}
-    >
-      {children}
-    </SocketContext.Provider>
-  )
+  return <SocketContext.Provider value={{ connectWs, closeWs, wsState, wsRef }}>{children}</SocketContext.Provider>
 }

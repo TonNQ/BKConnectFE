@@ -24,6 +24,7 @@ export interface Message {
   sender_name: string | null
   sender_avatar: string
   send_time: string
+  room_id: number
   message_type: string
   content: string
   root_message_id: number | null
