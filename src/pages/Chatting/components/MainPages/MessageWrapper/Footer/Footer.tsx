@@ -9,7 +9,7 @@ import { convertToDateTimeServer } from 'src/utils/utils'
 export default function Footer() {
   // const { wsRef, messages, setMessages, room } = useContext(SocketContext)
   // const { profile } = useContext(AppContext)
-  const { wsRef } = useContext(SocketContext)
+  const { wsRef, messages, setMessages, room } = useContext(SocketContext)
   const fileInputRef = useRef(null);
   // const handleFileChange = (event) => {
   //   const file = event.target.files[0];
@@ -25,7 +25,7 @@ export default function Footer() {
   //     reader.readAsDataURL(file);
   //   }
   // };
-  const { profile, messages, setMessages, room } = useContext(AppContext)
+  const { profile } = useContext(AppContext)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const [text, setText] = useState('')
   const [height, setHeight] = useState<number>(65)

@@ -10,7 +10,7 @@ import { AppContext } from 'src/contexts/app.context'
 
 export default function MessageWrapper() {
   const [showRoomInfo, setShowRoomInfo] = useState<boolean>(false)
-  const { messages, room } = useContext(AppContext)
+  const { messages, room } = useContext(SocketContext)
   let prevTime: string = ''
   useEffect(() => {}, [messages])
   return room ? (

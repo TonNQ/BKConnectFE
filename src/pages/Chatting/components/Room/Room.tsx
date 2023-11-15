@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function Room({ room }: Props) {
-  const { setMessages, setRoom, setRoomInfo } = useContext(AppContext)
+  const { setMessages, setRoom, setRoomInfo } = useContext(SocketContext)
   const handleClick = async () => {
     try {
       const roomInformationResponse = await roomApi.getInformationOfRoom({ SearchKey: room.id })
