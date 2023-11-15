@@ -6,7 +6,6 @@ import { SystemMsg, TextMsg, Timeline } from './MsgTypes'
 import { TimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
 import NoSelectedRoom from 'src/assets/images/NoSelectedRoom.jpg'
-import { AppContext } from 'src/contexts/app.context'
 
 export default function MessageWrapper() {
   const [showRoomInfo, setShowRoomInfo] = useState<boolean>(false)

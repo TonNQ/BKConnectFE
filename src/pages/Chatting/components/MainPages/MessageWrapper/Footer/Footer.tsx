@@ -1,35 +1,96 @@
-import { useContext, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import { SocketContext } from 'src/contexts/socket.context'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { AppContext } from 'src/contexts/app.context'
 import { convertToDateTimeServer } from 'src/utils/utils'
+import storage from 'src/utils/firebase'
+import { toast } from 'react-toastify'
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 
 export default function Footer() {
   // const { wsRef, messages, setMessages, room } = useContext(SocketContext)
   // const { profile } = useContext(AppContext)
   const { wsRef, messages, setMessages, room } = useContext(SocketContext)
-  const fileInputRef = useRef(null);
-  // const handleFileChange = (event) => {
-  //   const file = event.target.files[0];
-
-  //   if (file) {
-  //     const reader = new FileReader();
-
-  //     reader.onload = () => {
-  //       const imageDataUrl = reader.result;
-  //       setImage(imageDataUrl);
-  //     };
-
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
   const { profile } = useContext(AppContext)
+
+  // kiểm soát chiều rộng của ô tin nhắn
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const [text, setText] = useState('')
   const [height, setHeight] = useState<number>(65)
 
+  // upload ảnh lên firebase
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  // const [imageUrl, setImageUrl] = useState<string | null>(null)
+
+  // const onDrop = useCallback(async (acceptedFiles: File[]) => {
+  //   const selectedFile = acceptedFiles[0]
+
+  //   // Tạo tham chiếu đến Firebase Storage
+  //   const storageRef = storage
+
+  //   // Tạo tên duy nhất cho tệp
+  //   const fileName = `${Date.now()}_${selectedFile.name}`
+
+  //   // Tạo tham chiếu đến nơi bạn muốn lưu trữ tệp trong Storage
+  //   const fileRef = storageRef.child(fileName)
+
+  //   try {
+  //     // Tải lên tệp lên Firebase Storage
+  //     const snapshot = await fileRef.put(selectedFile)
+  //     console.log('File uploaded successfully:', snapshot)
+
+  //     // Lấy URL của tệp đã tải lên
+  //     const downloadURL = await snapshot.ref.getDownloadURL()
+  //     console.log('File download URL:', downloadURL)
+
+  //     // Lưu URL vào state hoặc thực hiện các thao tác khác với URL
+  //     setImageUrl(downloadURL)
+  //   } catch (error) {
+  //     console.error('Error uploading file:', error.message)
+  //   }
+  // }, [])
+
+  const [file, setFile] = useState<File | null>(null)
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files && event.target.files[0]
+    if (selectedFile) {
+      setFile(selectedFile)
+    }
+  }
+  useEffect(() => {
+    // Thực hiện tải lên Firebase khi có sự thay đổi trong state
+    if (file) {
+      handleUpload()
+    }
+  }, [file])
+  const handleUpload = () => {
+    if (!file) {
+      toast.error('Vui lòng chọn ảnh!')
+    } else {
+      const storageRef = ref(storage, `/Message_Image/${profile?.user_id} ${new Date().toISOString()}`)
+      // progress can be paused and resumed. It also exposes progress updates.
+      // Receives the storage reference and the file to upload.
+      const uploadTask = uploadBytesResumable(storageRef, file)
+
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+          // // update progress
+          // setPercent(percent)
+        },
+        (err) => console.log(err),
+        () => {
+          // download url
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            console.log(url)
+          })
+        }
+      )
+    }
+  }
   const updateHeight = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto'
@@ -88,10 +149,15 @@ export default function Footer() {
       ])
     }
   }
+  const handleOpenImgSelection = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click()
+    }
+  }
 
   return (
     <div className='grow-1 flex items-center overflow-hidden bg-white' style={{ minHeight: height > 60 ? height : 60 }}>
-      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-600'>
+      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-600' onClick={handleOpenImgSelection}>
         <AddCircleRoundedIcon sx={{ fontSize: '28px' }} />
       </div>
       <div className='my-2 flex grow items-center rounded-xl bg-gray-100 px-2 '>
@@ -106,16 +172,10 @@ export default function Footer() {
           onKeyDown={handleKeyDown}
         ></textarea>
       </div>
-      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-700' onClick={handleSubmit} ref={fileInputRef}>
+      <div className='mx-4 text-primary hover:cursor-pointer hover:text-blue-700' onClick={handleSubmit}>
         <SendRoundedIcon sx={{ fontSize: '28px' }} />
       </div>
-      <input
-        type="file"
-        accept="image/*"
-        // onChange={handleFileChange}
-        ref={fileInputRef}
-        className='invisible'
-      />
+      <input type='file' accept='image/*' onChange={handleChange} ref={fileInputRef} className='hidden' />
     </div>
   )
 }
