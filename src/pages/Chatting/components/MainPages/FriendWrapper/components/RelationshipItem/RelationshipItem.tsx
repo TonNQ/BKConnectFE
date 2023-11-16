@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import dut from 'src/assets/images/logo.jpg'
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
@@ -13,7 +13,10 @@ import { toast } from 'react-toastify'
 import { GroupRoom } from 'src/types/room.type'
 import { FriendRequest } from 'src/types/friendRequest.type'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
-import { ShowTimeDifference } from 'src/utils/utils'
+import { ShowTimeDifference, convertToDateTimeServer } from 'src/utils/utils'
+import { NotificationType, SendSocketData, WebSocketDataType } from 'src/types/socket.type'
+import { AppContext } from 'src/contexts/app.context'
+import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
   type: string
@@ -24,9 +27,12 @@ interface Props {
 }
 
 export default function RelationshipItem({ type, friend, group, request, updateFriend }: Props) {
+  const { profile } = useContext(AppContext)
+  const { wsRef } = useContext(SocketContext)
   const [showPopover, setShowPopover] = useState(false)
   // sử dụng để thay đổi UI khi remove request
   const [isRemoved, setIsRemoved] = useState(false)
+  const [isApproved, setIsApproved] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const handlePopoverToggle = () => {
     setShowPopover(!showPopover)
@@ -56,6 +62,19 @@ export default function RelationshipItem({ type, friend, group, request, updateF
       .removeFriendRequest({ SearchKey: request?.sender_id as string })
       .then(() => setIsRemoved(true))
       .catch((error) => toast.error(error))
+  }
+
+  const handleApproveRequest = () => {
+    const approveMessage: SendSocketData = {
+      user_id: profile?.user_id,
+      data_type: WebSocketDataType.IsNotification,
+      notification: {
+        notification_type: NotificationType.IsAcceptFriendRequest,
+        receiver_id: request?.sender_id as string
+      }
+    }
+    wsRef.current?.send(JSON.stringify(approveMessage))
+    setIsApproved(true)
   }
 
   useEffect(() => {
@@ -96,9 +115,12 @@ export default function RelationshipItem({ type, friend, group, request, updateF
             <div className='col-span-2 truncate'>Lớp: {request?.sender_class_name || 'Không xác định'}</div>
           </div>
         )}
-        {type === 'request' && !isRemoved && (
+        {type === 'request' && !isRemoved && !isApproved && (
           <div className='mt-2 flex flex-row flex-wrap'>
-            <div className='mr-2 min-w-[150px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'>
+            <div
+              className='mr-2 min-w-[150px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'
+              onClick={handleApproveRequest}
+            >
               Chấp nhận
             </div>
             <div
@@ -111,9 +133,14 @@ export default function RelationshipItem({ type, friend, group, request, updateF
         )}
         {type === 'request' && isRemoved && (
           <div className='mt-2 flex flex-row flex-wrap'>
-            <div className='mr-2 min-w-[150px] rounded-md bg-grayColor px-3 py-1 text-center text-black '>
+            <div className='min-w-[150px] rounded-md bg-grayColor px-3 py-1 text-center text-black '>
               Đã từ chối kết bạn
             </div>
+          </div>
+        )}
+        {type === 'request' && isApproved && (
+          <div className='mt-2 flex flex-row flex-wrap'>
+            <div className='text-sm font-semibold text-primary'>Hai bạn đã trở thành bạn bè</div>
           </div>
         )}
       </div>

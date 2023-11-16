@@ -16,6 +16,8 @@ export function isAxiosBadRequest<FormError>(error: unknown): error is AxiosErro
 function ConvertTime(hours: number, minutes: number) {
   if (hours < 12) {
     return `${hours}:${minutes.toString().padStart(2, '0')} AM`
+  } else if (hours == 12) {
+    return `12:${minutes.toString().padStart(2, '0')} PM`
   } else {
     return `${hours - 12}:${minutes.toString().padStart(2, '0')} PM`
   }
@@ -130,8 +132,7 @@ export function ShowTimeDifference(date: string, onlyTime: boolean) {
     } else {
       return ''
     }
-  }
-  else {
+  } else {
     if (minutes == 0) {
       return 'Đang hoạt động'
     } else if (minutes < 60) {
