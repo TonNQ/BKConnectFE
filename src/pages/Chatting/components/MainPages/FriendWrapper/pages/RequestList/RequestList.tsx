@@ -5,22 +5,23 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import FriendItem from '../../components/FriendItem'
 import { useEffect, useState } from 'react'
-import { SearchFriend } from 'src/types/user.type'
 import { debounce } from 'lodash'
 import { relationshipApi } from 'src/apis/relationship.api'
+import { FriendRequest } from 'src/types/friendRequest.type'
+import { friendRequestApi } from 'src/apis/friendRequest.api'
 
 export default function RequestList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
   const [inputSearch, setInputSearch] = useState('')
-  const [friends, setFriends] = useState<SearchFriend[]>([])
+  const [requests, setRequests] = useState<FriendRequest[]>([])
   // mode = 0: All friend, mode = 1: Recently
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
-      relationshipApi.getAllFriends().then((response) => {
-        setFriends(response.data.data)
+      friendRequestApi.getListOfReceivedFriendRequests().then((response) => {
+        setRequests(response.data.data)
       })
     } else {
-      relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
-        setFriends(response.data.data)
+      friendRequestApi.getListOfReceivedFriendRequests().then((response) => {
+        setRequests(response.data.data)
       })
     }
   }, 500)
@@ -33,7 +34,7 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center'>
           <PeopleAltOutlinedIcon sx={{ fontSize: '28px' }} />
-          <span className='ml-3 text-xl font-bold'>Lời mời kết bạn ({friends.length})</span>
+          <span className='ml-3 text-xl font-bold'>Lời mời kết bạn ({requests.length})</span>
         </div>
         <div className='flex flex-row items-center'>
           {/* Khung tìm kiếm */}
@@ -72,8 +73,8 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {friends.map((friend) => (
-          <FriendItem key={friend.user_id} type='friend' friend={friend} />
+        {requests.map((request) => (
+          <FriendItem key={request.id} type='request' request={request} />
         ))}
       </div>
     </div>
