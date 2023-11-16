@@ -6,13 +6,11 @@ import { AppContext } from 'src/contexts/app.context'
 import 'src/index.css'
 import classNames from 'classnames'
 import { SocketContext } from 'src/contexts/socket.context'
-import notificationApi from 'src/apis/notification.api'
-import { toast } from 'react-toastify'
 import NotificationItem from './components/NotificationItem'
 
 export default function Notification() {
   const { isNotificationVisible, setIsNotificationVisible } = useContext(AppContext)
-  const { notifications, setNotifications } = useContext(SocketContext)
+  const { notifications } = useContext(SocketContext)
   const toggleNotificationComponent = () => {
     setIsNotificationVisible(!isNotificationVisible)
   }

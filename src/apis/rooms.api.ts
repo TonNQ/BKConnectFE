@@ -20,6 +20,11 @@ const roomApi = {
   },
   getListOfPublicRooms() {
     return http.get<SuccessResponse<GroupRoom[]>>('/rooms/getListOfPublicRooms')
+  },
+  searchListOfPublicRooms(params: { SearchKey: string }) {
+    return http.get<SuccessResponse<GroupRoom[]>>('/rooms/searchListOfPublicRooms', {
+      params
+    })
   }
 }
 

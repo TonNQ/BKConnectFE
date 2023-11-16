@@ -7,15 +7,13 @@ import { useEffect, useState } from 'react'
 import 'src/css/Scroll.css'
 import userApi from 'src/apis/users.api'
 import { debounce } from 'lodash'
-import { SearchFriend, SearchUser } from 'src/types/user.type'
+import { SearchUser } from 'src/types/user.type'
 import User from '../../User'
 import SearchUserImg from 'src/assets/images/SearchUser.jpg'
 
 export default function SearchUsers() {
   const [inputSearch, setInputSearch] = useState('')
-  const [friends, setFriends] = useState<SearchFriend[]>([])
   const [users, setUsers] = useState<SearchUser[]>([])
-  // mode = 0: friends, mode = 1: users
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch.trim() !== '') {
       userApi.searchUsers({ searchKey: textSearch, pageIndex: 0 }).then((response) => {
@@ -65,7 +63,7 @@ export default function SearchUsers() {
           {inputSearch !== '' && (
             <>
               <div className='mb-1 text-base font-medium text-primary'>Kết quả tìm kiếm</div>
-              {users?.map((user) => <User key={user.user_id} user={user} searchObject='user' />)}
+              {users?.map((user) => <User key={user.user_id} user={user} />)}
             </>
           )}
           {inputSearch !== '' && users?.length === 0 && (

@@ -8,6 +8,11 @@ const friendRequestApi = {
   },
   removeFriendRequest(params: { SearchKey: string }) {
     return http.delete('/friendRequests/removeFriendRequest', { params })
+  },
+  searchListOfReceivedFriendRequests(params: { SearchKey: string }) {
+    return http.get('/friendRequests/searchListOfReceivedFriendRequests', {
+      params
+    })
   }
 }
 

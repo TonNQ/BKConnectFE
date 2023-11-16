@@ -16,12 +16,12 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   // mode = 0: All friend, mode = 1: Recently
   const [mode, setMode] = useState<number>(0)
   const debouncedSearch = debounce((textSearch: string) => {
-    if (textSearch === '') {
+    if (textSearch.trim() === '') {
       roomApi.getListOfPublicRooms().then((response) => {
         setGroups(response.data.data)
       })
     } else {
-      roomApi.getListOfPublicRooms().then((response) => {
+      roomApi.searchListOfPublicRooms({ SearchKey: textSearch.trim() }).then((response) => {
         setGroups(response.data.data)
       })
     }
@@ -52,7 +52,10 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
                 onChange={(e) => setInputSearch(e.target.value)}
               />
             </div>
-            <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'>
+            <div
+              className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'
+              onClick={() => setInputSearch('')}
+            >
               <CloseOutlinedIcon sx={{ fontSize: '18px' }} />
             </div>
           </div>

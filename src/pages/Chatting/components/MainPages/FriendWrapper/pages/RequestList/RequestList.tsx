@@ -14,12 +14,12 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
   const [requests, setRequests] = useState<FriendRequest[]>([])
   // mode = 0: All friend, mode = 1: Recently
   const debouncedSearch = debounce((textSearch: string) => {
-    if (textSearch === '') {
+    if (textSearch.trim() === '') {
       friendRequestApi.getListOfReceivedFriendRequests().then((response) => {
         setRequests(response.data.data)
       })
     } else {
-      friendRequestApi.getListOfReceivedFriendRequests().then((response) => {
+      friendRequestApi.searchListOfReceivedFriendRequests({ SearchKey: textSearch.trim() }).then((response) => {
         setRequests(response.data.data)
       })
     }
@@ -50,7 +50,10 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
                 onChange={(e) => setInputSearch(e.target.value)}
               />
             </div>
-            <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'>
+            <div
+              className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md text-gray-500 hover:bg-stone-200'
+              onClick={() => setInputSearch('')}
+            >
               <CloseOutlinedIcon sx={{ fontSize: '18px' }} />
             </div>
           </div>

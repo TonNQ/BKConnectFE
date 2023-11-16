@@ -1,5 +1,11 @@
 import classNames from 'classnames'
+import { useContext, useState } from 'react'
+import { toast } from 'react-toastify'
+import { friendRequestApi } from 'src/apis/friendRequest.api'
+import { AppContext } from 'src/contexts/app.context'
+import { SocketContext } from 'src/contexts/socket.context'
 import { Notification, NotificationType } from 'src/types/notification.type'
+import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { ShowTimeDifference } from 'src/utils/utils'
 
 interface Props {
@@ -7,6 +13,29 @@ interface Props {
 }
 
 export default function NotificationItem({ notificationInfo }: Props) {
+  const { profile } = useContext(AppContext)
+  const { wsRef } = useContext(SocketContext)
+  const [isRemoved, setIsRemoved] = useState(false)
+  const [isApproved, setIsApproved] = useState(false)
+  const handleReject = () => {
+    friendRequestApi
+      .removeFriendRequest({ SearchKey: notificationInfo.friend_request?.user_id as string })
+      .then(() => setIsRemoved(true))
+      .catch((error) => toast.error(error))
+  }
+
+  const handleApproveRequest = () => {
+    const approveMessage: SendSocketData = {
+      user_id: profile?.user_id,
+      data_type: WebSocketDataType.IsNotification,
+      notification: {
+        notification_type: NotificationType.IsAcceptFriendRequest,
+        receiver_id: notificationInfo.friend_request?.user_id as string
+      }
+    }
+    wsRef.current?.send(JSON.stringify(approveMessage))
+    setIsApproved(true)
+  }
   return (
     <div
       className={classNames('mb-2 flex w-full flex-row items-start rounded-lg p-2', {
@@ -20,10 +49,16 @@ export default function NotificationItem({ notificationInfo }: Props) {
         className='h-[60px] w-[60px] min-w-[60px] rounded-full border-[1px] border-gray-100'
       />
       <div className='ml-2 flex grow flex-col items-start'>
-        {notificationInfo.notification_type === NotificationType.IsAcceptFriendRequest && (
+        {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && (
           <div className='flex-wrap text-base'>
             <span className='font-semibold text-primary'>{notificationInfo.friend_request?.user_name}</span> đã gửi cho
             bạn lời mời kết bạn.
+          </div>
+        )}
+        {notificationInfo.notification_type === NotificationType.IsAcceptFriendRequest && (
+          <div className='flex-wrap text-base'>
+            <span className='font-semibold text-primary'>{notificationInfo.friend_request?.user_name}</span> đã chấp
+            nhận lời mời kết bạn.
           </div>
         )}
         {notificationInfo.notification_type === NotificationType.IsInRoom && (
@@ -35,13 +70,31 @@ export default function NotificationItem({ notificationInfo }: Props) {
         <div className='mt-1 text-xs font-medium text-primary'>
           {ShowTimeDifference(notificationInfo.sender_time, true)}
         </div>
-        {notificationInfo.notification_type === NotificationType.IsAcceptFriendRequest && (
+        {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && !isRemoved && !isApproved && (
           <div className='mt-3 flex flex-row flex-wrap'>
-            <div className='mr-2 min-w-[100px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'>
+            <div
+              className='mr-2 min-w-[100px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'
+              onClick={handleApproveRequest}
+            >
               Chấp nhận
             </div>
-            <div className='min-w-[100px] rounded-md bg-grayColor px-3 py-1 text-center text-black hover:cursor-pointer hover:bg-gray-200'>
+            <div
+              className='min-w-[100px] rounded-md bg-grayColor px-3 py-1 text-center text-black hover:cursor-pointer hover:bg-gray-200'
+              onClick={handleReject}
+            >
               Từ chối
+            </div>
+          </div>
+        )}
+        {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && isApproved && (
+          <div className='mt-3 flex flex-row flex-wrap'>
+            <div className='text-sm font-semibold text-primary'>Hai bạn đã trở thành bạn bè</div>
+          </div>
+        )}
+        {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && isRemoved && (
+          <div className='mt-2 flex flex-row flex-wrap'>
+            <div className='min-w-[150px] rounded-md bg-grayColor px-3 py-1 text-center text-black '>
+              Đã từ chối kết bạn
             </div>
           </div>
         )}
