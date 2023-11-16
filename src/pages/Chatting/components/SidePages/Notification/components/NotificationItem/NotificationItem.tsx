@@ -2,7 +2,6 @@ import classNames from 'classnames'
 import { useContext, useState } from 'react'
 import { toast } from 'react-toastify'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
-import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
 import { Notification, NotificationType } from 'src/types/notification.type'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
@@ -13,7 +12,6 @@ interface Props {
 }
 
 export default function NotificationItem({ notificationInfo }: Props) {
-  const { profile } = useContext(AppContext)
   const { wsRef } = useContext(SocketContext)
   const [isRemoved, setIsRemoved] = useState(false)
   const [isApproved, setIsApproved] = useState(false)
@@ -26,7 +24,6 @@ export default function NotificationItem({ notificationInfo }: Props) {
 
   const handleApproveRequest = () => {
     const approveMessage: SendSocketData = {
-      user_id: profile?.user_id,
       data_type: WebSocketDataType.IsNotification,
       notification: {
         notification_type: NotificationType.IsAcceptFriendRequest,

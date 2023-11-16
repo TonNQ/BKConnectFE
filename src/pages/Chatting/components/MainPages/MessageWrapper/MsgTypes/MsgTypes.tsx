@@ -1,9 +1,12 @@
 import dut from 'src/assets/images/logo.jpg'
 import classnames from 'classnames'
 import { ConvertDateTime } from 'src/utils/utils'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { Message } from 'src/types/room.type'
+import storage from 'src/utils/firebase'
+import { getDownloadURL, ref } from 'firebase/storage'
+import { toast } from 'react-toastify'
 
 // interface Message {
 //   id?: string
@@ -97,4 +100,63 @@ const TextMsg = ({
   }
 }
 
-export { TextMsg, Timeline, SystemMsg }
+const ImageMsg = ({
+  msg,
+  room_type
+}: {
+  msg: Message
+  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
+}) => {
+  const { profile } = useContext(AppContext)
+  const [imageUrl, setImageUrl] = useState('')
+  const isSender = msg.sender_id === profile?.user_id
+  useEffect(() => {
+    const getImageUrl = async () => {
+      try {
+        const fileRef = ref(storage, `Message_Image/${msg.content}`)
+        // Lấy URL của ảnh
+        const url = await getDownloadURL(fileRef)
+        // Cập nhật state để hiển thị ảnh
+        setImageUrl(url)
+      } catch (error) {
+        console.error('Error fetching image URL:', error)
+      }
+    }
+
+    getImageUrl()
+  }, [])
+  if (room_type === 'PrivateRoom') {
+    return (
+      <div
+        className={classnames('mx-4 mb-2 flex flex-row', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+      </div>
+    )
+  } else {
+    return (
+      <div
+        className={classnames('mx-4 mb-2  flex flex-row  items-end', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <img
+          src={msg.sender_avatar}
+          alt=''
+          className={classnames('h-[35px] w-[35px] rounded-full', {
+            hidden: isSender
+          })}
+        />
+        <div className='ml-3 flex flex-col'>
+          <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+        </div>
+      </div>
+    )
+  }
+}
+
+export { TextMsg, Timeline, SystemMsg, ImageMsg }

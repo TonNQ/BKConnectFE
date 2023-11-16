@@ -13,7 +13,7 @@ import { toast } from 'react-toastify'
 import { GroupRoom } from 'src/types/room.type'
 import { FriendRequest } from 'src/types/friendRequest.type'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
-import { ShowTimeDifference, convertToDateTimeServer } from 'src/utils/utils'
+import { ShowTimeDifference } from 'src/utils/utils'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
@@ -28,7 +28,6 @@ interface Props {
 }
 
 export default function RelationshipItem({ type, friend, group, request, updateFriend }: Props) {
-  const { profile } = useContext(AppContext)
   const { wsRef } = useContext(SocketContext)
   const [showPopover, setShowPopover] = useState(false)
   // sử dụng để thay đổi UI khi remove request
@@ -67,7 +66,6 @@ export default function RelationshipItem({ type, friend, group, request, updateF
 
   const handleApproveRequest = () => {
     const approveMessage: SendSocketData = {
-      user_id: profile?.user_id,
       data_type: WebSocketDataType.IsNotification,
       notification: {
         notification_type: NotificationType.IsAcceptFriendRequest,

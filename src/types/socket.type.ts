@@ -18,7 +18,6 @@ export interface ReceiveSocketData {
 }
 
 export interface SendSocketData {
-  user_id?: string
   data_type: WebSocketDataType
   message?: any
   notification?: NotificationSocket

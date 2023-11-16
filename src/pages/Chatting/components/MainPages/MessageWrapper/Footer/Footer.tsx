@@ -22,36 +22,6 @@ export default function Footer() {
 
   // upload ảnh lên firebase
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-  // const [imageUrl, setImageUrl] = useState<string | null>(null)
-
-  // const onDrop = useCallback(async (acceptedFiles: File[]) => {
-  //   const selectedFile = acceptedFiles[0]
-
-  //   // Tạo tham chiếu đến Firebase Storage
-  //   const storageRef = storage
-
-  //   // Tạo tên duy nhất cho tệp
-  //   const fileName = `${Date.now()}_${selectedFile.name}`
-
-  //   // Tạo tham chiếu đến nơi bạn muốn lưu trữ tệp trong Storage
-  //   const fileRef = storageRef.child(fileName)
-
-  //   try {
-  //     // Tải lên tệp lên Firebase Storage
-  //     const snapshot = await fileRef.put(selectedFile)
-  //     console.log('File uploaded successfully:', snapshot)
-
-  //     // Lấy URL của tệp đã tải lên
-  //     const downloadURL = await snapshot.ref.getDownloadURL()
-  //     console.log('File download URL:', downloadURL)
-
-  //     // Lưu URL vào state hoặc thực hiện các thao tác khác với URL
-  //     setImageUrl(downloadURL)
-  //   } catch (error) {
-  //     console.error('Error uploading file:', error.message)
-  //   }
-  // }, [])
-
   const [file, setFile] = useState<File | null>(null)
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files && event.target.files[0]
@@ -69,7 +39,8 @@ export default function Footer() {
     if (!file) {
       toast.error('Vui lòng chọn ảnh!')
     } else {
-      const storageRef = ref(storage, `/Message_Image/${profile?.user_id} ${new Date().toISOString()}`)
+      const directory = `${profile?.user_id}|${new Date().toISOString()}`
+      const storageRef = ref(storage, `/Message_Image/${directory}`)
       // progress can be paused and resumed. It also exposes progress updates.
       // Receives the storage reference and the file to upload.
       const uploadTask = uploadBytesResumable(storageRef, file)
@@ -86,6 +57,34 @@ export default function Footer() {
           // download url
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
             console.log(url)
+            const message: SendSocketData = {
+              data_type: WebSocketDataType.IsMessage,
+              message: {
+                temp_id: convertToDateTimeServer(new Date()),
+                room_id: room?.id,
+                message_type: 'Image',
+                content: directory,
+                root_message_id: null
+              }
+            }
+            wsRef.current?.send(JSON.stringify(message))
+            setText('')
+            setMessages([
+              {
+                message_id: 0,
+                sender_id: profile?.user_id || null,
+                sender_name: 'Bạn',
+                sender_avatar: profile?.avatar as string,
+                send_time: message.message.temp_id,
+                room_id: room?.id as number,
+                message_type: message.message.message_type,
+                content: message.message.content,
+                root_message_id: message.message.root_message_id,
+                root_message_content: null,
+                temp_id: message.message.temp_id
+              },
+              ...messages
+            ])
           })
         }
       )

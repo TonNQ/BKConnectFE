@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { toast } from 'react-toastify'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 import dut from 'src/assets/images/logo.jpg'
-import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
 import { NotificationType } from 'src/types/notification.type'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
@@ -14,11 +13,9 @@ interface Props {
 
 export default function User({ user }: Props) {
   const { wsRef } = useContext(SocketContext)
-  const { profile } = useContext(AppContext)
   const [isSended, setIsSended] = useState<boolean>(user.has_friend_request)
   const handleSendFriendRequest = () => {
     const sendRequest: SendSocketData = {
-      user_id: profile?.user_id,
       data_type: WebSocketDataType.IsNotification,
       notification: {
         notification_type: NotificationType.IsSendFriendRequest,
