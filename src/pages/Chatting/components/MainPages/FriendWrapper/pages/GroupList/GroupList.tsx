@@ -3,13 +3,12 @@
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import FriendItem from '../../components/FriendItem'
+import RelationshipItem from '../../components/RelationshipItem'
 import { useEffect, useState } from 'react'
 import { debounce } from 'lodash'
 import classNames from 'classnames'
 import { GroupRoom } from 'src/types/room.type'
 import roomApi from 'src/apis/rooms.api'
-import GroupItem from '../../components/GroupItem'
 
 export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
   const [inputSearch, setInputSearch] = useState('')
@@ -18,11 +17,11 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   const [mode, setMode] = useState<number>(0)
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
-      roomApi.getListOfPublicRooms({ SearchKey: textSearch }).then((response) => {
+      roomApi.getListOfPublicRooms().then((response) => {
         setGroups(response.data.data)
       })
     } else {
-      roomApi.getListOfPublicRooms({ SearchKey: textSearch }).then((response) => {
+      roomApi.getListOfPublicRooms().then((response) => {
         setGroups(response.data.data)
       })
     }
@@ -30,7 +29,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
-  }, [debouncedSearch, inputSearch])
+  }, [inputSearch])
   return (
     <div className='flex h-[100vh] flex-col bg-white p-4'>
       <div className='flex flex-row items-center justify-between'>
@@ -96,8 +95,8 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {mode === 0 && groups.map((group) => <FriendItem key={group.id} type='group' group={group} />)}
-        {mode === 1 && groups.map((group) => <FriendItem key={group.id} type='group' group={group} />)}
+        {mode === 0 && groups.map((group) => <RelationshipItem key={group.id} type='group' group={group} />)}
+        {mode === 1 && groups.map((group) => <RelationshipItem key={group.id} type='group' group={group} />)}
       </div>
     </div>
   )

@@ -28,7 +28,7 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
         <div className='ml-4'>
           <div className='text-lg font-semibold'>{roomInfo?.name}</div>
           <div className='text-sm font-extralight text-textColor'>
-            {roomInfo?.is_online ? 'Đang hoạt động' : ShowTimeDifference(roomInfo?.last_online || '')}
+            {roomInfo?.is_online ? 'Đang hoạt động' : ShowTimeDifference(roomInfo?.last_online || '', false)}
           </div>
         </div>
       </div>

@@ -105,7 +105,7 @@ export function TimeDifference(date1: string, date2: string) {
 }
 
 // Trả về dạng "1 phút trước", "1 giờ trước", "1 ngày trước", ...
-export function ShowTimeDifference(date: string) {
+export function ShowTimeDifference(date: string, onlyTime: boolean) {
   const time1: Date = new Date()
   const time2: Date = new Date(date)
   const diff: number = time1.getTime() - time2.getTime()
@@ -114,20 +114,39 @@ export function ShowTimeDifference(date: string) {
   const days: number = Math.floor(diff / (1000 * 60 * 60 * 24))
   const weeks: number = Math.floor(diff / (1000 * 60 * 60 * 24 * 7))
   const months: number = Math.floor(diff / (1000 * 60 * 60 * 24 * 4))
-  if (minutes == 0) {
-    return 'Đang hoạt động'
-  } else if (minutes < 60) {
-    return `Hoạt động ${minutes} phút trước`
-  } else if (hours < 24) {
-    return `Hoạt động ${hours} giờ trước`
-  } else if (days < 7) {
-    return `Hoạt động ${days} ngày trước`
-  } else if (weeks < 4) {
-    return `Hoạt động ${weeks} tuần trước`
-  } else if (months < 12) {
-    return `Hoạt động ${months} tháng trước`
-  } else {
-    return ''
+  if (onlyTime) {
+    if (minutes == 0) {
+      return 'vài giây trước'
+    } else if (minutes < 60) {
+      return `${minutes} phút trước`
+    } else if (hours < 24) {
+      return `${hours} giờ trước`
+    } else if (days < 7) {
+      return `${days} ngày trước`
+    } else if (weeks < 4) {
+      return `${weeks} tuần trước`
+    } else if (months < 12) {
+      return `${months} tháng trước`
+    } else {
+      return ''
+    }
+  }
+  else {
+    if (minutes == 0) {
+      return 'Đang hoạt động'
+    } else if (minutes < 60) {
+      return `Hoạt động ${minutes} phút trước`
+    } else if (hours < 24) {
+      return `Hoạt động ${hours} giờ trước`
+    } else if (days < 7) {
+      return `Hoạt động ${days} ngày trước`
+    } else if (weeks < 4) {
+      return `Hoạt động ${weeks} tuần trước`
+    } else if (months < 12) {
+      return `Hoạt động ${months} tháng trước`
+    } else {
+      return ''
+    }
   }
 }
 

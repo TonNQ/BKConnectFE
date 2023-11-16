@@ -47,7 +47,7 @@ export default function RoomInformation() {
       </div>
       <div className='mt-2 text-lg font-semibold'>{roomInfo?.name}</div>
       <div className='mb-6 text-base font-thin'>
-        {roomInfo?.is_online ? 'Đang hoạt động' : ShowTimeDifference(roomInfo?.last_online || '')}
+        {roomInfo?.is_online ? 'Đang hoạt động' : ShowTimeDifference(roomInfo?.last_online || '', false)}
       </div>
       {roomInfo?.room_type !== 'PrivateRoom' && (
         <>

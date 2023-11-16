@@ -12,6 +12,8 @@ import { relationshipApi } from 'src/apis/relationship.api'
 import { toast } from 'react-toastify'
 import { GroupRoom } from 'src/types/room.type'
 import { FriendRequest } from 'src/types/friendRequest.type'
+import { friendRequestApi } from 'src/apis/friendRequest.api'
+import { ShowTimeDifference } from 'src/utils/utils'
 
 interface Props {
   type: string
@@ -21,9 +23,10 @@ interface Props {
   updateFriend?: (updatedFriend: SearchFriend) => void
 }
 
-export default function FriendItem({ type, friend, group, request, updateFriend }: Props) {
+export default function RelationshipItem({ type, friend, group, request, updateFriend }: Props) {
   const [showPopover, setShowPopover] = useState(false)
-
+  // sử dụng để thay đổi UI khi remove request
+  const [isRemoved, setIsRemoved] = useState(false)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const handlePopoverToggle = () => {
     setShowPopover(!showPopover)
@@ -48,6 +51,13 @@ export default function FriendItem({ type, friend, group, request, updateFriend 
     }
   }
 
+  const handleReject = () => {
+    friendRequestApi
+      .removeFriendRequest({ SearchKey: request?.sender_id as string })
+      .then(() => setIsRemoved(true))
+      .catch((error) => toast.error(error))
+  }
+
   useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside)
 
@@ -64,7 +74,15 @@ export default function FriendItem({ type, friend, group, request, updateFriend 
         className='h-[60px] w-[60px] rounded-md border-[1px] border-gray-100'
       />
       <div className='ml-3 flex grow flex-col justify-center truncate'>
-        <div className='truncate text-lg font-semibold'>{friend?.name || group?.name || request?.sender_name}</div>
+        {type !== 'request' && <div className='truncate text-lg font-semibold'>{friend?.name || group?.name}</div>}
+        {type === 'request' && (
+          <div className='grid grid-cols-5 items-center'>
+            <div className='col-span-3 truncate text-lg font-semibold'>{request?.sender_name}</div>
+            <div className='col-span-2 truncate text-sm font-semibold text-primary'>
+              {ShowTimeDifference(request?.send_time as string, true)}
+            </div>
+          </div>
+        )}
         {type === 'friend' && (
           <div className='grid grid-cols-5 text-sm font-light'>
             <div className='col-span-3 truncate'>MSSV: {friend?.user_id || 'Không xác định'}</div>
@@ -78,13 +96,23 @@ export default function FriendItem({ type, friend, group, request, updateFriend 
             <div className='col-span-2 truncate'>Lớp: {request?.sender_class_name || 'Không xác định'}</div>
           </div>
         )}
-        {type === 'request' && (
+        {type === 'request' && !isRemoved && (
           <div className='mt-2 flex flex-row flex-wrap'>
-            <div className='mr-2 min-w-[100px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'>
+            <div className='mr-2 min-w-[150px] rounded-md bg-primary px-3 py-1 text-center text-white hover:cursor-pointer hover:bg-blue-500'>
               Chấp nhận
             </div>
-            <div className='min-w-[100px] rounded-md bg-grayColor px-3 py-1 text-center text-black hover:cursor-pointer hover:bg-gray-200'>
+            <div
+              className='min-w-[150px] rounded-md bg-grayColor px-3 py-1 text-center text-black hover:cursor-pointer hover:bg-gray-200'
+              onClick={handleReject}
+            >
               Từ chối
+            </div>
+          </div>
+        )}
+        {type === 'request' && isRemoved && (
+          <div className='mt-2 flex flex-row flex-wrap'>
+            <div className='mr-2 min-w-[150px] rounded-md bg-grayColor px-3 py-1 text-center text-black '>
+              Đã từ chối kết bạn
             </div>
           </div>
         )}

@@ -3,7 +3,7 @@
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import FriendItem from '../../components/FriendItem'
+import RelationshipItem from '../../components/RelationshipItem'
 import { useEffect, useState } from 'react'
 import { SearchFriend } from 'src/types/user.type'
 import { debounce } from 'lodash'
@@ -41,7 +41,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
     }
   }, 500)
 
-  // Hàm truyền vào FriendItem để hiển thị UI khi người dùng hủy kết bạn
+  // Hàm truyền vào RelationshipItem để hiển thị UI khi người dùng hủy kết bạn
   const updateFriend = (updatedFriend: SearchFriend) => {
     const updatedFriends = friends.map((friend) => {
       if (friend.user_id === updatedFriend.user_id) {
@@ -137,7 +137,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
         {friends.map((friend) => (
-          <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
+          <RelationshipItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
         ))}
       </div>
     </div>

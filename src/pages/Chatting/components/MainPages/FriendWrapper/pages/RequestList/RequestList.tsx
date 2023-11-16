@@ -3,10 +3,9 @@
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
-import FriendItem from '../../components/FriendItem'
+import RelationshipItem from '../../components/RelationshipItem'
 import { useEffect, useState } from 'react'
 import { debounce } from 'lodash'
-import { relationshipApi } from 'src/apis/relationship.api'
 import { FriendRequest } from 'src/types/friendRequest.type'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 
@@ -28,7 +27,7 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
-  }, [debouncedSearch, inputSearch])
+  }, [inputSearch])
   return (
     <div className='flex h-[100vh] flex-col bg-white p-4'>
       <div className='flex flex-row items-center justify-between'>
@@ -74,7 +73,7 @@ export default function RequestList({ setPageIndex }: { setPageIndex: React.Disp
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
         {requests.map((request) => (
-          <FriendItem key={request.id} type='request' request={request} />
+          <RelationshipItem key={request.id} type='request' request={request} />
         ))}
       </div>
     </div>
