@@ -17,7 +17,7 @@ export default function NotificationItem({ notificationInfo }: Props) {
   const [isApproved, setIsApproved] = useState(false)
   const handleReject = () => {
     friendRequestApi
-      .removeFriendRequest({ SearchKey: notificationInfo.friend_request?.user_id as string })
+      .removeFriendRequest({ SearchKey: notificationInfo.sender_id as string })
       .then(() => setIsRemoved(true))
       .catch((error) => toast.error(error))
   }
@@ -27,7 +27,7 @@ export default function NotificationItem({ notificationInfo }: Props) {
       data_type: WebSocketDataType.IsNotification,
       notification: {
         notification_type: NotificationType.IsAcceptFriendRequest,
-        receiver_id: notificationInfo.friend_request?.user_id as string
+        receiver_id: notificationInfo.sender_id as string
       }
     }
     wsRef.current?.send(JSON.stringify(approveMessage))
@@ -48,20 +48,28 @@ export default function NotificationItem({ notificationInfo }: Props) {
       <div className='ml-2 flex grow flex-col items-start'>
         {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && (
           <div className='flex-wrap text-base'>
-            <span className='font-semibold text-primary'>{notificationInfo.friend_request?.user_name}</span> đã gửi cho
-            bạn lời mời kết bạn.
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã gửi cho bạn lời mời
+            kết bạn.
           </div>
         )}
         {notificationInfo.notification_type === NotificationType.IsAcceptFriendRequest && (
           <div className='flex-wrap text-base'>
-            <span className='font-semibold text-primary'>{notificationInfo.friend_request?.user_name}</span> đã chấp
-            nhận lời mời kết bạn.
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã chấp nhận lời mời kết
+            bạn.
           </div>
         )}
         {notificationInfo.notification_type === NotificationType.IsInRoom && (
           <div className='flex-wrap text-base'>
-            Bạn vừa được thêm vào nhóm
-            <span className='font-semibold text-primary'> Lập trình mạng</span>.
+            Bạn vừa được {notificationInfo.sender_name} thêm vào{' '}
+            {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
+            <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
+          </div>
+        )}
+        {notificationInfo.notification_type === NotificationType.IsOutRoom && (
+          <div className='flex-wrap text-base'>
+            Bạn đã bị {notificationInfo.sender_name} đuổi khỏi{' '}
+            {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
+            <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
           </div>
         )}
         <div className='mt-1 text-xs font-medium text-primary'>

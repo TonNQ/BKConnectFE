@@ -6,17 +6,18 @@ export enum NotificationType {
   IsPostFile = 'IsPostFile'
 }
 
-interface UserNotification {
-  user_id: string
-  user_name: string
-  user_class: string
+interface RoomMessage {
+  room_name: string
+  room_type: 'PrivateRoom' | 'PublicRoom' | 'ClassRoom'
 }
 
 export interface Notification {
   id: number
+  sender_id: string
+  sender_name: string
   sender_time: string
   notification_type: NotificationType
   avatar: string
   is_read: boolean
-  friend_request?: UserNotification
+  room_message?: RoomMessage
 }
