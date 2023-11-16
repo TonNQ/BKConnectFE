@@ -55,7 +55,7 @@ export default function RoomList() {
           <CloseOutlinedIcon sx={{ fontSize: '18px' }} />
         </div>
       </div>
-      <div className='scrollbar-custom mt-4 w-full overflow-y-scroll scroll-smooth'>
+      <div className='mt-4 w-full overflow-auto'>
         <div className=' mx-4 flex flex-col space-y-2 '>
           {rooms?.map((room) => <Room key={room.id} room={room} />)}
           {rooms?.length === 0 && <div className='w-full text-center text-sm'>Không tìm thấy kết quả</div>}

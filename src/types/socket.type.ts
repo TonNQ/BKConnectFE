@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { NotificationType } from './notification.type'
 import { Message } from './room.type'
 
 export enum WebSocketDataType {
@@ -20,17 +21,11 @@ export interface SendSocketData {
   user_id?: string
   data_type: WebSocketDataType
   message?: any
-  notification?: Notification
+  notification?: NotificationSocket
 }
 
-export interface Notification {
+export interface NotificationSocket {
   notification_type: NotificationType
   receiver_id: string
 }
 
-export enum NotificationType {
-  IsSendFriendRequest = 'IsSendFriendRequest',
-  IsAcceptFriendRequest = 'IsAcceptFriendRequest',
-  IsOutRoom = 'IsOutRoom',
-  IsPostFile = 'IsPostFile'
-}

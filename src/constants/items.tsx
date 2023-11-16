@@ -14,27 +14,41 @@ import Profile from 'src/pages/Chatting/components/SidePages/Profile'
 import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessageWrapper/MessageWrapper'
 import FriendWrapper from 'src/pages/Chatting/components/MainPages/FriendWrapper/FriendWrapper'
 import SearchUsers from 'src/pages/Chatting/components/SidePages/SearchUsers'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import Notification from 'src/pages/Chatting/components/SidePages/Notification/Notification'
 
 export const DashboardOutlinedIcon = [
   {
     index: 0,
     title: 'Tin nhắn',
-    icon: <MessageOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
+    icon: <MessageOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />,
+    onlySideComponent: false
   },
   {
     index: 1,
     title: 'Danh sách bạn bè',
-    icon: <PeopleAltOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
+    icon: <PeopleAltOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />,
+    onlySideComponent: false
   },
   {
     index: 2,
     title: 'Lớp học',
-    icon: <ClassOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
+    icon: <ClassOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />,
+    onlySideComponent: false
   },
   {
     index: 3,
+    title: 'Thông báo',
+    icon: <NotificationsNoneIcon sx={{ color: 'white', fontSize: '30px' }} />,
+    onlySideComponent: true,
+    toggleComponent: 'notification'
+  },
+  {
+    index: 4,
     title: 'Cài đặt',
-    icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
+    icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />,
+    onlySideComponent: true,
+    toggleComponent: 'setting'
   }
 ]
 
@@ -56,8 +70,13 @@ export const DashboardFilledIcon = [
   },
   {
     index: 3,
+    title: 'Thông báo',
+    icon: <NotificationsNoneIcon sx={{ color: 'white', fontSize: '30px' }} />
+  },
+  {
+    index: 4,
     title: 'Cài đặt',
-    icon: <SettingsIcon sx={{ color: 'white', fontSize: '30px', fontWeight: '400' }} />
+    icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
   }
 ]
 
@@ -65,21 +84,24 @@ export const DashboardComponent = [
   {
     index: 0,
     sideComponent: <RoomList />,
-    mainComponent: <MessageWrapper />
+    mainComponent: <MessageWrapper />,
   },
   {
     index: 1,
     sideComponent: <SearchUsers />,
-    mainComponent: <FriendWrapper />
+    mainComponent: <FriendWrapper />,
   },
   {
     index: 2,
     sideComponent: <ClassList />,
-    mainComponent: <ClassPage />
+    mainComponent: <ClassPage />,
   },
   {
     index: 3,
-    sideComponent: <Profile />,
-    mainComponent: <SettingPage />
+    sideComponent: <Notification />,
+  },
+  {
+    index: 4,
+    sideComponent: <SettingPage />,
   }
 ]

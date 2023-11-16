@@ -5,6 +5,7 @@ import { createContext, useState, useRef, useContext, useEffect } from 'react'
 import { ReceiveSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { AppContext } from './app.context'
+import { Notification } from 'src/types/notification.type'
 
 const BaseConfig = {
   // socket has four state
@@ -33,6 +34,8 @@ interface SocketContextInterface {
   setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
   roomInfo: RoomInfo | null
   setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
+  notifications: Notification[]
+  setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -45,7 +48,9 @@ const initialSocketContext: SocketContextInterface = {
   room: null,
   setRoom: () => null,
   roomInfo: null,
-  setRoomInfo: () => null
+  setRoomInfo: () => null,
+  notifications: [],
+  setNotifications: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -55,6 +60,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [messages, setMessages] = useState<Message[]>(initialSocketContext.messages)
   const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
+  const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 5 // Số lần tái kết nối tối đa
@@ -179,7 +185,20 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   }
   return (
     <SocketContext.Provider
-      value={{ connectWs, closeWs, wsState, wsRef, messages, setMessages, room, setRoom, roomInfo, setRoomInfo }}
+      value={{
+        connectWs,
+        closeWs,
+        wsState,
+        wsRef,
+        messages,
+        setMessages,
+        room,
+        setRoom,
+        roomInfo,
+        setRoomInfo,
+        notifications,
+        setNotifications
+      }}
     >
       {children}
     </SocketContext.Provider>

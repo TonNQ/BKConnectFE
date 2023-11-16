@@ -14,9 +14,10 @@ import { GroupRoom } from 'src/types/room.type'
 import { FriendRequest } from 'src/types/friendRequest.type'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 import { ShowTimeDifference, convertToDateTimeServer } from 'src/utils/utils'
-import { NotificationType, SendSocketData, WebSocketDataType } from 'src/types/socket.type'
+import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
+import { NotificationType } from 'src/types/notification.type'
 
 interface Props {
   type: string
@@ -223,11 +224,11 @@ export default function RelationshipItem({ type, friend, group, request, updateF
           </div>
         </>
       )}
-      {/* {friend && !friend.isFriend && (
+      {friend && !friend.isFriend && (
         <div className='ml-2 min-w-[120px] overflow-hidden overflow-ellipsis whitespace-nowrap rounded-md bg-primary p-2 text-center text-base font-medium text-white hover:cursor-pointer hover:bg-secondary'>
           Thêm bạn bè
         </div>
-      )} */}
+      )}
     </div>
   )
 }

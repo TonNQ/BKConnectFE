@@ -1,5 +1,4 @@
 import { createContext, useState } from 'react'
-import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { User } from 'src/types/user.type'
 import { getAccessTokenFromLocalStorage, getProfileFromLocalStorage } from 'src/utils/auth'
 
@@ -14,6 +13,10 @@ interface AppContextInterface {
   setIsProfileVisible: React.Dispatch<React.SetStateAction<boolean | null>>
   isChangePasswordVisible: boolean | null
   setIsChangePasswordVisible: React.Dispatch<React.SetStateAction<boolean | null>>
+  isNotificationVisible: boolean | null
+  setIsNotificationVisible: React.Dispatch<React.SetStateAction<boolean | null>>
+  isSettingVisible: boolean | null
+  setIsSettingVisible: React.Dispatch<React.SetStateAction<boolean | null>>
   // messages: Message[]
   // setMessages: React.Dispatch<React.SetStateAction<Message[]>>
   // room: RoomType | null
@@ -32,13 +35,11 @@ const initialAppContext: AppContextInterface = {
   isProfileVisible: null,
   setIsProfileVisible: () => null,
   isChangePasswordVisible: null,
-  setIsChangePasswordVisible: () => null
-  // messages: [],
-  // setMessages: () => [],
-  // room: null,
-  // setRoom: () => null,
-  // roomInfo: null,
-  // setRoomInfo: () => null
+  setIsChangePasswordVisible: () => null,
+  isNotificationVisible: null,
+  setIsNotificationVisible: () => null,
+  isSettingVisible: null,
+  setIsSettingVisible: () => null
 }
 
 export const AppContext = createContext<AppContextInterface>(initialAppContext)
@@ -51,9 +52,10 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [isChangePasswordVisible, setIsChangePasswordVisible] = useState<boolean | null>(
     initialAppContext.isChangePasswordVisible
   )
-  // const [messages, setMessages] = useState<Message[]>(initialAppContext.messages)
-  // const [room, setRoom] = useState<RoomType | null>(initialAppContext.room)
-  // const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialAppContext.roomInfo)
+  const [isNotificationVisible, setIsNotificationVisible] = useState<boolean | null>(
+    initialAppContext.isNotificationVisible
+  )
+  const [isSettingVisible, setIsSettingVisible] = useState<boolean | null>(initialAppContext.isSettingVisible)
   return (
     <AppContext.Provider
       value={{
@@ -66,7 +68,11 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         isProfileVisible,
         setIsProfileVisible,
         isChangePasswordVisible,
-        setIsChangePasswordVisible
+        setIsChangePasswordVisible,
+        isNotificationVisible,
+        setIsNotificationVisible,
+        isSettingVisible,
+        setIsSettingVisible
       }}
     >
       {children}

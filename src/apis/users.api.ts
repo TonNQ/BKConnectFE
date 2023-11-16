@@ -1,5 +1,4 @@
-import { RoomType } from 'src/types/room.type'
-import { Class, Faculty, SearchFriend, SearchUser, User, UpdatedUser } from 'src/types/user.type'
+import { Class, Faculty, SearchUser, User, UpdatedUser } from 'src/types/user.type'
 import { SuccessResponse } from 'src/types/utils.type'
 import http from 'src/utils/http'
 
