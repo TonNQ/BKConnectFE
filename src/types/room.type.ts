@@ -31,3 +31,10 @@ export interface Message {
   root_message_content: string | null
   temp_id: string | null
 }
+
+export interface GroupRoom {
+  id: number
+  name: string
+  avatar: string
+  total_member: number
+}

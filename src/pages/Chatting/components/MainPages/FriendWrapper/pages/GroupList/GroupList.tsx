@@ -5,24 +5,25 @@ import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import FriendItem from '../../components/FriendItem'
 import { useEffect, useState } from 'react'
-import { SearchFriend } from 'src/types/user.type'
 import { debounce } from 'lodash'
 import classNames from 'classnames'
-import { relationshipApi } from 'src/apis/relationship.api'
+import { GroupRoom } from 'src/types/room.type'
+import roomApi from 'src/apis/rooms.api'
+import GroupItem from '../../components/GroupItem'
 
 export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
   const [inputSearch, setInputSearch] = useState('')
-  const [friends, setFriends] = useState<SearchFriend[]>([])
+  const [groups, setGroups] = useState<GroupRoom[]>([])
   // mode = 0: All friend, mode = 1: Recently
   const [mode, setMode] = useState<number>(0)
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch === '') {
-      relationshipApi.getAllFriends().then((response) => {
-        setFriends(response.data.data)
+      roomApi.getListOfPublicRooms({ SearchKey: textSearch }).then((response) => {
+        setGroups(response.data.data)
       })
     } else {
-      relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
-        setFriends(response.data.data)
+      roomApi.getListOfPublicRooms({ SearchKey: textSearch }).then((response) => {
+        setGroups(response.data.data)
       })
     }
   }, 500)
@@ -35,7 +36,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center'>
           <PeopleAltOutlinedIcon sx={{ fontSize: '28px' }} />
-          <span className='ml-3 text-xl font-bold'>Nhóm của bạn ({friends.length})</span>
+          <span className='ml-3 text-xl font-bold'>Nhóm của bạn ({groups.length})</span>
         </div>
         <div className='flex flex-row items-center'>
           {/* Khung tìm kiếm */}
@@ -95,8 +96,8 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {mode === 0 && friends.map((friend) => <FriendItem key={friend.user_id} type='friend' friend={friend} />)}
-        {mode === 1 && friends.map((friend) => <FriendItem key={friend.user_id} type='friend' friend={friend} />)}
+        {mode === 0 && groups.map((group) => <FriendItem key={group.id} type='group' group={group} />)}
+        {mode === 1 && groups.map((group) => <FriendItem key={group.id} type='group' group={group} />)}
       </div>
     </div>
   )

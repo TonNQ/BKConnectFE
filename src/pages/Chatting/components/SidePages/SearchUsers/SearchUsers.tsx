@@ -17,7 +17,7 @@ export default function SearchUsers() {
   const [users, setUsers] = useState<SearchUser[]>([])
   // mode = 0: friends, mode = 1: users
   const debouncedSearch = debounce((textSearch: string) => {
-    if (textSearch !== '') {
+    if (textSearch.trim() !== '') {
       userApi.searchUsers({ searchKey: textSearch, pageIndex: 0 }).then((response) => {
         setUsers(response.data.data)
       })

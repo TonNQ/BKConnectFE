@@ -14,6 +14,7 @@ import path from 'src/constants/path'
 import Profile from 'src/pages/Chatting/components/SidePages/Profile'
 import ChangePassword from 'src/pages/Chatting/components/SidePages/ChangePassword'
 import classNames from 'classnames'
+import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
   children?: React.ReactNode
@@ -31,6 +32,7 @@ export default function MainLayout({ children }: Props) {
     isChangePasswordVisible,
     setIsChangePasswordVisible
   } = useContext(AppContext)
+  const { setRoom, setRoomInfo, setMessages } = useContext(SocketContext)
   const navigate = useNavigate()
   const divRef = useRef<HTMLDivElement | null>(null)
   const [showSettingMenu, setShowSettingMenu] = useState(false)
@@ -82,6 +84,10 @@ export default function MainLayout({ children }: Props) {
   })
   const handleLogout = () => {
     logoutMutation.mutate()
+    setRoom(null)
+    setRoomInfo(null)
+    setMessages([])
+    setIndexPage(0)
   }
 
   return (

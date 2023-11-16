@@ -9,6 +9,7 @@ import { SearchFriend } from 'src/types/user.type'
 import { debounce } from 'lodash'
 import classNames from 'classnames'
 import { relationshipApi } from 'src/apis/relationship.api'
+import { TimeDifference } from 'src/utils/utils'
 
 export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispatch<React.SetStateAction<number>> }) {
   const [inputSearch, setInputSearch] = useState('')
@@ -24,12 +25,18 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
           setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
         } else if (mode === 1) {
           // chờ API lấy thời gian kết bạn
-          setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
+          setFriends(
+            response.data.data
+              .map((friend) => ({ ...friend, isFriend: true }))
+              .filter(
+                (friend) => TimeDifference(new Date().toISOString(), friend.friend_time) / (1000 * 60 * 60 * 24) <= 7
+              )
+          )
         }
       })
     } else {
       relationshipApi.searchFriends({ SearchKey: textSearch }).then((response) => {
-        setFriends(response.data.data)
+        setFriends(response.data.data.map((friend) => ({ ...friend, isFriend: true })))
       })
     }
   }, 500)
@@ -49,7 +56,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
-  }, [inputSearch])
+  }, [inputSearch, mode])
 
   return (
     <div className='flex h-[100vh] flex-col bg-white p-4'>
@@ -129,14 +136,9 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
         </div>
       </div>
       <div className='mt-4 grid w-full grid-cols-2 gap-2'>
-        {mode === 0 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
-        {mode === 1 &&
-          friends.map((friend) => (
-            <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
-          ))}
+        {friends.map((friend) => (
+          <FriendItem key={friend.user_id} type='friend' friend={friend} updateFriend={updateFriend} />
+        ))}
       </div>
     </div>
   )

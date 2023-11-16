@@ -15,7 +15,7 @@ export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
   const [rooms, setRooms] = useState<RoomType[]>([])
   const debouncedSearch = debounce((textSearch: string) => {
-    if (textSearch === '') {
+    if (textSearch.trim() === '') {
       roomApi.getAllRooms().then((response) => {
         setRooms(response.data.data)
       })
