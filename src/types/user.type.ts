@@ -30,6 +30,8 @@ export interface SearchFriend {
   name: string
   class_name: string
   avatar: string
+  friend_time: string
+  isFriend: boolean
 }
 
 export interface SearchUser {
@@ -38,6 +40,14 @@ export interface SearchUser {
   class_name: string
   avatar: string
   is_friend: boolean
+  sender_friend_request: string | null
+}
+
+export interface MemberOfRoom {
+  id: string
+  name: string
+  avatar: string
+  is_admin: boolean
 }
 
 export interface Faculty {

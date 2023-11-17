@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import logo from 'src/assets/images/logo.jpg'
-import avatar from 'src/assets/images/avatar.jpg'
 import { DashboardFilledIcon, DashboardOutlinedIcon } from 'src/constants/items'
 import Tooltip from '@mui/material/Tooltip'
 import { AppContext } from 'src/contexts/app.context'
@@ -11,9 +10,14 @@ import { clearLocalStorage } from 'src/utils/auth'
 import authApi from 'src/apis/auth.api'
 import { useNavigate } from 'react-router-dom'
 import path from 'src/constants/path'
-import Profile from 'src/pages/Chatting/pages/SidePages/Profile'
-import ChangePassword from 'src/pages/Chatting/pages/SidePages/ChangePassword'
+import Profile from 'src/pages/Chatting/components/SidePages/Profile'
+import ChangePassword from 'src/pages/Chatting/components/SidePages/ChangePassword'
 import classNames from 'classnames'
+import { SocketContext } from 'src/contexts/socket.context'
+import Notification from 'src/pages/Chatting/components/SidePages/Notification/Notification'
+import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
+import notificationApi from 'src/apis/notification.api'
+import { toast } from 'react-toastify'
 
 interface Props {
   children?: React.ReactNode
@@ -24,21 +28,86 @@ export default function MainLayout({ children }: Props) {
     indexPage,
     setIndexPage,
     setIsAuthenticated,
+    profile,
     setProfile,
     isProfileVisible,
     setIsProfileVisible,
     isChangePasswordVisible,
-    setIsChangePasswordVisible
+    setIsChangePasswordVisible,
+    isNotificationVisible,
+    setIsNotificationVisible,
+    isSettingVisible,
+    setIsSettingVisible
   } = useContext(AppContext)
+  const { setRoom, setRoomInfo, setMessages, setNotifications } = useContext(SocketContext)
   const navigate = useNavigate()
   const divRef = useRef<HTMLDivElement | null>(null)
   const [showSettingMenu, setShowSettingMenu] = useState(false)
   const toggleComponent = (component: string) => {
-    if (component === 'profile') {
-      setIsProfileVisible(!isProfileVisible)
-    } else if (component === 'changePassword') {
-      setIsChangePasswordVisible(!isChangePasswordVisible)
+    switch (component) {
+      case 'profile': {
+        if (isProfileVisible) {
+          setIsProfileVisible(false)
+        } else {
+          setIsProfileVisible(true)
+          setIsChangePasswordVisible(null)
+          setIsNotificationVisible(null)
+          setIsSettingVisible(null)
+        }
+        break
+      }
+      case 'changePassword': {
+        if (isChangePasswordVisible) {
+          setIsChangePasswordVisible(false)
+        } else {
+          setIsProfileVisible(null)
+          setIsChangePasswordVisible(true)
+          setIsNotificationVisible(null)
+          setIsSettingVisible(null)
+        }
+        break
+      }
+      case 'notification': {
+        if (isNotificationVisible) {
+          setIsChangePasswordVisible(false)
+        } else {
+          setIsProfileVisible(null)
+          setIsChangePasswordVisible(null)
+          setIsNotificationVisible(true)
+          setIsSettingVisible(null)
+        }
+        // gọi API get tất cả thông báo
+        notificationApi
+          .getListOfNotifications()
+          .then((data) => {
+            setNotifications(data.data.data)
+          })
+          .catch((error) => toast.error(error))
+        // click vào thông báo thì xem như đã đọc thông báo
+        notificationApi
+          .updateNotifications()
+          .then(() => {})
+          .catch((error) => toast.error(error))
+
+        break
+      }
+      case 'setting': {
+        if (isSettingVisible) {
+          setIsSettingVisible(false)
+        } else {
+          setIsProfileVisible(null)
+          setIsChangePasswordVisible(null)
+          setIsNotificationVisible(null)
+          setIsSettingVisible(true)
+        }
+        break
+      }
     }
+    // if (component === 'profile') {
+    //   setIsProfileVisible(!isProfileVisible)
+    // } else if (component === 'changePassword') {
+    //   setIsChangePasswordVisible(!isChangePasswordVisible)
+    // }
     setShowSettingMenu(false)
   }
 
@@ -67,6 +136,8 @@ export default function MainLayout({ children }: Props) {
     setIndexPage(indexPage)
     setIsProfileVisible(null)
     setIsChangePasswordVisible(null)
+    setIsNotificationVisible(null)
+    setIsSettingVisible(null)
   }
 
   const logoutMutation = useMutation({
@@ -75,11 +146,16 @@ export default function MainLayout({ children }: Props) {
       setIsAuthenticated(false)
       setProfile(null)
       clearLocalStorage()
+      // closeWs()
       navigate(path.login)
     }
   })
   const handleLogout = () => {
     logoutMutation.mutate()
+    setRoom(null)
+    setRoomInfo(null)
+    setMessages([])
+    setIndexPage(0)
   }
 
   return (
@@ -95,7 +171,13 @@ export default function MainLayout({ children }: Props) {
                   'bg-blue-400': indexPage === element.index
                 })}
                 key={element.index}
-                onClick={() => handleChangePage(element.index)}
+                onClick={() => {
+                  if (element.onlySideComponent) {
+                    toggleComponent(element.toggleComponent as string)
+                  } else {
+                    handleChangePage(element.index)
+                  }
+                }}
               >
                 {indexPage !== element.index && element.icon}
                 {indexPage === element.index && DashboardFilledIcon[indexPage].icon}
@@ -103,10 +185,9 @@ export default function MainLayout({ children }: Props) {
             </Tooltip>
           ))}
         </div>
-
         <div className='mb-[15px] hover:cursor-pointer' onClick={toggleSettingMenu}>
           <img
-            src={avatar}
+            src={profile?.avatar}
             alt='avatar'
             className='h-[50px] w-[50px] rounded-full border-[2px] border-solid border-white'
           />
@@ -136,6 +217,8 @@ export default function MainLayout({ children }: Props) {
       </div>
       <Profile />
       <ChangePassword />
+      <Notification />
+      <SettingPage />
       <div>{children}</div>
     </div>
   )

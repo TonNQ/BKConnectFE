@@ -31,7 +31,12 @@
 
 //   const handleSend = async () => {
 //     if (input.trim() !== '') {
-//       if (connection) connection.send(`SendMessage:: ${userName}: ${input}`)
+//       const a: Message = {
+//         id: '1',
+//         text: 'Hello world',
+//         sender: 'Toan'
+//       }
+//       if (connection) connection.send(JSON.stringify(a))
 //       setInput('')
 //     }
 //   }
@@ -62,8 +67,10 @@
 //           text: event.data,
 //           sender: 'testttt'
 //         }
+
 //         setMessages((prev) => [...prev, mess])
 //       }
+
 //       // .start()
 //       // .then(() => {
 //       //   connection.on('ReceiveMessage', (user, message) => {
