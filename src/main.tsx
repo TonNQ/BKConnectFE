@@ -21,8 +21,8 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AppProvider>
         <SocketProvider
-          // url={`wss://bkconnect.azurewebsites.net/websocket/ws?accessToken=`}
-          url={`wss://localhost:7012/websocket/ws?accessToken=`}
+          url={`wss://bkconnect.azurewebsites.net/websocket/ws?accessToken=`}
+          // url={`wss://localhost:7012/websocket/ws?accessToken=`}
           accessToken={getAccessTokenFromLocalStorage()}
         >
           <App />
