@@ -47,11 +47,11 @@ export default function Footer() {
 
       uploadTask.on(
         'state_changed',
-        // (snapshot) => {
-        //   // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-        //   // // update progress
-        //   // setPercent(percent)
-        // },
+        () => {
+          // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+          // // update progress
+          // setPercent(percent)
+        },
         (err) => console.log(err),
         () => {
           // download url

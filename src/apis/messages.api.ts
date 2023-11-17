@@ -5,6 +5,9 @@ import http from 'src/utils/http'
 const messageApi = {
   getMessagesByRoom(params: { SearchKey: number }) {
     return http.get<SuccessResponse<Message[]>>('/messages/getAllMessages', { params })
+  },
+  getAllImageMessages(params: { SearchKey: number}) {
+    return http.get<SuccessResponse<Message[]>>('/messages/getAllImageMessages', { params })
   }
 }
 
