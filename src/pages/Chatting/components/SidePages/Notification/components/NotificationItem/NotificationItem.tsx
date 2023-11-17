@@ -60,20 +60,20 @@ export default function NotificationItem({ notificationInfo }: Props) {
         )}
         {notificationInfo.notification_type === NotificationType.IsInRoom && (
           <div className='flex-wrap text-base'>
-            Bạn vừa được {notificationInfo.sender_name} thêm vào{' '}
+            Bạn vừa được <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> thêm vào{' '}
             {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
             <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
           </div>
         )}
         {notificationInfo.notification_type === NotificationType.IsOutRoom && (
           <div className='flex-wrap text-base'>
-            Bạn đã bị {notificationInfo.sender_name} đuổi khỏi{' '}
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã đuổi bạn khỏi{' '}
             {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
             <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
           </div>
         )}
         <div className='mt-1 text-xs font-medium text-primary'>
-          {ShowTimeDifference(notificationInfo.sender_time, true)}
+          {ShowTimeDifference(notificationInfo.send_time, true)}
         </div>
         {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && !isRemoved && !isApproved && (
           <div className='mt-3 flex flex-row flex-wrap'>

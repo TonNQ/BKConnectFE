@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useContext, useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import dut from 'src/assets/images/logo.jpg'
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import DoDisturbAltOutlinedIcon from '@mui/icons-material/DoDisturbAltOutlined'
@@ -15,7 +14,6 @@ import { FriendRequest } from 'src/types/friendRequest.type'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
-import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
 import { NotificationType } from 'src/types/notification.type'
 

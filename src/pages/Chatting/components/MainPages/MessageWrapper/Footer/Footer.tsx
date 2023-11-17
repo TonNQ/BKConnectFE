@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 import { SocketContext } from 'src/contexts/socket.context'
@@ -47,11 +47,11 @@ export default function Footer() {
 
       uploadTask.on(
         'state_changed',
-        (snapshot) => {
-          // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-          // // update progress
-          // setPercent(percent)
-        },
+        // (snapshot) => {
+        //   // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+        //   // // update progress
+        //   // setPercent(percent)
+        // },
         (err) => console.log(err),
         () => {
           // download url

@@ -15,7 +15,7 @@ export interface Notification {
   id: number
   sender_id: string
   sender_name: string
-  sender_time: string
+  send_time: string
   notification_type: NotificationType
   avatar: string
   is_read: boolean

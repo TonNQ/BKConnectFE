@@ -9,7 +9,6 @@ import { useContext } from 'react'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
-import { AppContext } from 'src/contexts/app.context'
 
 interface Props {
   room: RoomType

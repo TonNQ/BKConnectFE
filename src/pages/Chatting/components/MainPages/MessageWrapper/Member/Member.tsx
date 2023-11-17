@@ -1,4 +1,3 @@
-import dut from 'src/assets/images/logo.jpg'
 import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import AddIcon from '@mui/icons-material/Add'

@@ -1,11 +1,10 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import dut from 'src/assets/images/DUT_img.jpg'
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import Member from '../Member'
 import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { MemberOfRoom } from 'src/types/user.type'
 import roomApi from 'src/apis/rooms.api'

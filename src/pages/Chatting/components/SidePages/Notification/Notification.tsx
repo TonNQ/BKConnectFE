@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import 'src/index.css'
 import classNames from 'classnames'

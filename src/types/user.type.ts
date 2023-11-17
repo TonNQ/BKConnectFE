@@ -40,7 +40,7 @@ export interface SearchUser {
   class_name: string
   avatar: string
   is_friend: boolean
-  has_friend_request: boolean
+  sender_friend_request: string | null
 }
 
 export interface MemberOfRoom {

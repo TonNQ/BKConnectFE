@@ -10,9 +10,9 @@ class Http {
   constructor() {
     this.accessToken = getAccessTokenFromLocalStorage()
     this.instance = axios.create({
-      // baseURL: 'https://bkconnect.azurewebsites.net/',
-      baseURL: 'https://localhost:7012/',
-      timeout: 10 * 1000,
+      baseURL: 'https://bkconnect.azurewebsites.net/',
+      // baseURL: 'https://localhost:7012/',
+      timeout: 30 * 1000,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -62,7 +62,7 @@ class Http {
             const data: any | undefined = error.response?.data
             // const message = data.message || error.message
             const message = error.message
-            toast.error(message)
+            toast.error(data || message)
           }
         }
         return Promise.reject(error)

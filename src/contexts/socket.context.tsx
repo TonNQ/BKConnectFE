@@ -67,9 +67,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const reconnectInterval = 3000 // Thời gian giữa các lần tái kết nối (ms)
   const { profile } = useContext(AppContext)
   // const { profile, room, messages, setMessages } = useContext(AppContext)
-  let messagesData: Message[] = []
+  // let messagesData: Message[] = []
   let roomData: RoomType | null = null
-  let roomInfoData: RoomInfo | null = null
+  // let roomInfoData: RoomInfo | null = null
   useEffect(() => {
     // Clean up the WebSocket connection on unmount
     return () => {

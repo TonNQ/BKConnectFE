@@ -1,4 +1,3 @@
-import dut from 'src/assets/images/logo.jpg'
 import classnames from 'classnames'
 import { ConvertDateTime } from 'src/utils/utils'
 import { useContext, useEffect, useState } from 'react'
@@ -6,7 +5,6 @@ import { AppContext } from 'src/contexts/app.context'
 import { Message } from 'src/types/room.type'
 import storage from 'src/utils/firebase'
 import { getDownloadURL, ref } from 'firebase/storage'
-import { toast } from 'react-toastify'
 
 // interface Message {
 //   id?: string
