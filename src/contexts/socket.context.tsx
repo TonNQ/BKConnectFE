@@ -63,7 +63,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
-  const maxReconnectAttempts = 5 // Số lần tái kết nối tối đa
+  const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
   const reconnectInterval = 3000 // Thời gian giữa các lần tái kết nối (ms)
   const { profile } = useContext(AppContext)
   // const { profile, room, messages, setMessages } = useContext(AppContext)
