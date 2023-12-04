@@ -6,7 +6,7 @@ import VideoCameraFrontOutlinedIcon from '@mui/icons-material/VideoCameraFrontOu
 import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 import classNames from 'classnames'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
 
@@ -20,11 +20,40 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
     setShowRoomInfo(!showRoomInfo)
   }
   const { roomInfo } = useContext(SocketContext)
+  const [_, setCurrentTime] = useState(new Date())
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000) // Cập nhật mỗi 1 phút
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {}, [roomInfo])
+
   return (
     <div className='flex min-h-[65px] w-full grow-0 items-center justify-between bg-white px-4 shadow-sm shadow-stone-200'>
       <div className='flex items-center'>
-        {roomInfo?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={roomInfo.avatar} alt='ảnh' />}
-        {!roomInfo?.avatar && <img className='h-[45px] w-[45px] rounded-full' src={dut} alt='ảnh' />}
+        {roomInfo?.avatar && (
+          <div className='relative'>
+            <img
+              className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200'
+              src={roomInfo.avatar}
+              alt='ảnh'
+            />
+            {(roomInfo.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
+              <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
+            )}
+          </div>
+        )}
+        {!roomInfo?.avatar && (
+          <div className='relative'>
+            <img className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200' src={dut} alt='ảnh' />
+            {(roomInfo?.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
+              <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
+            )}
+          </div>
+        )}
         <div className='ml-4'>
           <div className='text-lg font-semibold'>{roomInfo?.name}</div>
           <div className='text-sm font-extralight text-textColor'>
