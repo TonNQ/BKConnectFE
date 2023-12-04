@@ -124,6 +124,12 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           })
           break
         }
+        case WebSocketDataType.IsNotification: {
+          setNotifications((prevNotifications) => {
+            return [receiveMsg.notification, ...prevNotifications]
+          })
+          break
+        }
         default: {
         }
       }
