@@ -5,17 +5,18 @@ import CircleIcon from '@mui/icons-material/Circle'
 import { RoomType } from 'src/types/room.type'
 import { ConvertDateTime } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
   room: RoomType
+  setInputSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function Room({ room }: Props) {
-  const { setMessages, setRoom, setRoomInfo } = useContext(SocketContext)
+export default function Room({ room, setInputSearch }: Props) {
+  const { setMessages, setRoom, setRoomInfo, setRoomList } = useContext(SocketContext)
   const handleClick = async () => {
     try {
       const roomInformationResponse = await roomApi.getInformationOfRoom({ SearchKey: room.id })
@@ -23,6 +24,17 @@ export default function Room({ room }: Props) {
       setRoomInfo(roomInformationResponse.data.data)
       setMessages([...messageResponse.data.data])
       setRoom(room)
+      setRoomList((prevRoomList) => {
+        if (prevRoomList === null) return null
+        return prevRoomList?.map((roomItem) => {
+          if (roomItem.id === room.id) {
+            return { ...roomItem, is_read: true }
+          } else {
+            return roomItem
+          }
+        })
+      })
+      setInputSearch('')
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -45,14 +57,18 @@ export default function Room({ room }: Props) {
     //     toast.error(error.message)
     //   })
   }
+  useEffect(() => {}, [room])
   return (
     <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>
-      <div className='min-w-[50px]'>
+      <div className='relative min-w-[50px]'>
         <img
           src={room.avatar || dut}
           alt='avatar room'
           className='h-[50px] w-[50px] rounded-full border-[1px] border-gray-200'
         />
+        {room.is_online && (
+          <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
+        )}
       </div>
       <div className='ml-2 flex grow flex-col justify-center truncate'>
         <div className='truncate text-base font-semibold'>{room.name}</div>

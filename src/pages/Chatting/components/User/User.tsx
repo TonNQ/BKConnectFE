@@ -56,33 +56,33 @@ export default function User({ user }: Props) {
       </div>
       <div className='ml-2 flex flex-1 flex-col'>
         <div className='grid flex-1 grid-cols-12 items-center justify-center'>
-          <div className='col-span-8 mr-1 truncate'>
+          <div className='col-span-7 mr-1 truncate'>
             <span className='truncate text-base font-semibold'>{user.name}</span>
           </div>
           {isFriend && (
-            <div className='col-span-4 items-center justify-center'>
+            <div className='col-span-5 items-center justify-center'>
               <div className='rounded-md border-[1px] border-primary bg-white py-1 text-center text-xs text-primary '>
                 Bạn bè
               </div>
             </div>
           )}
           {!isFriend && isSenderRequest === null && (
-            <div className='col-span-4 items-center justify-center' onClick={handleSendFriendRequest}>
-              <div className='rounded-md bg-primary px-2 py-1 text-center text-xs text-white hover:cursor-pointer hover:bg-secondary'>
+            <div className='col-span-5 items-center justify-center' onClick={handleSendFriendRequest}>
+              <div className='rounded-md bg-primary px-2 py-1 text-center text-xs font-medium text-white hover:cursor-pointer hover:bg-secondary'>
                 Kết bạn
               </div>
             </div>
           )}
           {!isFriend && isSenderRequest === profile?.user_id && (
-            <div className='col-span-4 items-center justify-center' onClick={handleRemoveFriendRequest}>
+            <div className='col-span-5 items-center justify-center' onClick={handleRemoveFriendRequest}>
               <div className='rounded-md bg-gray-200 px-2 py-1 text-center text-xs hover:cursor-pointer hover:bg-gray-300'>
                 Hủy
               </div>
             </div>
           )}
           {!isFriend && isSenderRequest !== null && isSenderRequest !== profile?.user_id && (
-            <div className='col-span-4 items-center justify-center' onClick={handleApproveFriendRequest}>
-              <div className='rounded-md bg-primary px-2 py-1 text-center text-xs text-white hover:cursor-pointer hover:bg-secondary'>
+            <div className='col-span-5 items-center justify-center' onClick={handleApproveFriendRequest}>
+              <div className='rounded-md bg-primary px-2 py-1 text-center text-xs font-medium text-white hover:cursor-pointer hover:bg-secondary'>
                 Chấp nhận
               </div>
             </div>

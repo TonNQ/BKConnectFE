@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import 'src/index.css'
 import classNames from 'classnames'
@@ -14,6 +14,7 @@ export default function Notification() {
   const toggleNotificationComponent = () => {
     setIsNotificationVisible(!isNotificationVisible)
   }
+  useEffect(() => {}, [notifications])
   return (
     <div
       className={classNames(
