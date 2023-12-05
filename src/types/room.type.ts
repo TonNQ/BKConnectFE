@@ -6,6 +6,8 @@ export interface RoomType {
   last_message: string
   last_message_time: string
   is_read: boolean
+  is_online: boolean
+  friend_id?: string
 }
 
 export interface RoomInfo {
@@ -16,6 +18,7 @@ export interface RoomInfo {
   last_online: string | null
   total_member: number
   is_online: boolean
+  friend_id?: string
 }
 
 export interface Message {
