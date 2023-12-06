@@ -4,8 +4,10 @@ import { GroupRoom, RoomInfo, RoomType } from 'src/types/room.type'
 import { MemberOfRoom } from 'src/types/user.type'
 
 const roomApi = {
-  getAllRooms() {
-    return http.get<SuccessResponse<RoomType[]>>('/rooms/getRoomsOfUser')
+  getRoomOfUser(params: { SearchKey: string }) {
+    return http.get<SuccessResponse<RoomInfo[]>>('/rooms/getRoomsOfUser', {
+      params
+    })
   },
   getRoomsByName(params: { searchKey: string }) {
     return http.get<SuccessResponse<RoomType[]>>('/rooms/searchRoomsOfUser', { params })
@@ -20,11 +22,6 @@ const roomApi = {
   },
   getListOfPublicRooms() {
     return http.get<SuccessResponse<GroupRoom[]>>('/rooms/getListOfPublicRooms')
-  },
-  searchListOfPublicRooms(params: { SearchKey: string }) {
-    return http.get<SuccessResponse<GroupRoom[]>>('/rooms/searchListOfPublicRooms', {
-      params
-    })
   }
 }
 

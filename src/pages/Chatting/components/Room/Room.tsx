@@ -2,8 +2,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import dut from 'src/assets/images/logo.jpg'
 import CircleIcon from '@mui/icons-material/Circle'
-import { RoomType } from 'src/types/room.type'
-import { ConvertDateTime } from 'src/utils/utils'
+import { RoomInfo } from 'src/types/room.type'
+import { ConvertDateTime, ShowTimeDifference } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
 import { useContext, useEffect } from 'react'
 import roomApi from 'src/apis/rooms.api'
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
 
 interface Props {
-  room: RoomType
+  room: RoomInfo
   setInputSearch: React.Dispatch<React.SetStateAction<string>>
 }
 
@@ -19,9 +19,8 @@ export default function Room({ room, setInputSearch }: Props) {
   const { setMessages, setRoom, setRoomInfo, setRoomList } = useContext(SocketContext)
   const handleClick = async () => {
     try {
-      const roomInformationResponse = await roomApi.getInformationOfRoom({ SearchKey: room.id })
       const messageResponse = await messageApi.getMessagesByRoom({ SearchKey: room.id })
-      setRoomInfo(roomInformationResponse.data.data)
+      setRoomInfo(room)
       setMessages([...messageResponse.data.data])
       setRoom(room)
       setRoomList((prevRoomList) => {
@@ -38,24 +37,6 @@ export default function Room({ room, setInputSearch }: Props) {
     } catch (error: any) {
       toast.error(error.message)
     }
-    // roomApi
-    //   .getInformationOfRoom({ SearchKey: room.id })
-    //   .then((response) => {
-    //     setRoomInfo(response.data.data)
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.message)
-    //   })
-    // messageApi
-    //   .getMessagesByRoom({ SearchKey: room.id })
-    //   .then((response) => {
-    //     setMessages([...response.data.data])
-    //     console.log('Rooooom', room)
-    //     setRoom(room)
-    //   })
-    //   .catch((error) => {
-    //     toast.error(error.message)
-    //   })
   }
   useEffect(() => {}, [room])
   return (
@@ -66,7 +47,7 @@ export default function Room({ room, setInputSearch }: Props) {
           alt='avatar room'
           className='h-[50px] w-[50px] rounded-full border-[1px] border-gray-200'
         />
-        {room.is_online && (
+        {(room.is_online || ShowTimeDifference(room.last_online || '', false) === 'Đang hoạt động') && (
           <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
         )}
       </div>

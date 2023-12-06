@@ -19,6 +19,9 @@ export interface RoomInfo {
   total_member: number
   is_online: boolean
   friend_id?: string
+  last_message: string
+  last_message_time: string
+  is_read: boolean
 }
 
 export interface Message {
@@ -33,6 +36,7 @@ export interface Message {
   root_message_id: number | null
   root_message_content: string | null
   temp_id: string | null
+  last_message: string
 }
 
 export interface GroupRoom {

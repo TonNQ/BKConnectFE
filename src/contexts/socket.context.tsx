@@ -6,7 +6,7 @@ import { ReceiveSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { AppContext } from './app.context'
 import { Notification } from 'src/types/notification.type'
-import { getDateTimeNow } from 'src/utils/utils'
+import { convertToDateTimeServer, getDateTimeNow } from 'src/utils/utils'
 
 const BaseConfig = {
   // socket has four state
@@ -31,8 +31,8 @@ interface SocketContextInterface {
   wsRef: React.MutableRefObject<WebSocket | null>
   messages: Message[]
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>
-  roomList: RoomType[] | null
-  setRoomList: React.Dispatch<React.SetStateAction<RoomType[] | null>>
+  roomList: RoomInfo[] | null
+  setRoomList: React.Dispatch<React.SetStateAction<RoomInfo[] | null>>
   room: RoomType | null
   setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
   roomInfo: RoomInfo | null
@@ -64,7 +64,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [wsState, setWsState] = useState<number>(BaseConfig.webSocketState.NOTCONNECTED)
   const [messages, setMessages] = useState<Message[]>(initialSocketContext.messages)
   // roomList: danh sách room của người dùng
-  const [roomList, setRoomList] = useState<RoomType[] | null>(initialSocketContext.roomList)
+  const [roomList, setRoomList] = useState<RoomInfo[] | null>(initialSocketContext.roomList)
   // room: room đang chọn
   const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
   // roomInfo: thông tin của room mà user đang xem
@@ -138,26 +138,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
             prevRoomList = prevRoomList?.map((roomItem, index) => {
               if (receiveMsg.message.room_id === roomItem.id) {
                 indexOfChangedRoom = index
-                let new_last_message: string = ''
-                if (receiveMsg.message.message_type === 'System') {
-                  new_last_message = receiveMsg.message.content
-                } else {
-                  if (receiveMsg.user_id === profile?.user_id) {
-                    new_last_message = 'Bạn: '
-                  } else {
-                    new_last_message = receiveMsg.message.sender_name + ': '
-                  }
-                }
-                if (receiveMsg.message.message_type === 'Image') {
-                  new_last_message += 'Đã gửi một hình ảnh'
-                } else if (receiveMsg.message.message_type === 'File') {
-                  new_last_message += 'Đã gửi một file đính kèm'
-                } else if (receiveMsg.message.message_type === 'Text') {
-                  new_last_message += receiveMsg.message.content
-                }
-                const newRoom: RoomType = {
+                const newRoom: RoomInfo = {
                   ...roomItem,
-                  last_message: new_last_message,
+                  last_message: receiveMsg.message.last_message,
                   last_message_time: receiveMsg.message.send_time
                 }
                 return newRoom
@@ -223,15 +206,18 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
             }
           })
           setRoomList((prevRoomList) => {
-            prevRoomList?.forEach((room) => {
+            if (prevRoomList === null) return prevRoomList
+            return prevRoomList?.map((room) => {
               if (room.friend_id === receiveMsg.user_id) {
                 return {
                   ...room,
-                  is_online: false
+                  is_online: false,
+                  last_online: convertToDateTimeServer(new Date())
                 }
+              } else {
+                return room
               }
             })
-            return prevRoomList
           })
           break
         }

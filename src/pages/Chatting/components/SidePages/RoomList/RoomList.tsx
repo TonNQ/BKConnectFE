@@ -12,29 +12,33 @@ import { SocketContext } from 'src/contexts/socket.context'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
-  const { roomList, setRoomList } = useContext(SocketContext)
+  const [_, setCurrentTime] = useState(new Date())
+  const { roomList, setRoomList, roomInfo } = useContext(SocketContext)
   const debouncedSearch = useCallback(
     debounce((textSearch: string) => {
-      if (textSearch.trim() === '') {
-        roomApi.getAllRooms().then((response) => {
-          setRoomList(response.data.data)
-        })
-      } else if (textSearch.trim() !== '') {
-        roomApi.getRoomsByName({ searchKey: textSearch }).then((response) => {
-          setRoomList(response.data.data)
-        })
-      }
+      setRoomList(null)
+      roomApi.getRoomOfUser({ SearchKey: textSearch.trim() }).then((response) => {
+        setRoomList(response.data.data)
+      })
     }, 500),
     [roomList]
   )
+  const handleResetInputSearch = () => {
+    setInputSearch('')
+  }
   useEffect(() => {
     debouncedSearch(inputSearch)
     return () => debouncedSearch.cancel()
   }, [inputSearch])
-  useEffect(() => {}, [roomList])
-  const handleResetInputSearch = () => {
-    setInputSearch('')
-  }
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000) // Cập nhật mỗi 1 phút
+    return () => clearInterval(interval)
+  }, [])
+  useEffect(() => {}, [roomList, roomInfo])
+
   return (
     <div className='flex h-[100vh] flex-col'>
       <div className='m-4 text-2xl font-semibold'>Chats</div>
