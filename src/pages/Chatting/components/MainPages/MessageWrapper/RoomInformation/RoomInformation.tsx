@@ -6,7 +6,6 @@ import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
 import { useContext, useEffect, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
-import { MemberOfRoom } from 'src/types/user.type'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
@@ -17,11 +16,10 @@ import { RoomInfo } from 'src/types/room.type'
 
 export default function RoomInformation() {
   const { profile } = useContext(AppContext)
-  const { roomInfo } = useContext(SocketContext)
+  const { roomInfo, members, setMembers } = useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)
-  const [members, setMembers] = useState<MemberOfRoom[]>([])
   // const [images, setImages] = useState<Message[]>([])
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [, setCurrentTime] = useState(new Date())
@@ -61,7 +59,7 @@ export default function RoomInformation() {
         <img
           src={roomInfo?.avatar}
           alt=''
-          className='mx-auto h-[100px] w-[100px] rounded-full border-[2px] border-solid border-white'
+          className='mx-auto h-[100px] w-[100px] rounded-full border-[2px] border-solid border-gray-200'
         />
         {((roomInfo as RoomInfo).is_online ||
           ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (

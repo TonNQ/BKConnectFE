@@ -7,6 +7,7 @@ export enum NotificationType {
 }
 
 interface RoomMessage {
+  room_id: number
   room_name: string
   room_type: 'PrivateRoom' | 'PublicRoom' | 'ClassRoom'
 }

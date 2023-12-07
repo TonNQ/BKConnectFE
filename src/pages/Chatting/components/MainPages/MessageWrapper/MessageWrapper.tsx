@@ -9,10 +9,10 @@ import NoSelectedRoom from 'src/assets/images/NoSelectedRoom.jpg'
 
 export default function MessageWrapper() {
   const [showRoomInfo, setShowRoomInfo] = useState<boolean>(false)
-  const { messages, room } = useContext(SocketContext)
+  const { messages, roomInfo } = useContext(SocketContext)
   let prevTime: string = ''
-  useEffect(() => {}, [messages])
-  return room ? (
+  useEffect(() => {}, [messages, roomInfo])
+  return roomInfo ? (
     <div className='grow-1 flex w-full'>
       <div className='flex h-[100vh] grow flex-col'>
         <Header showRoomInfo={showRoomInfo} setShowRoomInfo={setShowRoomInfo} />
@@ -21,7 +21,7 @@ export default function MessageWrapper() {
 
           {messages.map((message, index, arr) => {
             let showTimeLine: boolean = false
-            if (prevTime !== '' && TimeDifference(prevTime, message.send_time) >= 60 * 60 * 1000) {
+            if (prevTime !== '' && TimeDifference(prevTime, message.send_time) >= 30 * 60 * 1000) {
               showTimeLine = true
             }
             // biến để gán timeline
@@ -36,10 +36,14 @@ export default function MessageWrapper() {
                     <SystemMsg key={message.message_id} contentMsg={message.content} />
                   )}
                   {message.message_type === 'Text' && (
-                    <TextMsg key={message.message_id + message.send_time} msg={message} room_type={room?.room_type} />
+                    <TextMsg
+                      key={message.message_id + message.send_time}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                    />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={room?.room_type} />
+                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
                   )}
                   <Timeline key={message.send_time} date={message.send_time} />
                 </Fragment>
@@ -49,10 +53,14 @@ export default function MessageWrapper() {
                     <SystemMsg key={message.message_id} contentMsg={message.content} />
                   )}
                   {message.message_type === 'Text' && (
-                    <TextMsg key={message.message_id + message.send_time} msg={message} room_type={room?.room_type} />
+                    <TextMsg
+                      key={message.message_id + message.send_time}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                    />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={room?.room_type} />
+                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
                   )}
                   <Timeline key={message.send_time} date={message.send_time} />
                 </Fragment>
@@ -65,10 +73,14 @@ export default function MessageWrapper() {
                     <SystemMsg key={message.message_id} contentMsg={message.content} />
                   )}
                   {message.message_type === 'Text' && (
-                    <TextMsg key={message.message_id + message.send_time} msg={message} room_type={room?.room_type} />
+                    <TextMsg
+                      key={message.message_id + message.send_time}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                    />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={room?.room_type} />
+                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
                   )}
                 </Fragment>
               ) : (
@@ -77,10 +89,14 @@ export default function MessageWrapper() {
                     <SystemMsg key={message.message_id} contentMsg={message.content} />
                   )}
                   {message.message_type === 'Text' && (
-                    <TextMsg key={message.message_id + message.send_time} msg={message} room_type={room?.room_type} />
+                    <TextMsg
+                      key={message.message_id + message.send_time}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                    />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={room?.room_type} />
+                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
                   )}
                 </Fragment>
               )
@@ -89,7 +105,7 @@ export default function MessageWrapper() {
         </div>
         <Footer />
       </div>
-      {showRoomInfo && <RoomInformation key={room?.id} />}
+      {showRoomInfo && <RoomInformation key={roomInfo?.id} />}
     </div>
   ) : (
     <div className='grow-1 flex w-full'>

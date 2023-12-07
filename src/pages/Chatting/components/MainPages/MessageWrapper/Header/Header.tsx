@@ -20,7 +20,7 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
     setShowRoomInfo(!showRoomInfo)
   }
   const { roomInfo } = useContext(SocketContext)
-  const [_, setCurrentTime] = useState(new Date())
+  const [, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     const interval = setInterval(() => {
