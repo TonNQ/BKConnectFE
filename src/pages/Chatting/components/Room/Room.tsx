@@ -6,7 +6,6 @@ import { RoomInfo } from 'src/types/room.type'
 import { ConvertDateTime, ShowTimeDifference } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
 import { useContext, useEffect } from 'react'
-import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
 
