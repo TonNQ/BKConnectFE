@@ -150,6 +150,13 @@ const ImageMsg = ({
           })}
         />
         <div className='ml-3 flex flex-col'>
+          <div
+            className={classnames('mb-1 ml-2 text-sm text-textColor', {
+              hidden: isSender
+            })}
+          >
+            {msg.sender_name}
+          </div>
           <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
         </div>
       </div>

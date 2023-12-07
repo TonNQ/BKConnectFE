@@ -12,7 +12,7 @@ import { SocketContext } from 'src/contexts/socket.context'
 
 export default function RoomList() {
   const [inputSearch, setInputSearch] = useState('')
-  const [_, setCurrentTime] = useState(new Date())
+  const [, setCurrentTime] = useState(new Date())
   const { roomList, setRoomList, roomInfo } = useContext(SocketContext)
   const debouncedSearch = useCallback(
     debounce((textSearch: string) => {
