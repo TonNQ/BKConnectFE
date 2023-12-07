@@ -24,7 +24,7 @@ export default function RoomInformation() {
   const [members, setMembers] = useState<MemberOfRoom[]>([])
   // const [images, setImages] = useState<Message[]>([])
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [_, setCurrentTime] = useState(new Date())
+  const [, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -57,15 +57,16 @@ export default function RoomInformation() {
   // }
   return (
     <div className='flex h-[100vh] w-[350px] min-w-[350px] flex-col items-center overflow-auto border-l-[2px] border-l-gray-200 bg-white px-2'>
-      <div className='mt-4 flex items-center justify-between relative'>
+      <div className='relative mt-4 flex items-center justify-between'>
         <img
           src={roomInfo?.avatar}
           alt=''
           className='mx-auto h-[100px] w-[100px] rounded-full border-[2px] border-solid border-white'
         />
-        {((roomInfo as RoomInfo).is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
-              <div className='absolute bottom-0 right-0 h-[30px] w-[30px] rounded-full border-[3px] border-white bg-green-500'></div>
-            )}
+        {((roomInfo as RoomInfo).is_online ||
+          ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
+          <div className='absolute bottom-0 right-0 h-[30px] w-[30px] rounded-full border-[3px] border-white bg-green-500'></div>
+        )}
       </div>
       <div className='mt-2 text-lg font-semibold'>{roomInfo?.name}</div>
       <div className='mb-6 text-base font-thin'>

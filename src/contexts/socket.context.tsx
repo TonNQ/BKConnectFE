@@ -222,6 +222,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           break
         }
         default: {
+          break
         }
       }
     }
