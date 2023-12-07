@@ -27,4 +27,3 @@ export interface NotificationSocket {
   notification_type: NotificationType
   receiver_id: string
 }
-

@@ -27,6 +27,9 @@ const roomApi = {
     return http.get<SuccessResponse<GroupRoom[]>>('/rooms/searchListOfPublicRooms', {
       params
     })
+  },
+  removeUserFromRoom(body: {user_id: string; room_id: number}) {
+    return http.post<SuccessResponse<string>>('/rooms/removeUserFromRoom', body)
   }
 }
 

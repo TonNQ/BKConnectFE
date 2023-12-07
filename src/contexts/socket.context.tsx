@@ -7,6 +7,7 @@ import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { AppContext } from './app.context'
 import { Notification } from 'src/types/notification.type'
 import { convertToDateTimeServer, getDateTimeNow } from 'src/utils/utils'
+import { MemberOfRoom } from 'src/types/user.type'
 
 const BaseConfig = {
   // socket has four state
@@ -39,6 +40,8 @@ interface SocketContextInterface {
   setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
   notifications: Notification[]
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
+  members: MemberOfRoom[]
+  setMembers: React.Dispatch<React.SetStateAction<MemberOfRoom[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -55,7 +58,9 @@ const initialSocketContext: SocketContextInterface = {
   roomInfo: null,
   setRoomInfo: () => null,
   notifications: [],
-  setNotifications: () => []
+  setNotifications: () => [],
+  members: [],
+  setMembers: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -70,6 +75,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   // roomInfo: thông tin của room mà user đang xem
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
+  const [members, setMembers] = useState<MemberOfRoom[]>(initialSocketContext.members)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -112,7 +118,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           })
           setMessages((prevMessages) => {
             if (receiveMsg.message.room_id !== roomData?.id) return prevMessages
-            if (receiveMsg.message.sender_id !== profile?.user_id) {
+            if (receiveMsg.message.sender_id !== profile?.user_id || receiveMsg.message.message_type === 'System') {
               // Sử dụng prevMessages để đảm bảo rằng bạn đang cập nhật trên trạng thái mới nhất
               return [receiveMsg.message, ...prevMessages]
             } else {
@@ -162,6 +168,21 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           break
         }
         case WebSocketDataType.IsNotification: {
+          if (receiveMsg.notification.notification_type === 'IsOutRoom') {
+            setRoomList((prevRoomList) => {
+              if (prevRoomList === null) return null
+              return prevRoomList?.filter((r) => r.id !== receiveMsg.notification.room_message?.room_id)
+            })
+            setRoomInfo((prevRoomInfo) => {
+              if (prevRoomInfo?.id === receiveMsg.notification.room_message?.room_id) {
+                setMessages([])
+                setMembers([])
+                return null
+              } else {
+                return prevRoomInfo
+              }
+            })
+          }
           setNotifications((prevNotifications) => {
             return [receiveMsg.notification, ...prevNotifications]
           })
@@ -222,6 +243,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           break
         }
         default: {
+          break
         }
       }
     }
@@ -262,7 +284,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         roomInfo,
         setRoomInfo,
         notifications,
-        setNotifications
+        setNotifications,
+        members,
+        setMembers
       }}
     >
       {children}
