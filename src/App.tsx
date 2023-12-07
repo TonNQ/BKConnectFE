@@ -11,7 +11,6 @@ function App() {
     <SocketProvider
       // url={`wss://bkconnect.azurewebsites.net/websocket/ws?accessToken=`}
       url={`wss://localhost:7012/websocket/ws?accessToken=`}
-      // url={`wss://qm1gds0b-7012.asse.devtunnels.ms/websocket/ws?accessToken=`}
       accessToken={getAccessTokenFromLocalStorage()}
     >
       <div>
