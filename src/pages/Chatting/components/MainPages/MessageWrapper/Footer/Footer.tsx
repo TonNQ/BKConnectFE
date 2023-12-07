@@ -81,7 +81,8 @@ export default function Footer() {
                 content: message.message.content,
                 root_message_id: message.message.root_message_id,
                 root_message_content: null,
-                temp_id: message.message.temp_id
+                temp_id: message.message.temp_id,
+                last_message: 'Bạn: Đã gửi một ảnh đính kèm'
               },
               ...messages
             ])
@@ -142,7 +143,8 @@ export default function Footer() {
           content: message.message.content,
           root_message_id: message.message.root_message_id,
           root_message_content: null,
-          temp_id: message.message.temp_id
+          temp_id: message.message.temp_id,
+          last_message: 'Bạn: ' + message.message.content
         },
         ...messages
       ])
