@@ -3,6 +3,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
+import GroupAddIcon from '@mui/icons-material/GroupAdd'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import 'src/css/Scroll.css'
 import { debounce } from 'lodash'
@@ -10,10 +11,14 @@ import Room from '../../Room'
 import roomApi from 'src/apis/rooms.api'
 import { SocketContext } from 'src/contexts/socket.context'
 
-export default function RoomList() {
+export default function RoomList({
+  setIsOverlayVisible
+}: {
+  setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const [inputSearch, setInputSearch] = useState('')
   const [, setCurrentTime] = useState(new Date())
-  const { roomList, setRoomList, roomInfo } = useContext(SocketContext)
+  const { roomList, setRoomList, roomInfo, setAddMemberToRoomId } = useContext(SocketContext)
   const debouncedSearch = useCallback(
     debounce((textSearch: string) => {
       setRoomList(null)
@@ -41,7 +46,18 @@ export default function RoomList() {
 
   return (
     <div className='flex h-[100vh] flex-col'>
-      <div className='m-4 text-2xl font-semibold'>Chats</div>
+      <div className='m-4 flex items-center justify-between'>
+        <div className='text-2xl font-semibold'>Chats</div>
+        <div
+          className='ml-4 flex h-[30px] w-[30px] items-center justify-center rounded-full text-black hover:cursor-pointer hover:bg-stone-200 hover:text-primary'
+          onClick={() => {
+            setAddMemberToRoomId(null)
+            setIsOverlayVisible(true)
+          }}
+        >
+          <GroupAddIcon sx={{ fontSize: '20px' }} />
+        </div>
+      </div>
       <div className='mx-4 flex items-center justify-between rounded-md bg-stone-100 p-2'>
         <div className='flex grow items-center justify-center'>
           <div className='flex h-[20px] w-[30px] items-center justify-center text-gray-500'>

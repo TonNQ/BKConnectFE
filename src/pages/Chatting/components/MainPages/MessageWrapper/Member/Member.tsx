@@ -15,11 +15,12 @@ interface Props {
   isAddButton?: boolean
   member?: MemberOfRoom
   isAdmin?: boolean
+  setIsOverlayVisible?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function Member({ isAddButton, member, isAdmin }: Props) {
+export default function Member({ isAddButton, member, isAdmin, setIsOverlayVisible }: Props) {
   const { profile } = useContext(AppContext)
-  const { roomInfo, setMembers } = useContext(SocketContext)
+  const { roomInfo, setMembers, setAddMemberToRoomId } = useContext(SocketContext)
   const handleRemoveUser = () => {
     roomApi
       .removeUserFromRoom({ user_id: member?.id as string, room_id: roomInfo?.id as number })
@@ -37,6 +38,12 @@ export default function Member({ isAddButton, member, isAdmin }: Props) {
       className={classnames('flex w-full items-center justify-center rounded-md bg-white px-3 py-2', {
         'hover:cursor-pointer hover:bg-grayColor': isAddButton
       })}
+      onClick={() => {
+        setAddMemberToRoomId(roomInfo?.id as number)
+        if (setIsOverlayVisible !== undefined) {
+          setIsOverlayVisible(true)
+        }
+      }}
     >
       {!isAddButton && (
         <div className='min-w-[50px]'>

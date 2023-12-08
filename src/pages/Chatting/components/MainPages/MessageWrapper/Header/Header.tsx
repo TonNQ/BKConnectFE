@@ -16,12 +16,11 @@ interface Props {
 }
 
 export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
+  const { roomInfo } = useContext(SocketContext)
+  const [, setCurrentTime] = useState(new Date())
   const handleShowRoomInfo = () => {
     setShowRoomInfo(!showRoomInfo)
   }
-  const { roomInfo } = useContext(SocketContext)
-  const [, setCurrentTime] = useState(new Date())
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(new Date())
@@ -34,26 +33,16 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
   return (
     <div className='flex min-h-[65px] w-full grow-0 items-center justify-between bg-white px-4 shadow-sm shadow-stone-200'>
       <div className='flex items-center'>
-        {roomInfo?.avatar && (
-          <div className='relative'>
-            <img
-              className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200'
-              src={roomInfo.avatar}
-              alt='ảnh'
-            />
-            {(roomInfo.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
-              <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
-            )}
-          </div>
-        )}
-        {!roomInfo?.avatar && (
-          <div className='relative'>
-            <img className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200' src={dut} alt='ảnh' />
-            {(roomInfo?.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
-              <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
-            )}
-          </div>
-        )}
+        <div className='relative'>
+          <img
+            className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200'
+            src={roomInfo?.avatar || dut}
+            alt='ảnh'
+          />
+          {(roomInfo?.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
+            <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>
+          )}
+        </div>
         <div className='ml-4'>
           <div className='text-lg font-semibold'>{roomInfo?.name}</div>
           <div className='text-sm font-extralight text-textColor'>

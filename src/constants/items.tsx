@@ -5,15 +5,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined'
 import ClassIcon from '@mui/icons-material/Class'
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'
-import ClassPage from 'src/pages/Chatting/components/MainPages/ClassPage'
-import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
-import RoomList from 'src/pages/Chatting/components/SidePages/RoomList'
-import ClassList from 'src/pages/Chatting/components/SidePages/ClassList'
-import MessageWrapper from 'src/pages/Chatting/components/MainPages/MessageWrapper/MessageWrapper'
-import FriendWrapper from 'src/pages/Chatting/components/MainPages/FriendWrapper/FriendWrapper'
-import SearchUsers from 'src/pages/Chatting/components/SidePages/SearchUsers'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
-import Notification from 'src/pages/Chatting/components/SidePages/Notification/Notification'
 
 export const DashboardOutlinedIcon = [
   {
@@ -75,31 +67,5 @@ export const DashboardFilledIcon = [
     index: 4,
     title: 'Cài đặt',
     icon: <SettingsOutlinedIcon sx={{ color: 'white', fontSize: '30px' }} />
-  }
-]
-
-export const DashboardComponent = [
-  {
-    index: 0,
-    sideComponent: <RoomList />,
-    mainComponent: <MessageWrapper />,
-  },
-  {
-    index: 1,
-    sideComponent: <SearchUsers />,
-    mainComponent: <FriendWrapper />,
-  },
-  {
-    index: 2,
-    sideComponent: <ClassList />,
-    mainComponent: <ClassPage />,
-  },
-  {
-    index: 3,
-    sideComponent: <Notification />,
-  },
-  {
-    index: 4,
-    sideComponent: <SettingPage />,
   }
 ]

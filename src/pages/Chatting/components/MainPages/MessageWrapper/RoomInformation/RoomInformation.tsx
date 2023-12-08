@@ -11,10 +11,13 @@ import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
 import { RoomInfo } from 'src/types/room.type'
-// import { Message } from 'src/types/room.type'
-// import messageApi from 'src/apis/messages.api'
+import dut from 'src/assets/images/logo.jpg'
 
-export default function RoomInformation() {
+export default function RoomInformation({
+  setIsOverlayVisible
+}: {
+  setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const { profile } = useContext(AppContext)
   const { roomInfo, members, setMembers } = useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
@@ -57,7 +60,7 @@ export default function RoomInformation() {
     <div className='flex h-[100vh] w-[350px] min-w-[350px] flex-col items-center overflow-auto border-l-[2px] border-l-gray-200 bg-white px-2'>
       <div className='relative mt-4 flex items-center justify-between'>
         <img
-          src={roomInfo?.avatar}
+          src={roomInfo?.avatar || dut}
           alt=''
           className='mx-auto h-[100px] w-[100px] rounded-full border-[2px] border-solid border-gray-200'
         />
@@ -86,7 +89,7 @@ export default function RoomInformation() {
           </div>
           <div className='w-full'>
             {showMembers && members.map((member) => <Member key={member.id} member={member} isAdmin={isAdmin} />)}
-            {showMembers && <Member isAddButton={true} />}
+            {showMembers && <Member isAddButton={true} setIsOverlayVisible={setIsOverlayVisible} />}
           </div>
         </>
       )}

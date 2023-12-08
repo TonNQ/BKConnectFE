@@ -1,13 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NotificationType, Notification } from './notification.type'
-import { Message } from './room.type'
+import { Message, RoomInfo } from './room.type'
 
 export enum WebSocketDataType {
   IsMessage = 'IsMessage',
   IsOnline = 'IsOnline',
   IsOffline = 'IsOffline',
-  IsNotification = 'IsNotification'
+  IsNotification = 'IsNotification',
+  IsCreateGroupRoom = 'IsCreateGroupRoom'
 }
 
 export interface ReceiveSocketData {
@@ -15,6 +16,8 @@ export interface ReceiveSocketData {
   data_type: WebSocketDataType
   message: Message
   notification: Notification
+  room_info: RoomInfo
+  video_call: null
 }
 
 export interface SendSocketData {
