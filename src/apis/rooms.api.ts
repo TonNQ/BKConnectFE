@@ -28,8 +28,11 @@ const roomApi = {
       params
     })
   },
-  removeUserFromRoom(body: {user_id: string; room_id: number}) {
+  removeUserFromRoom(body: { user_id: string; room_id: number }) {
     return http.post<SuccessResponse<string>>('/rooms/removeUserFromRoom', body)
+  },
+  leaveRoom(body: { user_id: string; room_id: number }) {
+    return http.post<SuccessResponse<string>>('/rooms/leaveRoom', body)
   }
 }
 
