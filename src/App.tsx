@@ -4,9 +4,12 @@ import './App.css'
 import 'react-toastify/dist/ReactToastify.css'
 import { getAccessTokenFromLocalStorage } from './utils/auth'
 import { SocketProvider } from './contexts/socket.context'
+import Overlay from './components/Overlay'
+import { useState } from 'react'
 
 function App() {
-  const routeElements = useRouteElements()
+  const [isOverlayVisible, setIsOverlayVisible] = useState(false)
+  const routeElements = useRouteElements({ setIsOverlayVisible: setIsOverlayVisible })
   return (
     <SocketProvider
       // url={`wss://bkconnect.azurewebsites.net/websocket/ws?accessToken=`}
@@ -14,6 +17,7 @@ function App() {
       accessToken={getAccessTokenFromLocalStorage()}
     >
       <div>
+        {isOverlayVisible && <Overlay setIsOverlayVisible={setIsOverlayVisible} />}
         {routeElements}
         <ToastContainer />
       </div>

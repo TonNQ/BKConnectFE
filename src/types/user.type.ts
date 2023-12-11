@@ -43,6 +43,13 @@ export interface SearchUser {
   sender_friend_request: string | null
 }
 
+// Gộp SearchUser và SearchFriend, chỉ lấy những thông tin cần thiết cho việc thêm vào nhóm
+export interface SimpleUser {
+  user_id: string
+  name: string
+  avatar: string
+}
+
 export interface MemberOfRoom {
   id: string
   name: string

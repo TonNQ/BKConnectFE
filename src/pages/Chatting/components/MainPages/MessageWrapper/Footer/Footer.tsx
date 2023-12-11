@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { useContext, useEffect, useRef, useState } from 'react'
 import AddCircleRoundedIcon from '@mui/icons-material/AddCircleRounded'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
@@ -10,9 +12,7 @@ import { toast } from 'react-toastify'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 
 export default function Footer() {
-  // const { wsRef, messages, setMessages, room } = useContext(SocketContext)
-  // const { profile } = useContext(AppContext)
-  const { wsRef, messages, setMessages, room } = useContext(SocketContext)
+  const { wsRef, messages, setMessages, roomInfo } = useContext(SocketContext)
   const { profile } = useContext(AppContext)
 
   // kiểm soát chiều rộng của ô tin nhắn
@@ -61,7 +61,7 @@ export default function Footer() {
               data_type: WebSocketDataType.IsMessage,
               message: {
                 temp_id: convertToDateTimeServer(new Date()),
-                room_id: room?.id,
+                room_id: roomInfo?.id,
                 message_type: 'Image',
                 content: directory,
                 root_message_id: null
@@ -76,7 +76,7 @@ export default function Footer() {
                 sender_name: 'Bạn',
                 sender_avatar: profile?.avatar as string,
                 send_time: message.message.temp_id,
-                room_id: room?.id as number,
+                room_id: roomInfo?.id as number,
                 message_type: message.message.message_type,
                 content: message.message.content,
                 root_message_id: message.message.root_message_id,
@@ -123,7 +123,7 @@ export default function Footer() {
         data_type: WebSocketDataType.IsMessage,
         message: {
           temp_id: convertToDateTimeServer(new Date()),
-          room_id: room?.id,
+          room_id: roomInfo?.id,
           message_type: 'Text',
           content: text,
           root_message_id: null
@@ -138,7 +138,7 @@ export default function Footer() {
           sender_name: 'Bạn',
           sender_avatar: profile?.avatar as string,
           send_time: message.message.temp_id,
-          room_id: room?.id as number,
+          room_id: roomInfo?.id as number,
           message_type: message.message.message_type,
           content: message.message.content,
           root_message_id: message.message.root_message_id,
