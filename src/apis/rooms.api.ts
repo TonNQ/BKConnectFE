@@ -33,6 +33,12 @@ const roomApi = {
   },
   leaveRoom(body: { user_id: string; room_id: number }) {
     return http.post<SuccessResponse<string>>('/rooms/leaveRoom', body)
+  },
+  createGroupRoom(body: { name: string; room_type: string; user_ids: string[] }) {
+    return http.post<SuccessResponse<number>>('/rooms/createGroupRoom', body)
+  },
+  addUserToRoom(body: { user_id: string; room_id: number }) {
+    return http.post<SuccessResponse<string>>('/rooms/addUserToRoom', body)
   }
 }
 

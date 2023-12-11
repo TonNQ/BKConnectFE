@@ -12,7 +12,7 @@ import User from '../../User'
 import SearchUserImg from 'src/assets/images/SearchUser.jpg'
 
 export default function SearchUsers() {
-  const [inputSearch, setInputSearch] = useState('')
+  const [inputSearch, setInputSearch] = useState<string>('')
   const [users, setUsers] = useState<SearchUser[]>([])
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch.trim() !== '') {

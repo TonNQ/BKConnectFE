@@ -164,11 +164,11 @@ export function convertToDateTimeServer(date: Date) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds}`
 }
 
-// Lấy thời gian hiện tại theo múi giờ của trình duyệt 
+// Lấy thời gian hiện tại theo múi giờ của trình duyệt
 export function getDateTimeNow() {
-  const date = new Date();
+  const date = new Date()
   // Lấy múi giờ hiện tại của trình duyệt
-  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
   // Chuyển múi giờ của đối tượng Date theo múi giờ hiện tại của trình duyệt
-  return date.toLocaleString("en-US", { timeZone: browserTimeZone });
+  return date.toLocaleString('en-US', { timeZone: browserTimeZone })
 }
