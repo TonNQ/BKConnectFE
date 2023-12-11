@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NotificationType, Notification } from './notification.type'
+import { MemberOfRoom } from './user.type'
 import { Message, RoomInfo } from './room.type'
 
 export enum WebSocketDataType {
@@ -8,14 +9,24 @@ export enum WebSocketDataType {
   IsOnline = 'IsOnline',
   IsOffline = 'IsOffline',
   IsNotification = 'IsNotification',
+  IsInRoom = 'IsInRoom',
+  IsOutRoom = 'IsOutRoom',
+  IsChangeRoomInfo = 'IsChangeRoomInfo',
   IsCreateGroupRoom = 'IsCreateGroupRoom'
 }
 
+export interface ChangedRoomInfo {
+  room_id: number
+  total_member: number
+  new_member_list?: MemberOfRoom[]
+  left_member_id?: string
+}
 export interface ReceiveSocketData {
   user_id: string
   data_type: WebSocketDataType
   message: Message
   notification: Notification
+  changed_room_info: ChangedRoomInfo
   room_info: RoomInfo
   video_call: null
 }

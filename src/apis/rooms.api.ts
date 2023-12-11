@@ -31,6 +31,9 @@ const roomApi = {
   removeUserFromRoom(body: { user_id: string; room_id: number }) {
     return http.post<SuccessResponse<string>>('/rooms/removeUserFromRoom', body)
   },
+  leaveRoom(body: { user_id: string; room_id: number }) {
+    return http.post<SuccessResponse<string>>('/rooms/leaveRoom', body)
+  },
   createGroupRoom(body: { name: string; room_type: string; user_ids: string[] }) {
     return http.post<SuccessResponse<number>>('/rooms/createGroupRoom', body)
   },

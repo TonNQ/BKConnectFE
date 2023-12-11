@@ -34,7 +34,7 @@ export default function RoomInformation({
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {}, [roomInfo])
+  useEffect(() => {}, [roomInfo, members])
 
   const toggleShowComponent = (setStateFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
     setStateFunction((prevState: boolean) => !prevState)
@@ -90,6 +90,7 @@ export default function RoomInformation({
           <div className='w-full'>
             {showMembers && members.map((member) => <Member key={member.id} member={member} isAdmin={isAdmin} />)}
             {showMembers && <Member isAddButton={true} setIsOverlayVisible={setIsOverlayVisible} />}
+            {showMembers && <Member isLeaveRoom={true} />}
           </div>
         </>
       )}
