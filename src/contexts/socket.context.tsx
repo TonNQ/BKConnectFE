@@ -251,12 +251,12 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           })
           break
         }
-        case WebSocketDataType.IsChangeRoomInfo: {
+        case WebSocketDataType.IsChangedRoomInfo: {
           setRoomInfo((prevRoomInfo) => {
             if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
-              setMembers((prevMembers) =>
-                prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
-              )
+              setMembers((prevMembers) => {
+                return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
+              })
             }
             if (prevRoomInfo === null) return null
             else {

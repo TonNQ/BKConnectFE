@@ -11,7 +11,7 @@ export enum WebSocketDataType {
   IsNotification = 'IsNotification',
   IsInRoom = 'IsInRoom',
   IsOutRoom = 'IsOutRoom',
-  IsChangeRoomInfo = 'IsChangeRoomInfo',
+  IsChangedRoomInfo = 'IsChangedRoomInfo',
   IsCreateGroupRoom = 'IsCreateGroupRoom'
 }
 
