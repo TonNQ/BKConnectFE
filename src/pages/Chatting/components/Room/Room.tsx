@@ -16,7 +16,7 @@ interface Props {
 }
 
 export default function Room({ room, setInputSearch }: Props) {
-  const { setMessages, setRoom, setRoomInfo, setRoomList } = useContext(SocketContext)
+  const { setMessages, setRoom, setRoomInfo, setRoomList, setAddMemberToRoomId } = useContext(SocketContext)
   const handleClick = async () => {
     try {
       const messageResponse = await messageApi.getMessagesByRoom({ SearchKey: room.id })
@@ -34,6 +34,7 @@ export default function Room({ room, setInputSearch }: Props) {
         })
       })
       setInputSearch('')
+      setAddMemberToRoomId(room.id)
     } catch (error: any) {
       toast.error(error.message)
     }

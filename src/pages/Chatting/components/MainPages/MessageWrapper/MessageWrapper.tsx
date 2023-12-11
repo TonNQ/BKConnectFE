@@ -7,7 +7,11 @@ import { TimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
 import NoSelectedRoom from 'src/assets/images/NoSelectedRoom.jpg'
 
-export default function MessageWrapper() {
+export default function MessageWrapper({
+  setIsOverlayVisible
+}: {
+  setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const [showRoomInfo, setShowRoomInfo] = useState<boolean>(false)
   const { messages, roomInfo } = useContext(SocketContext)
   let prevTime: string = ''
@@ -105,7 +109,7 @@ export default function MessageWrapper() {
         </div>
         <Footer />
       </div>
-      {showRoomInfo && <RoomInformation key={roomInfo?.id} />}
+      {showRoomInfo && <RoomInformation key={roomInfo?.id} setIsOverlayVisible={setIsOverlayVisible} />}
     </div>
   ) : (
     <div className='grow-1 flex w-full'>

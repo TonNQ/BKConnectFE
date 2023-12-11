@@ -8,6 +8,9 @@ import { AppContext } from './app.context'
 import { Notification } from 'src/types/notification.type'
 import { convertToDateTimeServer, getDateTimeNow } from 'src/utils/utils'
 import { MemberOfRoom } from 'src/types/user.type'
+import { toast } from 'react-toastify'
+import messageApi from 'src/apis/messages.api'
+import roomApi from 'src/apis/rooms.api'
 
 const BaseConfig = {
   // socket has four state
@@ -38,6 +41,8 @@ interface SocketContextInterface {
   setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
   roomInfo: RoomInfo | null
   setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
+  addMemberToRoomId: number | null
+  setAddMemberToRoomId: React.Dispatch<React.SetStateAction<number | null>>
   notifications: Notification[]
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
   members: MemberOfRoom[]
@@ -57,6 +62,8 @@ const initialSocketContext: SocketContextInterface = {
   setRoom: () => null,
   roomInfo: null,
   setRoomInfo: () => null,
+  addMemberToRoomId: null,
+  setAddMemberToRoomId: () => null,
   notifications: [],
   setNotifications: () => [],
   members: [],
@@ -74,6 +81,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
   // roomInfo: thông tin của room mà user đang xem
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
+  // roomId xác định có phải là add new group hay add members to group
+  const [addMemberToRoomId, setAddMemberToRoomId] = useState<number | null>(initialSocketContext.addMemberToRoomId)
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
   const [members, setMembers] = useState<MemberOfRoom[]>(initialSocketContext.members)
   const wsRef = useRef<WebSocket | null>(null)
@@ -242,6 +251,40 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           })
           break
         }
+        case WebSocketDataType.IsCreateGroupRoom: {
+          setRoomList((prevRoomList) => {
+            if (prevRoomList === null) return prevRoomList
+            return [receiveMsg.room_info, ...prevRoomList]
+          })
+          if (receiveMsg.user_id === profile?.user_id) {
+            setRoomInfo(receiveMsg.room_info)
+            // Get all messages of new group
+            const fetchMessages = async () => {
+              try {
+                const response = await messageApi.getMessagesByRoom({ SearchKey: receiveMsg.room_info.id })
+                const newMessages = response.data.data
+                setMessages(newMessages)
+              } catch (error: any) {
+                const typedError: Error = error as Error
+                toast.error(typedError.message)
+              }
+            }
+            // Get all members of new group
+            const fetchMembers = async () => {
+              try {
+                const response = await roomApi.getListOfMembersInRoom({ SearchKey: receiveMsg.room_info.id })
+                const newMemberList = response.data.data
+                setMembers(newMemberList)
+              } catch (error: any) {
+                const typedError: Error = error as Error
+                toast.error(typedError.message)
+              }
+            }
+            fetchMessages()
+            fetchMembers()
+          }
+          break
+        }
         default: {
           break
         }
@@ -283,6 +326,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         setRoom,
         roomInfo,
         setRoomInfo,
+        addMemberToRoomId,
+        setAddMemberToRoomId,
         notifications,
         setNotifications,
         members,

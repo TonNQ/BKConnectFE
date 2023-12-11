@@ -1,3 +1,4 @@
+/* Vertical */
 .scrollbar-custom::-webkit-scrollbar {
   width: 4px;
 }
@@ -17,5 +18,28 @@
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover > .scrollbar-custom::-webkit-scrollbar {
-  width: 10px;
+  height: 4px;
+}
+
+/* Horizon */
+.scrollbar-custom--horizon::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scrollbar-custom--horizon::-webkit-scrollbar:hover {
+  height: 6px;
+}
+
+.scrollbar-custom--horizon::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 100px;
+}
+
+.scrollbar-custom--horizon::-webkit-scrollbar-thumb {
+  background: #cfcdcc;
+  border-radius: 100px;
+}
+
+.scrollbar-custom--horizon::-webkit-scrollbar-thumb:hover > .scrollbar-custom--horizon::-webkit-scrollbar {
+  height: 6px;
 }

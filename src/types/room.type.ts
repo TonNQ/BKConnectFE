@@ -19,6 +19,7 @@ export interface RoomInfo {
   total_member: number
   is_online: boolean
   friend_id?: string
+  last_message_id: number
   last_message: string
   last_message_time: string
   is_read: boolean

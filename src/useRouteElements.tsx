@@ -23,7 +23,11 @@ function RejectedRoute() {
   return !isAuthenticated ? <Outlet /> : <Navigate to='*' />
 }
 
-export default function useRouteElements() {
+export default function useRouteElements({
+  setIsOverlayVisible
+}: {
+  setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const element = useRoutes([
     {
       path: '',
@@ -34,7 +38,7 @@ export default function useRouteElements() {
           index: true,
           element: (
             <MainLayout>
-              <Chatting />
+              <Chatting setIsOverlayVisible={setIsOverlayVisible} />
             </MainLayout>
           )
         }
