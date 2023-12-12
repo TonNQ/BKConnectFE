@@ -7,7 +7,8 @@ module.exports = {
         primary: '#1E90ff',
         secondary: '#5c9fe0',
         textColor: '#787A7D',
-        grayColor: '#F0F0F0'
+        grayColor: '#F0F0F0',
+        darkGrayColor: '#3E4041'
       }
     }
   },
