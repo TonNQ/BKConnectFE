@@ -66,7 +66,7 @@ export default function RoomInformation({
         />
         {((roomInfo as RoomInfo).is_online ||
           ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
-          <div className='absolute bottom-0 right-0 h-[30px] w-[30px] rounded-full border-[3px] border-white bg-green-500'></div>
+          <div className='absolute bottom-0 right-[4px] h-[24px] w-[24px] rounded-full border-[3px] border-white bg-green-500'></div>
         )}
       </div>
       <div className='mt-2 text-lg font-semibold'>{roomInfo?.name}</div>
