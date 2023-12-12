@@ -23,11 +23,12 @@ function RejectedRoute() {
   return !isAuthenticated ? <Outlet /> : <Navigate to='*' />
 }
 
-export default function useRouteElements({
-  setIsOverlayVisible
-}: {
+interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+  setIsViewImageVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function useRouteElements({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const element = useRoutes([
     {
       path: '',
@@ -38,7 +39,7 @@ export default function useRouteElements({
           index: true,
           element: (
             <MainLayout>
-              <Chatting setIsOverlayVisible={setIsOverlayVisible} />
+              <Chatting setIsOverlayVisible={setIsOverlayVisible} setIsViewImageVisible={setIsViewImageVisible} />
             </MainLayout>
           )
         }

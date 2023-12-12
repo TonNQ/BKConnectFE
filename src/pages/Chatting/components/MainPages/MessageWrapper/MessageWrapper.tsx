@@ -7,11 +7,12 @@ import { TimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
 import NoSelectedRoom from 'src/assets/images/NoSelectedRoom.jpg'
 
-export default function MessageWrapper({
-  setIsOverlayVisible
-}: {
+interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+  setIsViewImageVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function MessageWrapper({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const [showRoomInfo, setShowRoomInfo] = useState<boolean>(false)
   const { messages, roomInfo } = useContext(SocketContext)
   let prevTime: string = ''
@@ -47,7 +48,12 @@ export default function MessageWrapper({
                     />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
+                    <ImageMsg
+                      key={message.content}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                      setIsViewImageVisible={setIsViewImageVisible}
+                    />
                   )}
                   <Timeline key={message.send_time} date={message.send_time} />
                 </Fragment>
@@ -64,7 +70,12 @@ export default function MessageWrapper({
                     />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
+                    <ImageMsg
+                      key={message.content}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                      setIsViewImageVisible={setIsViewImageVisible}
+                    />
                   )}
                   <Timeline key={message.send_time} date={message.send_time} />
                 </Fragment>
@@ -84,7 +95,12 @@ export default function MessageWrapper({
                     />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
+                    <ImageMsg
+                      key={message.content}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                      setIsViewImageVisible={setIsViewImageVisible}
+                    />
                   )}
                 </Fragment>
               ) : (
@@ -100,7 +116,12 @@ export default function MessageWrapper({
                     />
                   )}
                   {message.message_type === 'Image' && (
-                    <ImageMsg key={message.content} msg={message} room_type={roomInfo?.room_type} />
+                    <ImageMsg
+                      key={message.content}
+                      msg={message}
+                      room_type={roomInfo?.room_type}
+                      setIsViewImageVisible={setIsViewImageVisible}
+                    />
                   )}
                 </Fragment>
               )
@@ -109,7 +130,13 @@ export default function MessageWrapper({
         </div>
         <Footer />
       </div>
-      {showRoomInfo && <RoomInformation key={roomInfo?.id} setIsOverlayVisible={setIsOverlayVisible} />}
+      {showRoomInfo && (
+        <RoomInformation
+          key={roomInfo?.id}
+          setIsOverlayVisible={setIsOverlayVisible}
+          setIsViewImageVisible={setIsViewImageVisible}
+        />
+      )}
     </div>
   ) : (
     <div className='grow-1 flex w-full'>
