@@ -12,7 +12,7 @@ import { toast } from 'react-toastify'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 
 export default function Footer() {
-  const { wsRef, messages, setMessages, roomInfo } = useContext(SocketContext)
+  const { wsRef, messages, setMessages, roomInfo, setImages } = useContext(SocketContext)
   const { profile } = useContext(AppContext)
 
   // kiểm soát chiều rộng của ô tin nhắn
@@ -86,6 +86,7 @@ export default function Footer() {
               },
               ...messages
             ])
+            setImages((prevImages) => [url, ...prevImages])
           })
         }
       )

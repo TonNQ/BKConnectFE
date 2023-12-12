@@ -47,6 +47,10 @@ interface SocketContextInterface {
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
   members: MemberOfRoom[]
   setMembers: React.Dispatch<React.SetStateAction<MemberOfRoom[]>>
+  selectedImage: string | null
+  setSelectedImage: React.Dispatch<React.SetStateAction<string | null>>
+  images: string[]
+  setImages: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -67,7 +71,11 @@ const initialSocketContext: SocketContextInterface = {
   notifications: [],
   setNotifications: () => [],
   members: [],
-  setMembers: () => []
+  setMembers: () => [],
+  selectedImage: null,
+  setSelectedImage: () => null,
+  images: [],
+  setImages: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -85,6 +93,10 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [addMemberToRoomId, setAddMemberToRoomId] = useState<number | null>(initialSocketContext.addMemberToRoomId)
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
   const [members, setMembers] = useState<MemberOfRoom[]>(initialSocketContext.members)
+  // Lưu url của ảnh cần zoom (view image)
+  const [selectedImage, setSelectedImage] = useState<string | null>(initialSocketContext.selectedImage)
+  // Images list of room
+  const [images, setImages] = useState<string[]>(initialSocketContext.images)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -348,7 +360,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         notifications,
         setNotifications,
         members,
-        setMembers
+        setMembers,
+        selectedImage,
+        setSelectedImage,
+        images,
+        setImages
       }}
     >
       {children}

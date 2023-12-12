@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import classnames from 'classnames'
 import { ConvertDateTime } from 'src/utils/utils'
 import { useContext, useEffect, useState } from 'react'
@@ -5,18 +7,13 @@ import { AppContext } from 'src/contexts/app.context'
 import { Message } from 'src/types/room.type'
 import storage from 'src/utils/firebase'
 import { getDownloadURL, ref } from 'firebase/storage'
+import { SocketContext } from 'src/contexts/socket.context'
 
-// interface Message {
-//   id?: string
-//   type?: 'text' | 'img' | 'reply'
-//   content?: string
-//   send_time?: string
-//   sender_id?: string
-//   sender_name?: string
-//   room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom'
-//   reply_message_sender?: string
-//   reply_message_content?: string
-// }
+interface Props {
+  msg: Message
+  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
+  setIsViewImageVisible?: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 const Timeline = ({ date }: { date: string }) => {
   return (
@@ -34,13 +31,7 @@ const SystemMsg = ({ contentMsg }: { contentMsg: string }) => {
   )
 }
 
-const TextMsg = ({
-  msg,
-  room_type
-}: {
-  msg: Message
-  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
-}) => {
+const TextMsg = ({ msg, room_type }: Props) => {
   const { profile } = useContext(AppContext)
   const isSender = msg.sender_id === profile?.user_id
   if (room_type === 'PrivateRoom') {
@@ -98,15 +89,16 @@ const TextMsg = ({
   }
 }
 
-const ImageMsg = ({
-  msg,
-  room_type
-}: {
-  msg: Message
-  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
-}) => {
+const ImageMsg = ({ msg, room_type, setIsViewImageVisible }: Props) => {
   const { profile } = useContext(AppContext)
-  const [imageUrl, setImageUrl] = useState('')
+  const { setSelectedImage } = useContext(SocketContext)
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const handleClick = () => {
+    if (setIsViewImageVisible !== undefined) {
+      setIsViewImageVisible(true)
+      setSelectedImage(imageUrl)
+    }
+  }
   const isSender = msg.sender_id === profile?.user_id
   useEffect(() => {
     const getImageUrl = async () => {
@@ -131,7 +123,12 @@ const ImageMsg = ({
           'justify-start': !isSender
         })}
       >
-        <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+        <img
+          src={imageUrl}
+          alt=''
+          className='max-h-[300px] max-w-[300px] rounded-2xl hover:cursor-pointer'
+          onClick={handleClick}
+        />
       </div>
     )
   } else {
@@ -157,7 +154,12 @@ const ImageMsg = ({
           >
             {msg.sender_name}
           </div>
-          <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+          <img
+            src={imageUrl}
+            alt=''
+            className='max-h-[300px] max-w-[300px] rounded-2xl hover:cursor-pointer'
+            onClick={handleClick}
+          />
         </div>
       </div>
     )
