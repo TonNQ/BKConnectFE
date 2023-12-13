@@ -131,9 +131,9 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
               <ImageCard key={image} imageUrl={image} setIsViewImageVisible={setIsViewImageVisible} />
             ))}
           </div>
-          <div className='mb-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
+          {/* <div className='mb-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
             Xem tất cả
-          </div>
+          </div> */}
         </>
       )}
       <div

@@ -97,6 +97,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(initialSocketContext.selectedImage)
   // Images list of room
   const [images, setImages] = useState<string[]>(initialSocketContext.images)
+  // File list of room
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
