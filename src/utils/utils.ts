@@ -172,3 +172,26 @@ export function getDateTimeNow() {
   // Chuyển múi giờ của đối tượng Date theo múi giờ hiện tại của trình duyệt
   return date.toLocaleString('en-US', { timeZone: browserTimeZone })
 }
+
+// Sinh ra chuỗi ngẫu nhiên gồm chữ cái thường và số
+export function generateRandomString(length: number) {
+  let result = ''
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const charactersLength = characters.length
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength))
+  }
+  return result
+}
+
+// Chuyển đổi đơn vị byte sang B/KB/MB/GB/TB theo mức cao nhất
+export function convertBytes(bytes: number) {
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+
+  if (bytes === 0) return '0 B'
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1024))
+  const convertedSize = parseFloat((bytes / Math.pow(1024, i)).toFixed(2))
+
+  return `${convertedSize} ${sizes[i]}`
+}
