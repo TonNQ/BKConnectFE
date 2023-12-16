@@ -6,8 +6,11 @@ const messageApi = {
   getMessagesByRoom(params: { SearchKey: number }) {
     return http.get<SuccessResponse<Message[]>>('/messages/getAllMessages', { params })
   },
-  getAllImageMessages(params: { SearchKey: number}) {
+  getAllImageMessages(params: { SearchKey: number }) {
     return http.get<SuccessResponse<Message[]>>('/messages/getAllImageMessages', { params })
+  },
+  getAllFileMessages(params: { SearchKey: number }) {
+    return http.get<SuccessResponse<Message[]>>('/messages/getAllFileMessages', { params })
   }
 }
 

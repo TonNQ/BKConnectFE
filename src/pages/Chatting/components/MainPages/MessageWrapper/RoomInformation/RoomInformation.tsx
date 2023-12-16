@@ -13,7 +13,7 @@ import { SocketContext } from 'src/contexts/socket.context'
 import { RoomInfo } from 'src/types/room.type'
 import dut from 'src/assets/images/logo.jpg'
 import messageApi from 'src/apis/messages.api'
-import { getImageUrl } from 'src/utils/getImage'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
@@ -22,7 +22,7 @@ interface Props {
 
 export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const { profile } = useContext(AppContext)
-  const { roomInfo, members, setMembers, images, setImages } = useContext(SocketContext)
+  const { roomInfo, members, setMembers, images, setImages, files, setFiles } = useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)
@@ -61,7 +61,7 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
         const newImages = await Promise.all(
           imageMessages.map(async (msg) => {
             // Sử dụng memoization để lấy URL từ cache nếu có
-            const url = await getImageUrl(msg.content)
+            const url = await getUrl('Message_Image', msg.content)
             return url
           })
         )
@@ -70,8 +70,19 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
       }),
     []
   )
+  const memoizedGetFilesApi = useCallback(
+    () =>
+      messageApi.getAllFileMessages({ SearchKey: roomInfo?.id as number }).then(async (response) => {
+        const fileMessages = response.data.data
+        setFiles(fileMessages.map((fileMsg) => fileMsg.content))
+      }),
+    []
+  )
   const handleShowImages = () => {
     memoizedGetImagesApi()
+  }
+  const handleShowFiles = () => {
+    memoizedGetFilesApi()
   }
   useEffect(() => {}, [])
   return (
@@ -138,21 +149,22 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
       )}
       <div
         className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
-        onClick={() => toggleShowComponent(setShowFiles)}
+        onClick={() => {
+          handleShowFiles()
+          toggleShowComponent(setShowFiles)
+        }}
       >
         <div className='text-base'>File</div>
         <KeyboardArrowDownRoundedIcon />
       </div>
       {showFiles && (
         <>
-          <FileWrapper />
-          <FileWrapper />
-          <FileWrapper />
-          <FileWrapper />
-          <FileWrapper />
-          <div className='flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
+          {files.map((file) => (
+            <FileWrapper key={file} fileDirection={file} />
+          ))}
+          {/* <div className='mt-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
             Xem tất cả
-          </div>
+          </div> */}
         </>
       )}
       <div className='mb-2'></div>

@@ -51,6 +51,8 @@ interface SocketContextInterface {
   setSelectedImage: React.Dispatch<React.SetStateAction<string | null>>
   images: string[]
   setImages: React.Dispatch<React.SetStateAction<string[]>>
+  files: string[]
+  setFiles: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -75,7 +77,9 @@ const initialSocketContext: SocketContextInterface = {
   selectedImage: null,
   setSelectedImage: () => null,
   images: [],
-  setImages: () => []
+  setImages: () => [],
+  files: [],
+  setFiles: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -97,7 +101,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [selectedImage, setSelectedImage] = useState<string | null>(initialSocketContext.selectedImage)
   // Images list of room
   const [images, setImages] = useState<string[]>(initialSocketContext.images)
-  // File list of room
+  // Files list of room
+  const [files, setFiles] = useState<string[]>(initialSocketContext.files)
+
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -365,7 +371,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         selectedImage,
         setSelectedImage,
         images,
-        setImages
+        setImages,
+        files,
+        setFiles
       }}
     >
       {children}
