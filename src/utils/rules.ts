@@ -27,8 +27,8 @@ export const getRules = (getValues?: UseFormGetValues<any>): Rules => ({
       message: 'Email không đúng định dạng'
     },
     minLength: {
-      value: 20,
-      message: 'Độ dài tối thiểu là 20 kí tự'
+      value: 12,
+      message: 'Độ dài tối thiểu là 12 kí tự'
     },
     maxLength: {
       value: 30,
@@ -116,7 +116,7 @@ export const schema = yup.object({
     .string()
     .required('Email là bắt buộc')
     .email('Email không đúng định dạng')
-    .min(20, 'Độ dài tối thiểu là 20 kí tự')
+    .min(12, 'Độ dài tối thiểu là 12 kí tự')
     .max(30, 'Độ dài tối đa là 30 kí tự')
     .matches(/dut\.udn\.vn$/, 'Email phải có đuôi .dut.udn.vn'),
   password: yup
