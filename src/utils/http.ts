@@ -12,7 +12,7 @@ class Http {
     this.instance = axios.create({
       // baseURL: 'https://bkconnect.azurewebsites.net/',
       baseURL: 'https://localhost:7012/',
-      timeout: 30 * 1000,
+      timeout: 600 * 1000,
       headers: {
         'Content-Type': 'application/json'
       }

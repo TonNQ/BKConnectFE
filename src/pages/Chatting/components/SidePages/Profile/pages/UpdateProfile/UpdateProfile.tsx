@@ -118,7 +118,7 @@ export default function UpdateProfile({ isUpdatePage, setIsUpdatePage }: Props) 
           name='birthday'
           type='date'
           register={register}
-          labelName='Ngày sinh (mm/dd/yyyy)'
+          labelName='Ngày sinh'
           defaultValue={ConvertYMD(profile?.birthday as string)}
           className=''
           classNameLabel='text-sm mt-1 font-semibold'
