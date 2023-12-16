@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import classNames from 'classnames'
 import { useContext, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -67,7 +69,7 @@ export default function NotificationItem({ notificationInfo }: Props) {
         )}
         {notificationInfo.notification_type === NotificationType.IsOutRoom && (
           <div className='flex-wrap text-base'>
-            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã đuổi bạn khỏi{' '}
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã xóa bạn khỏi{' '}
             {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
             <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
           </div>

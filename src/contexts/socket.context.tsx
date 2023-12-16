@@ -268,7 +268,13 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           setRoomInfo((prevRoomInfo) => {
             if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
               setMembers((prevMembers) => {
-                return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
+                if (receiveMsg.changed_room_info.left_member_id !== null) {
+                  return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
+                } else if (receiveMsg.changed_room_info.new_member_list !== null) {
+                  return [...prevMembers, ...(receiveMsg.changed_room_info.new_member_list as MemberOfRoom[])]
+                } else {
+                  return prevMembers
+                }
               })
             }
             if (prevRoomInfo === null) return null
