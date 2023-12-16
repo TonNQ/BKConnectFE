@@ -10,16 +10,19 @@ import ClassPage from './components/MainPages/ClassPage'
 import Notification from './components/SidePages/Notification/Notification'
 import SettingPage from './components/MainPages/SettingPage'
 
-export default function Chatting({
-  setIsOverlayVisible
-}: {
+interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+  setIsViewImageVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function Chatting({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const DashboardComponent = [
     {
       index: 0,
       sideComponent: <RoomList setIsOverlayVisible={setIsOverlayVisible} />,
-      mainComponent: <MessageWrapper setIsOverlayVisible={setIsOverlayVisible} />
+      mainComponent: (
+        <MessageWrapper setIsOverlayVisible={setIsOverlayVisible} setIsViewImageVisible={setIsViewImageVisible} />
+      )
     },
     {
       index: 1,

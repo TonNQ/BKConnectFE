@@ -47,6 +47,10 @@ interface SocketContextInterface {
   setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
   members: MemberOfRoom[]
   setMembers: React.Dispatch<React.SetStateAction<MemberOfRoom[]>>
+  selectedImage: string | null
+  setSelectedImage: React.Dispatch<React.SetStateAction<string | null>>
+  images: string[]
+  setImages: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -67,7 +71,11 @@ const initialSocketContext: SocketContextInterface = {
   notifications: [],
   setNotifications: () => [],
   members: [],
-  setMembers: () => []
+  setMembers: () => [],
+  selectedImage: null,
+  setSelectedImage: () => null,
+  images: [],
+  setImages: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -85,6 +93,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [addMemberToRoomId, setAddMemberToRoomId] = useState<number | null>(initialSocketContext.addMemberToRoomId)
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
   const [members, setMembers] = useState<MemberOfRoom[]>(initialSocketContext.members)
+  // Lưu url của ảnh cần zoom (view image)
+  const [selectedImage, setSelectedImage] = useState<string | null>(initialSocketContext.selectedImage)
+  // Images list of room
+  const [images, setImages] = useState<string[]>(initialSocketContext.images)
+  // File list of room
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -251,6 +264,29 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           })
           break
         }
+        case WebSocketDataType.IsChangedRoomInfo: {
+          setRoomInfo((prevRoomInfo) => {
+            if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
+              setMembers((prevMembers) => {
+                if (receiveMsg.changed_room_info.left_member_id !== null) {
+                  return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
+                } else if (receiveMsg.changed_room_info.new_member_list !== null) {
+                  return [...prevMembers, ...(receiveMsg.changed_room_info.new_member_list as MemberOfRoom[])]
+                } else {
+                  return prevMembers
+                }
+              })
+            }
+            if (prevRoomInfo === null) return null
+            else {
+              return {
+                ...prevRoomInfo,
+                total_member: receiveMsg.changed_room_info.total_member
+              }
+            }
+          })
+          break
+        }
         case WebSocketDataType.IsCreateGroupRoom: {
           setRoomList((prevRoomList) => {
             if (prevRoomList === null) return prevRoomList
@@ -331,7 +367,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         notifications,
         setNotifications,
         members,
-        setMembers
+        setMembers,
+        selectedImage,
+        setSelectedImage,
+        images,
+        setImages
       }}
     >
       {children}

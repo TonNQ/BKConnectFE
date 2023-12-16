@@ -1,22 +1,23 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import classnames from 'classnames'
-import { ConvertDateTime } from 'src/utils/utils'
+import { ConvertDateTime, convertBytes } from 'src/utils/utils'
 import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { Message } from 'src/types/room.type'
 import storage from 'src/utils/firebase'
-import { getDownloadURL, ref } from 'firebase/storage'
+import { getDownloadURL, getMetadata, ref } from 'firebase/storage'
+import { SocketContext } from 'src/contexts/socket.context'
+import DescriptionIcon from '@mui/icons-material/Description'
+import DownloadIcon from '@mui/icons-material/Download'
+import { toast } from 'react-toastify'
 
-// interface Message {
-//   id?: string
-//   type?: 'text' | 'img' | 'reply'
-//   content?: string
-//   send_time?: string
-//   sender_id?: string
-//   sender_name?: string
-//   room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom'
-//   reply_message_sender?: string
-//   reply_message_content?: string
-// }
+interface Props {
+  msg: Message
+  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
+  setIsViewImageVisible?: React.Dispatch<React.SetStateAction<boolean>>
+}
 
 const Timeline = ({ date }: { date: string }) => {
   return (
@@ -34,13 +35,7 @@ const SystemMsg = ({ contentMsg }: { contentMsg: string }) => {
   )
 }
 
-const TextMsg = ({
-  msg,
-  room_type
-}: {
-  msg: Message
-  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
-}) => {
+const TextMsg = ({ msg, room_type }: Props) => {
   const { profile } = useContext(AppContext)
   const isSender = msg.sender_id === profile?.user_id
   if (room_type === 'PrivateRoom') {
@@ -98,15 +93,16 @@ const TextMsg = ({
   }
 }
 
-const ImageMsg = ({
-  msg,
-  room_type
-}: {
-  msg: Message
-  room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
-}) => {
+const ImageMsg = ({ msg, room_type, setIsViewImageVisible }: Props) => {
   const { profile } = useContext(AppContext)
-  const [imageUrl, setImageUrl] = useState('')
+  const { setSelectedImage } = useContext(SocketContext)
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const handleClick = () => {
+    if (setIsViewImageVisible !== undefined) {
+      setIsViewImageVisible(true)
+      setSelectedImage(imageUrl)
+    }
+  }
   const isSender = msg.sender_id === profile?.user_id
   useEffect(() => {
     const getImageUrl = async () => {
@@ -117,10 +113,9 @@ const ImageMsg = ({
         // Cập nhật state để hiển thị ảnh
         setImageUrl(url)
       } catch (error) {
-        console.error('Error fetching image URL:', error)
+        toast.error('Error fetching image URL:' + error)
       }
     }
-
     getImageUrl()
   }, [])
   if (room_type === 'PrivateRoom') {
@@ -131,7 +126,12 @@ const ImageMsg = ({
           'justify-start': !isSender
         })}
       >
-        <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+        <img
+          src={imageUrl}
+          alt=''
+          className='max-h-[300px] max-w-[300px] rounded-2xl hover:cursor-pointer'
+          onClick={handleClick}
+        />
       </div>
     )
   } else {
@@ -157,11 +157,164 @@ const ImageMsg = ({
           >
             {msg.sender_name}
           </div>
-          <img src={imageUrl} alt='' className='max-h-[300px] max-w-[300px] rounded-2xl' />
+          <img
+            src={imageUrl}
+            alt=''
+            className='max-h-[300px] max-w-[300px] rounded-2xl hover:cursor-pointer'
+            onClick={handleClick}
+          />
         </div>
       </div>
     )
   }
 }
 
-export { TextMsg, Timeline, SystemMsg, ImageMsg }
+const FileMsg = ({ msg, room_type }: Props) => {
+  const { profile } = useContext(AppContext)
+  const [fileUrl, setFileUrl] = useState<string>('')
+  const [fileSize, setFileSize] = useState<number | null>(null)
+  const isSender = msg.sender_id === profile?.user_id
+  console.log('msg', msg)
+  useEffect(() => {
+    const getFileUrl = async () => {
+      try {
+        const fileRef = ref(storage, `Message_File/${msg.content}`)
+        const url = await getDownloadURL(fileRef)
+        setFileUrl(url)
+        getMetadata(fileRef)
+          .then((metadata) => {
+            setFileSize(metadata.size)
+          })
+          .catch((error) => {
+            toast.error('Error getting file metadata:' + error)
+          })
+      } catch (error) {
+        toast.error('Error fetching file URL:' + error)
+      }
+    }
+    getFileUrl()
+  }, [])
+  const fileName = msg.content.slice(msg.content.lastIndexOf('/') + 1)
+  const downloadFile = async () => {
+    try {
+      // Tránh tạo ra thêm 1 link mới từ url
+      const link = document.createElement('a')
+      link.href = fileUrl
+      link.download = fileName
+      link.target = '_self'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } catch (error) {
+      toast.error('Error downloading file:' + error)
+    }
+  }
+
+  if (room_type === 'PrivateRoom') {
+    return (
+      <div
+        className={classnames('mx-4 mb-2 flex flex-row', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <div
+          className={classnames(
+            'flex max-w-[40vw] flex-row items-center space-x-4 whitespace-normal rounded-2xl px-3 py-2 text-lg',
+            {
+              'bg-primary text-white': isSender,
+              'bg-grayColor text-black': !isSender
+            }
+          )}
+        >
+          <div
+            className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
+              'bg-blue-400': isSender,
+              'bg-stone-200': !isSender
+            })}
+          >
+            <DescriptionIcon sx={{ fontSize: '24px', width: '100%' }} />
+          </div>
+          <div className='flex flex-1 flex-col'>
+            <div className='line-clamp-2 overflow-ellipsis text-lg font-medium'>{fileName}</div>
+            <div className='text-base font-normal'>{convertBytes(fileSize || 0)}</div>
+          </div>
+          <div
+            className={classnames(
+              'jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full hover:cursor-pointer',
+              {
+                'bg-blue-400 hover:bg-secondary': isSender,
+                'bg-stone-200 hover:bg-stone-300': !isSender
+              }
+            )}
+            onClick={downloadFile}
+          >
+            <DownloadIcon sx={{ fontSize: '24px', width: '100%' }} />
+          </div>
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div
+        className={classnames('mx-4 mb-2  flex flex-row  items-end', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <img
+          src={msg.sender_avatar}
+          alt=''
+          className={classnames('h-[35px] w-[35px] rounded-full', {
+            hidden: isSender
+          })}
+        />
+        <div className='ml-3 flex flex-col'>
+          <div
+            className={classnames('mb-1 ml-2 text-sm text-textColor', {
+              hidden: isSender
+            })}
+          >
+            {msg.sender_name}
+          </div>
+          <div
+            className={classnames(
+              'flex max-w-[40vw] flex-row items-center space-x-4 whitespace-normal rounded-2xl px-3 py-2 text-lg',
+              {
+                'bg-primary text-white': isSender,
+                'bg-grayColor text-black': !isSender
+              }
+            )}
+          >
+            <div
+              className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
+                'bg-blue-400': isSender,
+                'bg-stone-200': !isSender
+              })}
+            >
+              <DescriptionIcon sx={{ fontSize: '24px', width: '100%' }} />
+            </div>
+            <div className='flex flex-1 flex-col'>
+              <div className='line-clamp-2 overflow-ellipsis text-lg font-medium'>{fileName}</div>
+              <div className='text-base font-normal'>{convertBytes(fileSize || 0)}</div>
+            </div>
+            <div
+              className={classnames(
+                'jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full hover:cursor-pointer',
+                {
+                  'bg-blue-400 hover:bg-secondary': isSender,
+                  'bg-stone-200 hover:bg-stone-300': !isSender
+                }
+              )}
+              onClick={downloadFile}
+            >
+              <DownloadIcon sx={{ fontSize: '24px', width: '100%' }} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+export { TextMsg, Timeline, SystemMsg, ImageMsg, FileMsg }

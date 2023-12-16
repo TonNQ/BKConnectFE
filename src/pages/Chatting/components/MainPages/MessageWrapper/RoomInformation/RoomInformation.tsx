@@ -4,7 +4,7 @@ import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownR
 import Member from '../Member'
 import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
@@ -12,18 +12,20 @@ import { AppContext } from 'src/contexts/app.context'
 import { SocketContext } from 'src/contexts/socket.context'
 import { RoomInfo } from 'src/types/room.type'
 import dut from 'src/assets/images/logo.jpg'
+import messageApi from 'src/apis/messages.api'
+import { getImageUrl } from 'src/utils/getImage'
 
-export default function RoomInformation({
-  setIsOverlayVisible
-}: {
+interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+  setIsViewImageVisible: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const { profile } = useContext(AppContext)
-  const { roomInfo, members, setMembers } = useContext(SocketContext)
+  const { roomInfo, members, setMembers, images, setImages } = useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)
-  // const [images, setImages] = useState<Message[]>([])
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [, setCurrentTime] = useState(new Date())
 
@@ -34,7 +36,7 @@ export default function RoomInformation({
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {}, [roomInfo])
+  useEffect(() => {}, [roomInfo, members])
 
   const toggleShowComponent = (setStateFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
     setStateFunction((prevState: boolean) => !prevState)
@@ -51,11 +53,27 @@ export default function RoomInformation({
         toast.error(error)
       })
   }
-  // const handleShowImages = () => {
-  //   messageApi.getAllImageMessages({ SearchKey: roomInfo?.id as number }).then((response) => {
-  //     setImages(response.data.data)
-  //   })
-  // }
+  const memoizedGetImagesApi = useCallback(
+    () =>
+      messageApi.getAllImageMessages({ SearchKey: roomInfo?.id as number }).then(async (response) => {
+        const imageMessages = response.data.data
+
+        const newImages = await Promise.all(
+          imageMessages.map(async (msg) => {
+            // Sử dụng memoization để lấy URL từ cache nếu có
+            const url = await getImageUrl(msg.content)
+            return url
+          })
+        )
+        // Cập nhật danh sách hình ảnh trong state
+        setImages(newImages as string[])
+      }),
+    []
+  )
+  const handleShowImages = () => {
+    memoizedGetImagesApi()
+  }
+  useEffect(() => {}, [])
   return (
     <div className='flex h-[100vh] w-[350px] min-w-[350px] flex-col items-center overflow-auto border-l-[2px] border-l-gray-200 bg-white px-2'>
       <div className='relative mt-4 flex items-center justify-between'>
@@ -66,7 +84,7 @@ export default function RoomInformation({
         />
         {((roomInfo as RoomInfo).is_online ||
           ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
-          <div className='absolute bottom-0 right-0 h-[30px] w-[30px] rounded-full border-[3px] border-white bg-green-500'></div>
+          <div className='absolute bottom-0 right-[4px] h-[24px] w-[24px] rounded-full border-[3px] border-white bg-green-500'></div>
         )}
       </div>
       <div className='mt-2 text-lg font-semibold'>{roomInfo?.name}</div>
@@ -80,7 +98,9 @@ export default function RoomInformation({
           <div
             className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
             onClick={() => {
-              handleShowMembers()
+              if (!showMembers) {
+                handleShowMembers()
+              }
               toggleShowComponent(setShowMembers)
             }}
           >
@@ -90,13 +110,14 @@ export default function RoomInformation({
           <div className='w-full'>
             {showMembers && members.map((member) => <Member key={member.id} member={member} isAdmin={isAdmin} />)}
             {showMembers && <Member isAddButton={true} setIsOverlayVisible={setIsOverlayVisible} />}
+            {showMembers && <Member isLeaveRoom={true} />}
           </div>
         </>
       )}
       <div
         className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
         onClick={() => {
-          // handleShowImages()
+          handleShowImages()
           toggleShowComponent(setShowImages)
         }}
       >
@@ -106,20 +127,13 @@ export default function RoomInformation({
       {showImages && (
         <>
           <div className='relative my-2 grid w-full grid-cols-4 gap-1 px-1'>
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
-            <ImageCard />
+            {images.map((image) => (
+              <ImageCard key={image} imageUrl={image} setIsViewImageVisible={setIsViewImageVisible} />
+            ))}
           </div>
-          <div className='mb-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
+          {/* <div className='mb-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
             Xem tất cả
-          </div>
+          </div> */}
         </>
       )}
       <div
