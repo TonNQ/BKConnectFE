@@ -5,7 +5,7 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CircleOutlinedIcon from '@mui/icons-material/CircleOutlined'
 import 'src/css/Scroll.css'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { SetStateAction, useContext, useEffect, useRef, useState } from 'react'
 import classNames from 'classnames'
 import { debounce } from 'lodash'
 import userApi from 'src/apis/users.api'
@@ -13,15 +13,18 @@ import { SimpleUser } from 'src/types/user.type'
 import { relationshipApi } from 'src/apis/relationship.api'
 import roomApi from 'src/apis/rooms.api'
 import { SocketContext } from 'src/contexts/socket.context'
+import { AppContext } from 'src/contexts/app.context'
 
 interface Props {
   setIsOverlayVisible: (value: React.SetStateAction<boolean>) => void
 }
 
 export default function Overlay({ setIsOverlayVisible }: Props) {
+  const { profile } = useContext(AppContext)
   const { addMemberToRoomId, members } = useContext(SocketContext)
   const overlayRef = useRef<HTMLDivElement>(null)
   const [roomName, setRoomName] = useState<string>('')
+  const [roomType, setRoomType] = useState<string>('PublicRoom')
   const [inputSearch, setInputSearch] = useState<string>('')
   const [users, setUsers] = useState<SimpleUser[]>([])
   const [addedUserList, setAddedUserList] = useState<SimpleUser[]>([])
@@ -62,9 +65,12 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
       return prevList.filter((u) => u.user_id !== user.user_id)
     })
   }
+  const handleRoomTypeChange = (event: { target: { value: SetStateAction<string> } }) => {
+    setRoomType(event.target.value)
+  }
   const handleCreateGroup = () => {
     roomApi
-      .createGroupRoom({ name: roomName, room_type: 'PublicRoom', user_ids: addedUserList.map((u) => u.user_id) })
+      .createGroupRoom({ name: roomName, room_type: roomType, user_ids: addedUserList.map((u) => u.user_id) })
       .then((response) => {
         console.log(response)
         setIsOverlayVisible(false)
@@ -134,19 +140,34 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
         </div>
         <div className='p-4'>
           {!addMemberToRoomId && (
-            <div className='mb-4 flex w-full flex-row items-center'>
-              <div className='mr-2 text-base font-semibold'>Tên nhóm: </div>
-              <div className='flex flex-1 items-center justify-between rounded-md border-[1px] border-gray-300 bg-white px-2 py-1'>
-                <input
-                  type='text'
-                  className='ml-1 grow border-none bg-white text-base focus:outline-none'
-                  placeholder='Nhập tên nhóm'
-                  onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-                    handleInputChange(event.target.value, setRoomName)
-                  }
-                />
+            <>
+              <div className='mb-4 flex w-full flex-row items-center'>
+                <div className='mr-2 min-w-[100px] text-base font-semibold'>Tên nhóm: </div>
+                <div className='flex flex-1 items-center justify-between rounded-md border-[1px] border-gray-300 bg-white px-2 py-1'>
+                  <input
+                    type='text'
+                    className='ml-1 grow border-none bg-white text-base focus:outline-none'
+                    placeholder='Nhập tên nhóm'
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+                      handleInputChange(event.target.value, setRoomName)
+                    }
+                  />
+                </div>
               </div>
-            </div>
+              {profile?.role === 'Teacher' && (
+                <div className='mb-4 flex w-full flex-row items-center'>
+                  <div className='mr-2 min-w-[100px] text-base font-semibold'>Loại: </div>
+                  <select
+                    value={roomType}
+                    className='flex flex-1 grow items-center justify-between rounded-md border-[1px] border-gray-300 bg-white px-2 py-1 text-base focus:outline-none'
+                    onChange={handleRoomTypeChange}
+                  >
+                    <option value='PublicRoom'>Nhóm chat chung</option>
+                    <option value='ClassRoom'>Lớp học</option>
+                  </select>
+                </div>
+              )}
+            </>
           )}
 
           {/* Search */}
@@ -194,7 +215,7 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
             {addedUserList.length === 0 && <div className='text-sm text-gray-500'>Chưa chọn người dùng nào</div>}
           </div>
           <div className='mb-2 text-lg font-bold'>Gợi ý</div>
-          <div className='scrollbar-custom flex h-[300px] max-h-[300px] flex-col overflow-y-auto bg-white'>
+          <div className='scrollbar-custom flex h-[250px] max-h-[250px] flex-col overflow-y-auto bg-white'>
             {users.map((user) => (
               <div
                 key={user.user_id}
