@@ -110,7 +110,7 @@ export default function Footer() {
   // }
   const handleUploadSelectedFile = () => {
     if (!selectedFile) {
-      toast.error('Vui lòng chọn 1selectedFfile!')
+      toast.error('Vui lòng chọn 1 file!')
     } else {
       const isImage = selectedFile.type.startsWith('image')
       const directory = isImage
@@ -134,7 +134,6 @@ export default function Footer() {
         () => {
           // download url
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            console.log(url)
             const message: SendSocketData = {
               data_type: WebSocketDataType.IsMessage,
               message: {

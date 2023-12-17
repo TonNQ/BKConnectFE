@@ -5,7 +5,7 @@ import React, { createContext, useState, useRef, useContext, useEffect } from 'r
 import { ReceiveSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { Message, RoomInfo, RoomType } from 'src/types/room.type'
 import { AppContext } from './app.context'
-import { Notification } from 'src/types/notification.type'
+import { Notification, NotificationType } from 'src/types/notification.type'
 import { convertToDateTimeServer, getDateTimeNow } from 'src/utils/utils'
 import { MemberOfRoom } from 'src/types/user.type'
 import { toast } from 'react-toastify'
@@ -53,6 +53,8 @@ interface SocketContextInterface {
   setImages: React.Dispatch<React.SetStateAction<string[]>>
   files: string[]
   setFiles: React.Dispatch<React.SetStateAction<string[]>>
+  documents: string[]
+  setDocuments: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -79,7 +81,9 @@ const initialSocketContext: SocketContextInterface = {
   images: [],
   setImages: () => [],
   files: [],
-  setFiles: () => []
+  setFiles: () => [],
+  documents: [],
+  setDocuments: () => []
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -103,7 +107,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [images, setImages] = useState<string[]>(initialSocketContext.images)
   // Files list of room
   const [files, setFiles] = useState<string[]>(initialSocketContext.files)
-
+  // Files list in class room (documents)
+  const [documents, setDocuments] = useState<string[]>(initialSocketContext.documents)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -196,7 +201,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           break
         }
         case WebSocketDataType.IsNotification: {
-          if (receiveMsg.notification.notification_type === 'IsOutRoom') {
+          if (receiveMsg.notification.notification_type === NotificationType.IsOutRoom) {
             setRoomList((prevRoomList) => {
               if (prevRoomList === null) return null
               return prevRoomList?.filter((r) => r.id !== receiveMsg.notification.room_message?.room_id)
@@ -210,9 +215,12 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
                 return prevRoomInfo
               }
             })
-          }
-          setNotifications((prevNotifications) => {
-            return [receiveMsg.notification, ...prevNotifications]
+          } else if (receiveMsg.notification.notification_type === NotificationType.IsPostFile)
+            setNotifications((prevNotifications) => {
+              return [receiveMsg.notification, ...prevNotifications]
+            })
+          setDocuments((prevDocuments) => {
+            return [receiveMsg.notification.post_file?.file_name as string, ...prevDocuments]
           })
           break
         }
@@ -373,7 +381,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         images,
         setImages,
         files,
-        setFiles
+        setFiles,
+        documents,
+        setDocuments
       }}
     >
       {children}

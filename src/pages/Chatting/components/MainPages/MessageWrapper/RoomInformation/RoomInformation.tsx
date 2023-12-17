@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import Member from '../Member'
 import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import roomApi from 'src/apis/rooms.api'
 import { toast } from 'react-toastify'
@@ -14,6 +15,9 @@ import { RoomInfo } from 'src/types/room.type'
 import dut from 'src/assets/images/logo.jpg'
 import messageApi from 'src/apis/messages.api'
 import { getUrl } from 'src/utils/getFileFromFirebase'
+import fileApi from 'src/apis/file.api'
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import storage from 'src/utils/firebase'
 
 interface Props {
   setIsOverlayVisible: React.Dispatch<React.SetStateAction<boolean>>
@@ -22,22 +26,25 @@ interface Props {
 
 export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const { profile } = useContext(AppContext)
-  const { roomInfo, members, setMembers, images, setImages, files, setFiles } = useContext(SocketContext)
+  const { roomInfo, members, setMembers, images, setImages, files, setFiles, documents, setDocuments } =
+    useContext(SocketContext)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)
+  // showDocument: show tài liệu học tập giảng viên upload lên
+  const [showDocuments, setShowDocuments] = useState<boolean>(false)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [, setCurrentTime] = useState(new Date())
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date())
-    }, 60000) // Cập nhật mỗi 1 phút
-    return () => clearInterval(interval)
-  }, [])
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const fileSelectionRef = useRef<HTMLInputElement | null>(null)
 
-  useEffect(() => {}, [roomInfo, members])
-
+  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files && event.target.files[0]
+    if (selectedFile) {
+      setSelectedFile(selectedFile)
+    }
+  }
   const toggleShowComponent = (setStateFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
     setStateFunction((prevState: boolean) => !prevState)
   }
@@ -52,6 +59,38 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
       .catch((error) => {
         toast.error(error)
       })
+  }
+  const handleOpenFileSelection = () => {
+    if (fileSelectionRef.current) {
+      fileSelectionRef.current.click()
+    }
+  }
+  const handleUploadSelectedFile = () => {
+    if (!selectedFile) {
+      toast.error('Vui lòng chọn 1 file!')
+    } else {
+      const directory = `${roomInfo?.id as number}/${selectedFile.name}`
+      const storageRef = ref(storage, `/File/${directory}`)
+      const uploadTask = uploadBytesResumable(storageRef, selectedFile)
+
+      uploadTask.on(
+        'state_changed',
+        () => {
+          // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+          // // update progress
+          // setPercent(percent)
+        },
+        (err) => console.log(err),
+        () => {
+          // download url
+          getDownloadURL(uploadTask.snapshot.ref).then(() => {
+            fileApi.addFileInClass({ path: directory, room_id: roomInfo?.id as number }).then(() => {
+              setDocuments((prevDocuments) => [directory, ...prevDocuments])
+            })
+          })
+        }
+      )
+    }
   }
   const memoizedGetImagesApi = useCallback(
     () =>
@@ -78,13 +117,39 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
       }),
     []
   )
+  const memoizedGetDocumentsApi = useCallback(
+    () =>
+      fileApi.getAllFiles({ SearchKey: roomInfo?.id as number }).then(async (response) => {
+        const files = response.data.data
+        setDocuments(files.map((file) => file.path))
+      }),
+    []
+  )
   const handleShowImages = () => {
     memoizedGetImagesApi()
   }
   const handleShowFiles = () => {
     memoizedGetFilesApi()
   }
+  const handleShowDocuments = () => {
+    memoizedGetDocumentsApi()
+  }
+
   useEffect(() => {}, [])
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date())
+    }, 60000) // Cập nhật mỗi 1 phút
+    return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {}, [roomInfo, members])
+  useEffect(() => {
+    // Thực hiện tải lên Firebase khi có sự thay đổi trong state
+    if (selectedFile) {
+      handleUploadSelectedFile()
+    }
+  }, [selectedFile])
   return (
     <div className='flex h-[100vh] w-[350px] min-w-[350px] flex-col items-center overflow-auto border-l-[2px] border-l-gray-200 bg-white px-2'>
       <div className='relative mt-4 flex items-center justify-between'>
@@ -116,7 +181,8 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
             }}
           >
             <div className='text-base'>Thành viên trong đoạn chat</div>
-            <KeyboardArrowDownRoundedIcon />
+            {showMembers && <KeyboardArrowUpIcon />}
+            {!showMembers && <KeyboardArrowDownRoundedIcon />}
           </div>
           <div className='w-full'>
             {showMembers && members.map((member) => <Member key={member.id} member={member} isAdmin={isAdmin} />)}
@@ -133,7 +199,8 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
         }}
       >
         <div className='text-base'>Ảnh</div>
-        <KeyboardArrowDownRoundedIcon />
+        {showImages && <KeyboardArrowUpIcon />}
+        {!showImages && <KeyboardArrowDownRoundedIcon />}
       </div>
       {showImages && (
         <>
@@ -155,19 +222,51 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
         }}
       >
         <div className='text-base'>File</div>
-        <KeyboardArrowDownRoundedIcon />
+        {showFiles && <KeyboardArrowUpIcon />}
+        {!showFiles && <KeyboardArrowDownRoundedIcon />}
       </div>
       {showFiles && (
         <>
           {files.map((file) => (
-            <FileWrapper key={file} fileDirection={file} />
+            <FileWrapper key={file} fileDirection={file} isDocument={false} />
           ))}
           {/* <div className='mt-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
             Xem tất cả
           </div> */}
         </>
       )}
-      <div className='mb-2'></div>
+      {profile?.role === 'Teacher' && (
+        <>
+          <div
+            className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
+            onClick={() => {
+              handleShowDocuments()
+              toggleShowComponent(setShowDocuments)
+            }}
+          >
+            <div className='text-base'>Tài liệu học tập</div>
+            {showDocuments && <KeyboardArrowUpIcon />}
+            {!showDocuments && <KeyboardArrowDownRoundedIcon />}
+          </div>
+          {showDocuments && (
+            <>
+              {documents.map((file) => (
+                <FileWrapper key={file} fileDirection={file} isDocument={true} />
+              ))}
+              {/* <div className='mt-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'>
+            Xem tất cả
+          </div> */}
+              <div
+                className='mt-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'
+                onClick={handleOpenFileSelection}
+              >
+                Thêm tài liệu
+              </div>
+              <input type='file' accept='*' onChange={handleChangeFile} ref={fileSelectionRef} className='hidden' />
+            </>
+          )}
+        </>
+      )}
     </div>
   )
 }

@@ -7,7 +7,12 @@ import { toast } from 'react-toastify'
 import storage from 'src/utils/firebase'
 import { ConvertDMY, convertBytes } from 'src/utils/utils'
 
-export default function FileWrapper({ fileDirection }: { fileDirection: string }) {
+interface Props {
+  fileDirection: string
+  isDocument: boolean
+}
+
+export default function FileWrapper({ fileDirection, isDocument }: Props) {
   const [fileName, setFileName] = useState<string>('')
   const [fileSize, setFileSize] = useState<number>(0)
   const [fileUrl, setFileUrl] = useState<string>('')
@@ -16,7 +21,9 @@ export default function FileWrapper({ fileDirection }: { fileDirection: string }
   useEffect(() => {
     const getFileUrl = async () => {
       try {
-        const fileRef = ref(storage, `Message_File/${fileDirection}`)
+        const fileRef = isDocument
+          ? ref(storage, `File/${fileDirection}`)
+          : ref(storage, `Message_File/${fileDirection}`)
         const url = await getDownloadURL(fileRef)
         setFileUrl(url)
         getMetadata(fileRef)

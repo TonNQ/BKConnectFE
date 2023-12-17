@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import classNames from 'classnames'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 import { SocketContext } from 'src/contexts/socket.context'
@@ -15,6 +17,14 @@ export default function NotificationItem({ notificationInfo }: Props) {
   const { wsRef } = useContext(SocketContext)
   const [isRemoved, setIsRemoved] = useState(false)
   const [isApproved, setIsApproved] = useState(false)
+  const contentRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const content = contentRef.current
+    if (content && content.scrollHeight > content.clientHeight) {
+      content.classList.add('break-all')
+    }
+  }, [])
+
   const handleReject = () => {
     friendRequestApi
       .removeFriendRequest({ SearchKey: notificationInfo.sender_id as string })
@@ -33,6 +43,17 @@ export default function NotificationItem({ notificationInfo }: Props) {
     wsRef.current?.send(JSON.stringify(approveMessage))
     setIsApproved(true)
   }
+  const handleFileName = (fileName: string, maxLength: number) => {
+    const words = fileName.split(' ') // Tách các từ trong xâu
+    let isTooLong = false
+    for (let i = 0; i < words.length; i++) {
+      if (words[i].length > maxLength) {
+        isTooLong = true
+        break
+      }
+    }
+    return isTooLong ? fileName.substring(0, maxLength) + '...' : fileName
+  }
   return (
     <div
       className={classNames('mb-2 flex w-full flex-row items-start rounded-lg p-2', {
@@ -47,29 +68,36 @@ export default function NotificationItem({ notificationInfo }: Props) {
       />
       <div className='ml-2 flex grow flex-col items-start'>
         {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && (
-          <div className='flex-wrap text-base'>
+          <div ref={contentRef} className='overflow-wrap-break-word flex-wrap whitespace-pre-wrap text-base'>
             <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã gửi cho bạn lời mời
             kết bạn.
           </div>
         )}
         {notificationInfo.notification_type === NotificationType.IsAcceptFriendRequest && (
-          <div className='flex-wrap text-base'>
+          <div ref={contentRef} className='overflow-wrap-break-word flex-wrap whitespace-pre-wrap text-base'>
             <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã chấp nhận lời mời kết
             bạn.
           </div>
         )}
-        {notificationInfo.notification_type === NotificationType.IsInRoom && (
-          <div className='flex-wrap text-base'>
-            Bạn vừa được <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> thêm vào{' '}
+        {notificationInfo.notification_type === NotificationType.IsOutRoom && (
+          <div ref={contentRef} className='overflow-wrap-break-word flex-wrap whitespace-pre-wrap text-base'>
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã xóa bạn khỏi{' '}
             {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
             <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
           </div>
         )}
-        {notificationInfo.notification_type === NotificationType.IsOutRoom && (
-          <div className='flex-wrap text-base'>
-            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã đuổi bạn khỏi{' '}
-            {notificationInfo.room_message?.room_type === 'PublicRoom' ? 'nhóm ' : 'lớp '}
-            <span className='font-semibold text-primary'>{notificationInfo.room_message?.room_name}</span>.
+        {notificationInfo.notification_type === NotificationType.IsPostFile && (
+          <div ref={contentRef} className='overflow-wrap-break-word flex-wrap whitespace-pre-wrap text-base'>
+            <span className='font-semibold text-primary'>{notificationInfo.sender_name}</span> đã tải file{' '}
+            <span className='font-semibold text-primary'>
+              {handleFileName(
+                notificationInfo.post_file?.file_name.substring(
+                  notificationInfo.post_file?.file_name.indexOf('/') + 1
+                ) as string,
+                20
+              )}
+            </span>{' '}
+            lên lớp học <span className='font-semibold text-primary'>{notificationInfo.post_file?.room_name}</span>.
           </div>
         )}
         <div className='mt-1 text-xs font-medium text-primary'>
