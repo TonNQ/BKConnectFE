@@ -14,6 +14,9 @@ export function isAxiosBadRequest<FormError>(error: unknown): error is AxiosErro
 }
 
 function ConvertTime(hours: number, minutes: number) {
+  if (hours === 0) {
+    return `12:${minutes.toString().padStart(2, '0')} AM`
+  }
   if (hours < 12) {
     return `${hours}:${minutes.toString().padStart(2, '0')} AM`
   } else if (hours == 12) {

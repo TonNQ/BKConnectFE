@@ -174,7 +174,6 @@ const FileMsg = ({ msg, room_type }: Props) => {
   const [fileUrl, setFileUrl] = useState<string>('')
   const [fileSize, setFileSize] = useState<number | null>(null)
   const isSender = msg.sender_id === profile?.user_id
-  console.log('msg', msg)
   useEffect(() => {
     const getFileUrl = async () => {
       try {
