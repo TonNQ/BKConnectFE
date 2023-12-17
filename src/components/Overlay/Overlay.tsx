@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function Overlay({ setIsOverlayVisible }: Props) {
-  const { addMemberToRoomId } = useContext(SocketContext)
+  const { addMemberToRoomId, members } = useContext(SocketContext)
   const overlayRef = useRef<HTMLDivElement>(null)
   const [roomName, setRoomName] = useState<string>('')
   const [inputSearch, setInputSearch] = useState<string>('')
@@ -29,7 +29,13 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch.trim() !== '') {
       userApi.searchUsers({ searchKey: textSearch.trim(), pageIndex: 0 }).then((response) => {
-        setUsers(response.data.data)
+        const searchUsers = response.data.data
+        if (addMemberToRoomId) {
+          const memberIds = members.map((member) => member.id)
+          setUsers(searchUsers.filter((user) => !memberIds.includes(user.user_id)))
+        } else {
+          setUsers(searchUsers)
+        }
       })
     }
   }, 500)
@@ -37,7 +43,6 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
     setInputSearch('')
   }
   const handleInputChange = (value: string, setInputState: React.Dispatch<React.SetStateAction<string>>) => {
-    console.log(value)
     setInputState(value)
   }
   const handleAddUser = (user: SimpleUser) => {
@@ -101,7 +106,13 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
   useEffect(() => {
     if (inputSearch.trim() === '') {
       relationshipApi.getAllFriends().then((response) => {
-        setUsers(response.data.data)
+        const searchUsers = response.data.data
+        if (addMemberToRoomId) {
+          const memberIds = members.map((member) => member.id)
+          setUsers(searchUsers.filter((user) => !memberIds.includes(user.user_id)))
+        } else {
+          setUsers(searchUsers)
+        }
       })
     } else {
       debouncedSearch(inputSearch)
