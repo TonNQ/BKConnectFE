@@ -2,6 +2,8 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
+import CreateOutlinedIcon from '@mui/icons-material/CreateOutlined'
+import ImageOutlinedIcon from '@mui/icons-material/ImageOutlined'
 import Member from '../Member'
 import ImageCard from '../ImageCard'
 import FileWrapper from '../FileWrapper'
@@ -26,8 +28,19 @@ interface Props {
 
 export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const { profile } = useContext(AppContext)
-  const { roomInfo, members, setMembers, images, setImages, files, setFiles, documents, setDocuments } =
-    useContext(SocketContext)
+  const {
+    roomInfo,
+    members,
+    setMembers,
+    images,
+    setImages,
+    files,
+    setFiles,
+    documents,
+    setDocuments,
+    setChangedRoomName
+  } = useContext(SocketContext)
+  const [showSettings, setShowSettings] = useState<boolean>(false)
   const [showMembers, setShowMembers] = useState<boolean>(false)
   const [showImages, setShowImages] = useState<boolean>(false)
   const [showFiles, setShowFiles] = useState<boolean>(false)
@@ -169,8 +182,46 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
           ? 'Đang hoạt động'
           : ShowTimeDifference(roomInfo?.last_online || '', false)}
       </div>
+
       {roomInfo?.room_type !== 'PrivateRoom' && (
         <>
+          <div
+            className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
+            onClick={() => {
+              toggleShowComponent(setShowSettings)
+            }}
+          >
+            <div className='text-base'>Tùy chỉnh {roomInfo?.room_type === 'PublicRoom' ? 'nhóm' : 'lớp học'}</div>
+            {showSettings && <KeyboardArrowUpIcon />}
+            {!showSettings && <KeyboardArrowDownRoundedIcon />}
+          </div>
+          <div className='w-full'>
+            {showSettings && (
+              <>
+                <div
+                  className='flex w-full items-center rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
+                  onClick={() => {
+                    setChangedRoomName(roomInfo?.name as string)
+                    setIsOverlayVisible(true)
+                  }}
+                >
+                  <CreateOutlinedIcon sx={{ fontSize: `20px` }} />
+                  <div className='ml-4 text-base'>
+                    Đổi tên {roomInfo?.room_type === 'PublicRoom' ? 'nhóm' : 'lớp học'}
+                  </div>
+                </div>
+                <div
+                  className='flex w-full items-center rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
+                  onClick={() => {}}
+                >
+                  <ImageOutlinedIcon sx={{ fontSize: `20px` }} />
+                  <div className='ml-4 text-base'>
+                    Đổi ảnh {roomInfo?.room_type === 'PublicRoom' ? 'nhóm' : 'lớp học'}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           <div
             className='flex w-full justify-between rounded-md px-3 py-2 font-medium hover:cursor-pointer hover:bg-grayColor'
             onClick={() => {
