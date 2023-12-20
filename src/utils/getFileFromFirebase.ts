@@ -11,3 +11,25 @@ export const getUrl = async (root: string, name: string) => {
     console.error('Error fetching URL:', error)
   }
 }
+
+// export const getUrlString = (root: string, name: string) => {
+//   try {
+//     let url: string = ''
+//     getUrl(root, name)
+//       .then((responseUrl) => {
+//         console.log(responseUrl)
+//         url = responseUrl as string
+//         return url
+//       })
+//       .catch(() => {
+//         console.error('Error: getUrlString')
+//       })
+//       .finally(() => {
+//         return url
+//       })
+//     console.log(url)
+//   } catch (error) {
+//     console.error('Error fetching URL:', error)
+//     throw error // Re-throw lỗi để bên ngoài có thể xử lý
+//   }
+// }
