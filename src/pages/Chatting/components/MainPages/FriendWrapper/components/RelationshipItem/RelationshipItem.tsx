@@ -16,6 +16,8 @@ import { ShowTimeDifference } from 'src/utils/utils'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { SocketContext } from 'src/contexts/socket.context'
 import { NotificationType } from 'src/types/notification.type'
+import { getUrl } from 'src/utils/getFileFromFirebase'
+import dut from 'src/assets/images/logo.jpg'
 
 interface Props {
   type: string
@@ -31,6 +33,7 @@ export default function RelationshipItem({ type, friend, group, request, updateF
   // sử dụng để thay đổi UI khi remove request
   const [isRemoved, setIsRemoved] = useState(false)
   const [isApproved, setIsApproved] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const popoverRef = useRef<HTMLDivElement | null>(null)
   const handlePopoverToggle = () => {
     setShowPopover(!showPopover)
@@ -75,6 +78,10 @@ export default function RelationshipItem({ type, friend, group, request, updateF
   }
 
   useEffect(() => {
+    const avatarString = friend?.avatar || group?.avatar || request?.sender_avatar
+    getUrl(group?.avatar ? 'Avatar_Room' : 'Avatar', avatarString as string)
+      .then((url) => setAvatarUrl(url as string))
+      .catch((error) => console.error(error))
     document.addEventListener('mousedown', handleClickOutside)
 
     return () => {
@@ -84,11 +91,13 @@ export default function RelationshipItem({ type, friend, group, request, updateF
 
   return (
     <div className='flex w-full flex-row items-center rounded-md border-[1px] border-gray-100 p-3'>
-      <img
-        src={friend?.avatar || group?.avatar || request?.sender_avatar}
-        alt='avatar'
-        className='h-[60px] w-[60px] rounded-md border-[1px] border-gray-100'
-      />
+      <div className='relative h-[60px] w-[60px] min-w-[60px]'>
+        <img
+          src={avatarUrl ?? dut}
+          alt='avatar'
+          className='absolute left-0 top-0 mx-auto h-full w-full rounded-md border-[1px] border-gray-100 object-cover'
+        />
+      </div>
       <div className='ml-3 flex grow flex-col justify-center truncate'>
         {type !== 'request' && <div className='truncate text-lg font-semibold'>{friend?.name || group?.name}</div>}
         {type === 'request' && (

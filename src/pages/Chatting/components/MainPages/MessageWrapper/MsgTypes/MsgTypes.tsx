@@ -12,6 +12,8 @@ import { SocketContext } from 'src/contexts/socket.context'
 import DescriptionIcon from '@mui/icons-material/Description'
 import DownloadIcon from '@mui/icons-material/Download'
 import { toast } from 'react-toastify'
+import { getUrl } from 'src/utils/getFileFromFirebase'
+import dut from 'src/assets/images/logo.jpg'
 
 interface Props {
   msg: Message
@@ -38,6 +40,10 @@ const SystemMsg = ({ contentMsg }: { contentMsg: string }) => {
 const TextMsg = ({ msg, room_type }: Props) => {
   const { profile } = useContext(AppContext)
   const isSender = msg.sender_id === profile?.user_id
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  useEffect(() => {
+    getUrl('Avatar', msg.sender_avatar).then((url) => setAvatarUrl(url as string))
+  }, [])
   if (room_type === 'PrivateRoom') {
     return (
       <div
@@ -65,7 +71,7 @@ const TextMsg = ({ msg, room_type }: Props) => {
         })}
       >
         <img
-          src={msg.sender_avatar}
+          src={avatarUrl ?? dut}
           alt=''
           className={classnames('h-[35px] w-[35px] rounded-full', {
             hidden: isSender
@@ -104,19 +110,12 @@ const ImageMsg = ({ msg, room_type, setIsViewImageVisible }: Props) => {
     }
   }
   const isSender = msg.sender_id === profile?.user_id
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   useEffect(() => {
-    const getImageUrl = async () => {
-      try {
-        const fileRef = ref(storage, `Message_Image/${msg.content}`)
-        // Lấy URL của ảnh
-        const url = await getDownloadURL(fileRef)
-        // Cập nhật state để hiển thị ảnh
-        setImageUrl(url)
-      } catch (error) {
-        toast.error('Error fetching image URL:' + error)
-      }
-    }
-    getImageUrl()
+    getUrl('Message_Image', msg.content)
+      .then((url) => setImageUrl(url as string))
+      .catch((error) => toast.error('Error fetching image URL:' + error))
+    getUrl('Avatar', msg.sender_avatar).then((url) => setAvatarUrl(url as string))
   }, [])
   if (room_type === 'PrivateRoom') {
     return (
@@ -143,7 +142,7 @@ const ImageMsg = ({ msg, room_type, setIsViewImageVisible }: Props) => {
         })}
       >
         <img
-          src={msg.sender_avatar}
+          src={avatarUrl ?? dut}
           alt=''
           className={classnames('h-[35px] w-[35px] rounded-full', {
             hidden: isSender
@@ -174,6 +173,7 @@ const FileMsg = ({ msg, room_type }: Props) => {
   const [fileUrl, setFileUrl] = useState<string>('')
   const [fileSize, setFileSize] = useState<number | null>(null)
   const isSender = msg.sender_id === profile?.user_id
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   useEffect(() => {
     const getFileUrl = async () => {
       try {
@@ -192,6 +192,7 @@ const FileMsg = ({ msg, room_type }: Props) => {
       }
     }
     getFileUrl()
+    getUrl('Avatar', msg.sender_avatar).then((url) => setAvatarUrl(url as string))
   }, [])
   const fileName = msg.content.slice(msg.content.lastIndexOf('/') + 1)
   const downloadFile = async () => {
@@ -262,7 +263,7 @@ const FileMsg = ({ msg, room_type }: Props) => {
         })}
       >
         <img
-          src={msg.sender_avatar}
+          src={avatarUrl ?? dut}
           alt=''
           className={classnames('h-[35px] w-[35px] rounded-full', {
             hidden: isSender

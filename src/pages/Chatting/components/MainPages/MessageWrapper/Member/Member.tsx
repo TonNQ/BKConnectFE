@@ -4,13 +4,15 @@ import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import classnames from 'classnames'
 import { MemberOfRoom } from 'src/types/user.type'
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import roomApi from 'src/apis/rooms.api'
 import { SocketContext } from 'src/contexts/socket.context'
 import { toast } from 'react-toastify'
 import AddIcon from '@mui/icons-material/Add'
 import LogoutIcon from '@mui/icons-material/Logout'
+import { getUrl } from 'src/utils/getFileFromFirebase'
+import dut from 'src/assets/images/logo.jpg'
 
 interface Props {
   isAddButton?: boolean
@@ -24,6 +26,7 @@ export default function Member({ isAddButton, isLeaveRoom, member, isAdmin, setI
   const { profile } = useContext(AppContext)
   const { roomInfo, setMembers, setMessages, setRoomInfo, setRoomList, setAddMemberToRoomId } =
     useContext(SocketContext)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const handleRemoveUser = () => {
     if (isLeaveRoom) {
       roomApi
@@ -66,6 +69,11 @@ export default function Member({ isAddButton, isLeaveRoom, member, isAdmin, setI
         })
     }
   }
+  useEffect(() => {
+    getUrl('Avatar', member?.avatar as string)
+      .then((url) => setAvatarUrl(url as string))
+      .catch((error) => console.error(error))
+  }, [])
   return (
     <div
       className={classnames('flex w-full items-center justify-center rounded-md bg-white px-3 py-2', {
@@ -87,7 +95,7 @@ export default function Member({ isAddButton, isLeaveRoom, member, isAdmin, setI
       {!isAddButton && !isLeaveRoom && (
         <div className='min-w-[50px]'>
           <img
-            src={member?.avatar}
+            src={avatarUrl ?? dut}
             alt='avatar room'
             className='h-[40px] w-[40px] rounded-full border-[1px] border-gray-200'
           />

@@ -1,4 +1,6 @@
-import { useContext, useState } from 'react'
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { friendRequestApi } from 'src/apis/friendRequest.api'
 import dut from 'src/assets/images/logo.jpg'
@@ -7,6 +9,7 @@ import { SocketContext } from 'src/contexts/socket.context'
 import { NotificationType } from 'src/types/notification.type'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
 import { SearchUser } from 'src/types/user.type'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   user: SearchUser
@@ -17,6 +20,7 @@ export default function User({ user }: Props) {
   const { profile } = useContext(AppContext)
   const [isFriend, setIsFriend] = useState<boolean>(user.is_friend)
   const [isSenderRequest, setIsSenderRequest] = useState<string | null>(user.sender_friend_request)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const handleSendFriendRequest = () => {
     const sendRequest: SendSocketData = {
       data_type: WebSocketDataType.IsNotification,
@@ -45,13 +49,18 @@ export default function User({ user }: Props) {
     wsRef.current?.send(JSON.stringify(approveMessage))
     setIsFriend(true)
   }
+  useEffect(() => {
+    getUrl('Avatar', user.avatar)
+      .then((url) => setAvatarUrl(url as string))
+      .catch((error) => console.error(error))
+  }, [])
   return (
     <div className='flex w-full rounded-md bg-stone-50 px-3 py-2'>
-      <div className='min-w-[50px]'>
+      <div className='relative h-[50px] w-[50px] min-w-[50px]'>
         <img
-          src={user.avatar || dut}
+          src={avatarUrl ?? dut}
           alt='avatar user'
-          className='h-[50px] w-[50px] rounded-full border-[1px] border-gray-200'
+          className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[1px] border-gray-200 object-cover'
         />
       </div>
       <div className='ml-2 flex flex-1 flex-col'>
