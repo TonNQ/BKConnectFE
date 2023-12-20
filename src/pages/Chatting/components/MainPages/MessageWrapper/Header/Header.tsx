@@ -9,6 +9,7 @@ import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   showRoomInfo: boolean
@@ -18,6 +19,7 @@ interface Props {
 export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
   const { roomInfo } = useContext(SocketContext)
   const [, setCurrentTime] = useState(new Date())
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const handleShowRoomInfo = () => {
     setShowRoomInfo(!showRoomInfo)
   }
@@ -28,15 +30,19 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {}, [roomInfo])
+  useEffect(() => {
+    getUrl(roomInfo?.room_type === 'PrivateRoom' ? 'Avatar' : 'Avatar_Room', roomInfo?.avatar as string).then((url) => {
+      setAvatarUrl(url as string)
+    })
+  }, [roomInfo])
 
   return (
     <div className='flex min-h-[65px] w-full grow-0 items-center justify-between bg-white px-4 shadow-sm shadow-stone-200'>
       <div className='flex items-center'>
-        <div className='relative'>
+        <div className='relative h-[45px] w-[45px] min-w-[45px]'>
           <img
-            className='h-[45px] w-[45px] rounded-full border-[1px] border-gray-200'
-            src={roomInfo?.avatar || dut}
+            className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[1px] border-gray-200 object-cover'
+            src={avatarUrl ?? dut}
             alt='ảnh'
           />
           {(roomInfo?.is_online || ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (

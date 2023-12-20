@@ -42,6 +42,9 @@ const roomApi = {
   },
   changeName(body: { room_id: number; room_name: string }) {
     return http.put<SuccessResponse<{ room_id: number; room_name: string }>>('/rooms/changeName', body)
+  },
+  changeAvatar(body: { room_id: number; avatar: string }) {
+    return http.put<SuccessResponse<{ room_id: number; avatar: string }>>('/rooms/changeAvatar', body)
   }
 }
 
