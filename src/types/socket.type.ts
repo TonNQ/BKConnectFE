@@ -20,6 +20,8 @@ export interface ChangedRoomInfo {
   total_member: number
   new_member_list?: MemberOfRoom[]
   left_member_id?: string
+  new_avatar?: string
+  new_name?: string
 }
 export interface ReceiveSocketData {
   user_id: string

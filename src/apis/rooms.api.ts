@@ -39,6 +39,9 @@ const roomApi = {
   },
   addUserToRoom(body: { user_id: string; room_id: number }) {
     return http.post<SuccessResponse<string>>('/rooms/addUserToRoom', body)
+  },
+  changeName(body: { room_id: number; room_name: string }) {
+    return http.put<SuccessResponse<{ room_id: number; room_name: string }>>('/rooms/changeName', body)
   }
 }
 

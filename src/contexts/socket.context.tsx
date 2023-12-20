@@ -41,6 +41,8 @@ interface SocketContextInterface {
   setRoom: React.Dispatch<React.SetStateAction<RoomType | null>>
   roomInfo: RoomInfo | null
   setRoomInfo: React.Dispatch<React.SetStateAction<RoomInfo | null>>
+  changedRoomName: string | null
+  setChangedRoomName: React.Dispatch<React.SetStateAction<string | null>>
   addMemberToRoomId: number | null
   setAddMemberToRoomId: React.Dispatch<React.SetStateAction<number | null>>
   notifications: Notification[]
@@ -69,6 +71,8 @@ const initialSocketContext: SocketContextInterface = {
   room: null,
   setRoom: () => null,
   roomInfo: null,
+  changedRoomName: null,
+  setChangedRoomName: () => null,
   setRoomInfo: () => null,
   addMemberToRoomId: null,
   setAddMemberToRoomId: () => null,
@@ -97,6 +101,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [room, setRoom] = useState<RoomType | null>(initialSocketContext.room)
   // roomInfo: thông tin của room mà user đang xem
   const [roomInfo, setRoomInfo] = useState<RoomInfo | null>(initialSocketContext.roomInfo)
+  // changedRoomName: tên của room cần đổi (id room đổi tên = id của roomInfo)
+  const [changedRoomName, setChangedRoomName] = useState<string | null>(initialSocketContext.changedRoomName)
   // roomId xác định có phải là add new group hay add members to group
   const [addMemberToRoomId, setAddMemberToRoomId] = useState<number | null>(initialSocketContext.addMemberToRoomId)
   const [notifications, setNotifications] = useState<Notification[]>(initialSocketContext.notifications)
@@ -280,6 +286,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         }
         case WebSocketDataType.IsChangedRoomInfo: {
           setRoomInfo((prevRoomInfo) => {
+            if (prevRoomInfo === null) return null
+
             if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
               setMembers((prevMembers) => {
                 if (receiveMsg.changed_room_info.left_member_id !== null) {
@@ -290,13 +298,27 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
                   return prevMembers
                 }
               })
-            }
-            if (prevRoomInfo === null) return null
-            else {
+              if (receiveMsg.changed_room_info.new_name !== null) {
+                setRoomList((prevRoomList) => {
+                  if (prevRoomList === null) return null
+                  else {
+                    return prevRoomList.map((room) => {
+                      if (room.id === receiveMsg.changed_room_info.room_id) {
+                        return { ...room, name: receiveMsg.changed_room_info.new_name as string }
+                      } else {
+                        return room
+                      }
+                    })
+                  }
+                })
+              }
               return {
                 ...prevRoomInfo,
-                total_member: receiveMsg.changed_room_info.total_member
+                total_member: receiveMsg.changed_room_info.total_member,
+                name: receiveMsg.changed_room_info.new_name ?? prevRoomInfo.name
               }
+            } else {
+              return prevRoomInfo
             }
           })
           break
@@ -376,6 +398,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         setRoom,
         roomInfo,
         setRoomInfo,
+        changedRoomName,
+        setChangedRoomName,
         addMemberToRoomId,
         setAddMemberToRoomId,
         notifications,
