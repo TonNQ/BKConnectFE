@@ -298,13 +298,17 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
                   return prevMembers
                 }
               })
-              if (receiveMsg.changed_room_info.new_name !== null) {
+              if (receiveMsg.changed_room_info.new_name || receiveMsg.changed_room_info.new_avatar) {
                 setRoomList((prevRoomList) => {
                   if (prevRoomList === null) return null
                   else {
                     return prevRoomList.map((room) => {
                       if (room.id === receiveMsg.changed_room_info.room_id) {
-                        return { ...room, name: receiveMsg.changed_room_info.new_name as string }
+                        return {
+                          ...room,
+                          name: receiveMsg.changed_room_info.new_name ?? room.name,
+                          avatar: receiveMsg.changed_room_info.new_avatar ?? room.avatar
+                        }
                       } else {
                         return room
                       }
@@ -315,7 +319,8 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
               return {
                 ...prevRoomInfo,
                 total_member: receiveMsg.changed_room_info.total_member,
-                name: receiveMsg.changed_room_info.new_name ?? prevRoomInfo.name
+                name: receiveMsg.changed_room_info.new_name ?? prevRoomInfo.name,
+                avatar: receiveMsg.changed_room_info.new_avatar ?? prevRoomInfo.avatar
               }
             } else {
               return prevRoomInfo
