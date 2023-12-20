@@ -31,7 +31,7 @@ export default function FriendList({ setPageIndex }: { setPageIndex: React.Dispa
     return () => debouncedSearch.cancel()
   }, [inputSearch])
   return (
-    <div className='flex h-[100vh] flex-col bg-white p-4'>
+    <div className='flex h-[100vh] flex-col overflow-auto bg-white p-4'>
       <div className='flex flex-row items-center justify-between'>
         <div className='flex flex-row items-center'>
           <PeopleAltOutlinedIcon sx={{ fontSize: '28px' }} />

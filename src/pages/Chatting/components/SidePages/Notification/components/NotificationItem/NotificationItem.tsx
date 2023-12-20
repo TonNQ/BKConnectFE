@@ -7,7 +7,9 @@ import { friendRequestApi } from 'src/apis/friendRequest.api'
 import { SocketContext } from 'src/contexts/socket.context'
 import { Notification, NotificationType } from 'src/types/notification.type'
 import { SendSocketData, WebSocketDataType } from 'src/types/socket.type'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 import { ShowTimeDifference } from 'src/utils/utils'
+import dut from 'src/assets/images/logo.jpg'
 
 interface Props {
   notificationInfo: Notification
@@ -17,6 +19,7 @@ export default function NotificationItem({ notificationInfo }: Props) {
   const { wsRef } = useContext(SocketContext)
   const [isRemoved, setIsRemoved] = useState(false)
   const [isApproved, setIsApproved] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const content = contentRef.current
@@ -54,6 +57,11 @@ export default function NotificationItem({ notificationInfo }: Props) {
     }
     return isTooLong ? fileName.substring(0, maxLength) + '...' : fileName
   }
+  useEffect(() => {
+    getUrl('Avatar', notificationInfo.avatar)
+      .then((url) => setAvatarUrl(url as string))
+      .catch((error) => console.error(error))
+  }, [])
   return (
     <div
       className={classNames('mb-2 flex w-full flex-row items-start rounded-lg p-2', {
@@ -61,11 +69,13 @@ export default function NotificationItem({ notificationInfo }: Props) {
         'bg-blue-100': !notificationInfo.is_read
       })}
     >
-      <img
-        src={notificationInfo.avatar}
-        alt='avatar'
-        className='h-[60px] w-[60px] min-w-[60px] rounded-full border-[1px] border-gray-100'
-      />
+      <div className='relative h-[60px] w-[60px] min-w-[60px]'>
+        <img
+          src={avatarUrl ?? dut}
+          alt='avatar'
+          className='absolute left-0 top-0 mx-auto rounded-full border-[1px] border-gray-100 object-cover'
+        />
+      </div>
       <div className='ml-2 flex grow flex-col items-start'>
         {notificationInfo.notification_type === NotificationType.IsSendFriendRequest && (
           <div ref={contentRef} className='overflow-wrap-break-word flex-wrap whitespace-pre-wrap text-base'>
