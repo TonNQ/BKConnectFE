@@ -2,24 +2,36 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import { useContext, useEffect, useState } from 'react'
-import userApi from 'src/apis/users.api'
 import { AppContext } from 'src/contexts/app.context'
 import 'src/index.css'
 import classNames from 'classnames'
 import ShowProfile from './pages/ShowProfile/ShowProfile'
 import UpdateProfile from './pages/UpdateProfile'
+// import { getUrl } from 'src/utils/getFileFromFirebase'
+// import { toast } from 'react-toastify'
 
 export default function Profile() {
-  const { profile, setProfile, isProfileVisible, setIsProfileVisible } = useContext(AppContext)
-  const [isUpdatePage, SetIsUpdatePage] = useState<boolean>(false)
+  const { isProfileVisible, setIsProfileVisible } = useContext(AppContext)
+  const [isUpdatePage, setIsUpdatePage] = useState<boolean>(false)
   useEffect(() => {
-    userApi.getProfile().then((response) => {
-      const profileData = response.data
-      if (profileData && profileData.data && profile !== profileData.data) {
-        setProfile(profileData.data)
-      }
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // if (!profile) {
+    //   userApi.getProfile().then((response) => {
+    //     const profileData = response.data
+    //     if (profileData && profileData.data && profile !== profileData.data) {
+    //       getUrl('Avatar', profileData.data.avatar)
+    //         .then((url) => {
+    //           setProfile({
+    //             ...profileData.data,
+    //             avatar: url as string
+    //           })
+    //         })
+    //         .catch(() => {
+    //           toast.error('Có lỗi đã xảy ra khi xuất ảnh')
+    //           setProfile({ ...profileData.data, avatar: '' })
+    //         })
+    //     }
+    //   })
+    // }
   }, [])
   const toggleProfileComponent = () => {
     setIsProfileVisible(!isProfileVisible)
@@ -42,11 +54,11 @@ export default function Profile() {
         <div className='ml-4 text-2xl font-semibold'>{isUpdatePage ? 'Cập nhật profile' : 'Profile'}</div>
       </div>
 
-      <div className='m-4 flex grow flex-col items-center'>
+      <div className='mx-4 my-2 flex grow flex-col items-center'>
         {isUpdatePage ? (
-          <UpdateProfile isUpdatePage={isUpdatePage} setIsUpdatePage={SetIsUpdatePage} />
+          <UpdateProfile isUpdatePage={isUpdatePage} setIsUpdatePage={setIsUpdatePage} />
         ) : (
-          <ShowProfile isUpdatePage={isUpdatePage} setIsUpdatePage={SetIsUpdatePage} />
+          <ShowProfile isUpdatePage={isUpdatePage} setIsUpdatePage={setIsUpdatePage} />
         )}
       </div>
     </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded'
@@ -29,7 +30,9 @@ interface Props {
 export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVisible }: Props) {
   const { profile } = useContext(AppContext)
   const {
+    setRoomList,
     roomInfo,
+    setRoomInfo,
     members,
     setMembers,
     images,
@@ -47,17 +50,15 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
   // showDocument: show tài liệu học tập giảng viên upload lên
   const [showDocuments, setShowDocuments] = useState<boolean>(false)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [, setCurrentTime] = useState(new Date())
-
+  const [, setCurrentTime] = useState<Date>(new Date())
+  const [root, setRoot] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  // Chọn avatar room
+  const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null)
+  // Chọn file of class (document)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const fileSelectionRef = useRef<HTMLInputElement | null>(null)
-
-  const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = event.target.files && event.target.files[0]
-    if (selectedFile) {
-      setSelectedFile(selectedFile)
-    }
-  }
+  const avatarSelectionRef = useRef<HTMLInputElement | null>(null)
   const toggleShowComponent = (setStateFunction: React.Dispatch<React.SetStateAction<boolean>>) => {
     setStateFunction((prevState: boolean) => !prevState)
   }
@@ -73,36 +74,94 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
         toast.error(error)
       })
   }
-  const handleOpenFileSelection = () => {
-    if (fileSelectionRef.current) {
-      fileSelectionRef.current.click()
+  const handleChangeFile = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setSelectedFileCallback: React.Dispatch<React.SetStateAction<File | null>>
+  ) => {
+    const selectedFile = event.target.files && event.target.files[0]
+    if (selectedFile) {
+      if (setSelectedFileCallback === setSelectedFile) {
+        setRoot('File')
+      } else if (setSelectedFileCallback === setSelectedAvatar) {
+        setRoot('Avatar_Room')
+      }
+      setSelectedFileCallback(selectedFile)
     }
   }
-  const handleUploadSelectedFile = () => {
-    if (!selectedFile) {
+  const handleOpenFileSelection = (selectionRef: React.MutableRefObject<HTMLInputElement | null>) => {
+    if (selectionRef.current) {
+      selectionRef.current.click()
+    }
+  }
+  const handleUploadSelectedFile = (root: string) => {
+    if (!selectedFile && !selectedAvatar) {
       toast.error('Vui lòng chọn 1 file!')
     } else {
-      const directory = `${roomInfo?.id as number}/${selectedFile.name}`
-      const storageRef = ref(storage, `/File/${directory}`)
-      const uploadTask = uploadBytesResumable(storageRef, selectedFile)
+      if (root === 'Avatar_Room' && selectedAvatar && selectedAvatar.type.startsWith('image')) {
+        const storageRef = ref(storage, `/${root}/${roomInfo?.id}`)
+        const uploadTask = uploadBytesResumable(storageRef, selectedAvatar)
 
-      uploadTask.on(
-        'state_changed',
-        () => {
-          // const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
-          // // update progress
-          // setPercent(percent)
-        },
-        (err) => console.log(err),
-        () => {
-          // download url
-          getDownloadURL(uploadTask.snapshot.ref).then(() => {
-            fileApi.addFileInClass({ path: directory, room_id: roomInfo?.id as number }).then(() => {
-              setDocuments((prevDocuments) => [directory, ...prevDocuments])
+        uploadTask.on(
+          'state_changed',
+          () => {},
+          (err) => console.log(err),
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(() => {
+              roomApi
+                .changeAvatar({ room_id: roomInfo?.id as number, avatar: roomInfo?.id.toString() || '' })
+                .then((response) => {
+                  setRoomInfo((prevRoomInfo) => {
+                    if (prevRoomInfo === null) return null
+                    else {
+                      return {
+                        ...prevRoomInfo,
+                        avatar: response.data.data.avatar
+                      }
+                    }
+                  })
+                  setRoomList((prevRoomList) => {
+                    if (prevRoomList === null) return null
+                    return prevRoomList?.map((room) => {
+                      if (room.id === response.data.data.room_id) {
+                        return { ...room, avatar: response.data.data.avatar }
+                      } else {
+                        return room
+                      }
+                    })
+                  })
+                  toast.success('Thay đổi ảnh thành công', {
+                    autoClose: 3000
+                  })
+                })
+                .catch((error) => {
+                  toast.error('Có lỗi xảy ra khi thay đổi ảnh')
+                  console.error(error)
+                })
             })
-          })
-        }
-      )
+          }
+        )
+        setSelectedAvatar(null)
+      } else if (root === 'File' && selectedFile) {
+        const directory = `${roomInfo?.id as number}/${selectedFile.name}`
+        const storageRef = ref(storage, `/${root}/${directory}`)
+        const uploadTask = uploadBytesResumable(storageRef, selectedFile)
+
+        uploadTask.on(
+          'state_changed',
+          () => {},
+          (err) => console.log(err),
+          () => {
+            getDownloadURL(uploadTask.snapshot.ref).then(() => {
+              fileApi.addFileInClass({ path: directory, room_id: roomInfo?.id as number }).then(() => {
+                setDocuments((prevDocuments) => [directory, ...prevDocuments])
+              })
+            })
+          }
+        )
+        setSelectedFile(null)
+      } else {
+        toast.error('Vui lòng chọn file phù hợp')
+      }
     }
   }
   const memoizedGetImagesApi = useCallback(
@@ -156,20 +215,23 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
     return () => clearInterval(interval)
   }, [])
 
-  useEffect(() => {}, [roomInfo, members])
   useEffect(() => {
-    // Thực hiện tải lên Firebase khi có sự thay đổi trong state
-    if (selectedFile) {
-      handleUploadSelectedFile()
+    getUrl('Avatar_Room', roomInfo?.avatar as string).then((url) => {
+      setAvatarUrl(url as string)
+    })
+  }, [roomInfo, members])
+  useEffect(() => {
+    if ((selectedFile || selectedAvatar) && root) {
+      handleUploadSelectedFile(root as string)
     }
-  }, [selectedFile])
+  }, [selectedFile, selectedAvatar, root])
   return (
     <div className='flex h-[100vh] w-[350px] min-w-[350px] flex-col items-center overflow-auto border-l-[2px] border-l-gray-200 bg-white px-2'>
-      <div className='relative mt-4 flex items-center justify-between'>
+      <div className='relative mt-4 flex h-[100px] w-[100px] items-center justify-between pt-[100px]'>
         <img
-          src={roomInfo?.avatar || dut}
+          src={avatarUrl ?? dut}
           alt=''
-          className='mx-auto h-[100px] w-[100px] rounded-full border-[2px] border-solid border-gray-200'
+          className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[2px] border-solid border-gray-200 object-cover'
         />
         {((roomInfo as RoomInfo).is_online ||
           ShowTimeDifference(roomInfo?.last_online || '', false) === 'Đang hoạt động') && (
@@ -215,9 +277,16 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
                   onClick={() => {}}
                 >
                   <ImageOutlinedIcon sx={{ fontSize: `20px` }} />
-                  <div className='ml-4 text-base'>
+                  <div className='ml-4 text-base' onClick={() => handleOpenFileSelection(avatarSelectionRef)}>
                     Đổi ảnh {roomInfo?.room_type === 'PublicRoom' ? 'nhóm' : 'lớp học'}
                   </div>
+                  <input
+                    type='file'
+                    accept='image/*'
+                    onChange={(e) => handleChangeFile(e, setSelectedAvatar)}
+                    ref={avatarSelectionRef}
+                    className='hidden'
+                  />
                 </div>
               </>
             )}
@@ -309,11 +378,17 @@ export default function RoomInformation({ setIsOverlayVisible, setIsViewImageVis
           </div> */}
               <div
                 className='mt-2 flex w-full items-center justify-center rounded-md bg-gray-200 py-1 text-center text-base font-semibold hover:cursor-pointer hover:bg-gray-300'
-                onClick={handleOpenFileSelection}
+                onClick={() => handleOpenFileSelection(fileSelectionRef)}
               >
                 Thêm tài liệu
               </div>
-              <input type='file' accept='*' onChange={handleChangeFile} ref={fileSelectionRef} className='hidden' />
+              <input
+                type='file'
+                accept='*'
+                onChange={(e) => handleChangeFile(e, setSelectedFile)}
+                ref={fileSelectionRef}
+                className='hidden'
+              />
             </>
           )}
         </>

@@ -6,9 +6,10 @@ import CircleIcon from '@mui/icons-material/Circle'
 import { RoomInfo } from 'src/types/room.type'
 import { ConvertDateTime, ShowTimeDifference } from 'src/utils/utils'
 import messageApi from 'src/apis/messages.api'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   room: RoomInfo
@@ -17,6 +18,7 @@ interface Props {
 
 export default function Room({ room, setInputSearch }: Props) {
   const { setMessages, setRoom, setRoomInfo, setRoomList, setAddMemberToRoomId } = useContext(SocketContext)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const handleClick = async () => {
     try {
       const messageResponse = await messageApi.getMessagesByRoom({ SearchKey: room.id })
@@ -39,14 +41,18 @@ export default function Room({ room, setInputSearch }: Props) {
       toast.error(error.message)
     }
   }
-  useEffect(() => {}, [room])
+  useEffect(() => {
+    getUrl(room.room_type === 'PrivateRoom' ? 'Avatar' : 'Avatar_Room', room.avatar as string).then((url) => {
+      setAvatarUrl(url as string)
+    })
+  }, [room])
   return (
     <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>
-      <div className='relative min-w-[50px]'>
+      <div className='relative h-[50px] w-[50px] min-w-[50px]'>
         <img
-          src={room.avatar || dut}
+          src={avatarUrl ?? dut}
           alt='avatar room'
-          className='h-[50px] w-[50px] rounded-full border-[1px] border-gray-200'
+          className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[1px] border-gray-200 object-cover'
         />
         {(room.is_online || ShowTimeDifference(room.last_online || '', false) === 'Đang hoạt động') && (
           <div className='absolute bottom-0 right-0 h-[16px] w-[16px] rounded-full border-[3px] border-white bg-green-500'></div>

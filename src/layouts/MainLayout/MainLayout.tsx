@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import logo from 'src/assets/images/logo.jpg'
+import avatar from 'src/assets/images/avatar.jpg'
 import { DashboardFilledIcon, DashboardOutlinedIcon } from 'src/constants/items'
 import Tooltip from '@mui/material/Tooltip'
 import { AppContext } from 'src/contexts/app.context'
@@ -18,6 +19,7 @@ import Notification from 'src/pages/Chatting/components/SidePages/Notification/N
 import SettingPage from 'src/pages/Chatting/components/MainPages/SettingPage'
 import notificationApi from 'src/apis/notification.api'
 import { toast } from 'react-toastify'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   children?: React.ReactNode
@@ -43,6 +45,7 @@ export default function MainLayout({ children }: Props) {
   const navigate = useNavigate()
   const divRef = useRef<HTMLDivElement | null>(null)
   const [showSettingMenu, setShowSettingMenu] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const toggleComponent = (component: string) => {
     switch (component) {
       case 'profile': {
@@ -116,14 +119,6 @@ export default function MainLayout({ children }: Props) {
     setIsProfileVisible(null)
     setIsChangePasswordVisible(null)
   }
-  useEffect(() => {
-    // Đặt lắng nghe sự kiện click trên toàn bộ tài liệu
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      // Hủy lắng nghe khi component bị hủy
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
 
   // Xử lý sự kiện click để ẩn div
   const handleClickOutside = (event: MouseEvent) => {
@@ -157,6 +152,23 @@ export default function MainLayout({ children }: Props) {
     setMessages([])
     setIndexPage(0)
   }
+  useEffect(() => {
+    // Đặt lắng nghe sự kiện click trên toàn bộ tài liệu
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      // Hủy lắng nghe khi component bị hủy
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
+  useEffect(() => {
+    getUrl('Avatar', profile?.avatar as string)
+      .then((url) => {
+        if (url) {
+          setAvatarUrl(url)
+        }
+      })
+      .catch((error) => console.error(error))
+  })
 
   return (
     <div className='flex'>
@@ -185,12 +197,14 @@ export default function MainLayout({ children }: Props) {
             </Tooltip>
           ))}
         </div>
-        <div className='mb-[15px] hover:cursor-pointer' onClick={toggleSettingMenu}>
-          <img
-            src={profile?.avatar}
-            alt='avatar'
-            className='h-[50px] w-[50px] rounded-full border-[2px] border-solid border-white'
-          />
+        <div className='mb-[15px] flex items-center justify-center' onClick={toggleSettingMenu}>
+          <div className='relative h-[50px] w-[50px] pt-[100%] hover:cursor-pointer'>
+            <img
+              src={avatarUrl ? avatarUrl : avatar}
+              alt='avatar'
+              className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[2px] border-solid border-white object-cover'
+            />
+          </div>
         </div>
         {showSettingMenu && (
           <div

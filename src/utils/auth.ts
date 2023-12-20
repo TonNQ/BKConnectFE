@@ -9,6 +9,7 @@ export const setAccessTokenToLocalStorage = (access_token: string) => {
 // Xóa access token khỏi local storage
 export const clearLocalStorage = () => {
   localStorage.removeItem('access_token')
+  localStorage.removeItem('profile')
 }
 
 // Lấy access token từ local storage
