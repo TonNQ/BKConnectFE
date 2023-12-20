@@ -12,7 +12,9 @@ const userApi = {
   changePassword(body: { current_password: string; new_password: string }) {
     return http.put<SuccessResponse<string>>('/users/changePassword', body)
   },
-
+  changeAvatar(body: { avatar: string }) {
+    return http.put<SuccessResponse<string>>('/users/changeAvatar', body)
+  },
   searchUsers(params: { searchKey: string; pageIndex: number }) {
     return http.get<SuccessResponse<SearchUser[]>>('/users/searchUsers', {
       params
