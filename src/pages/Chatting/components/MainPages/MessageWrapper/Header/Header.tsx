@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from 'react'
 import { ShowTimeDifference } from 'src/utils/utils'
 import { SocketContext } from 'src/contexts/socket.context'
 import { getUrl } from 'src/utils/getFileFromFirebase'
+import path from 'src/constants/path'
 
 interface Props {
   showRoomInfo: boolean
@@ -22,6 +23,9 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const handleShowRoomInfo = () => {
     setShowRoomInfo(!showRoomInfo)
+  }
+  const openVideoCall = (roomId: number) => {
+    window.open(`${path.video_call}/${roomId}`, '_blank')
   }
   useEffect(() => {
     const interval = setInterval(() => {
@@ -60,7 +64,10 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
         <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'>
           <PhoneOutlinedIcon sx={{ fontSize: '24px' }} />
         </div>
-        <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'>
+        <div
+          className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'
+          onClick={() => openVideoCall(roomInfo?.id as number)}
+        >
           <VideoCameraFrontOutlinedIcon sx={{ fontSize: '24px' }} />
         </div>
         <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'>
