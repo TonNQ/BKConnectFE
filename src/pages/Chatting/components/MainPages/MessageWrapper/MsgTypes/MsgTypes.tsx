@@ -11,6 +11,7 @@ import { getDownloadURL, getMetadata, ref } from 'firebase/storage'
 import { SocketContext } from 'src/contexts/socket.context'
 import DescriptionIcon from '@mui/icons-material/Description'
 import DownloadIcon from '@mui/icons-material/Download'
+import VideocamIcon from '@mui/icons-material/Videocam'
 import { toast } from 'react-toastify'
 import { getUrl } from 'src/utils/getFileFromFirebase'
 import dut from 'src/assets/images/logo.jpg'
@@ -92,6 +93,97 @@ const TextMsg = ({ msg, room_type }: Props) => {
             })}
           >
             {msg.content}
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+const StartCallVideoMsg = ({ msg, room_type }: Props) => {
+  const { profile } = useContext(AppContext)
+  const isSender = msg.sender_id === profile?.user_id
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
+  useEffect(() => {
+    getUrl('Avatar', msg.sender_avatar).then((url) => setAvatarUrl(url as string))
+  }, [])
+
+  if (room_type === 'PrivateRoom') {
+    return (
+      <div
+        className={classnames('mx-4 mb-2 flex flex-row', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <div
+          className={classnames(
+            'flex max-w-[40vw] flex-row items-center space-x-4 whitespace-normal rounded-2xl px-3 py-2 pr-6 text-lg hover:cursor-pointer',
+            {
+              'bg-primary text-white': isSender,
+              'bg-grayColor text-black': !isSender
+            }
+          )}
+        >
+          <div
+            className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
+              'bg-blue-400': isSender,
+              'bg-stone-200': !isSender
+            })}
+          >
+            <VideocamIcon sx={{ fontSize: '24px', width: '100%' }} />
+          </div>
+          <div className='flex flex-1 flex-col justify-center'>
+            <div className='line-clamp-2 overflow-ellipsis text-lg font-medium'>{msg.content}</div>
+            <div className='mb-1 text-sm font-normal'>Tham gia hoặc bắt đầu cuộc gọi mới</div>
+          </div>
+        </div>
+      </div>
+    )
+  } else {
+    return (
+      <div
+        className={classnames('mx-4 mb-2  flex flex-row  items-end', {
+          'justify-end': isSender,
+          'justify-start': !isSender
+        })}
+      >
+        <img
+          src={avatarUrl ?? dut}
+          alt=''
+          className={classnames('h-[35px] w-[35px] rounded-full', {
+            hidden: isSender
+          })}
+        />
+        <div className='ml-3 flex flex-col'>
+          <div
+            className={classnames('mb-1 ml-2 text-sm text-textColor', {
+              hidden: isSender
+            })}
+          >
+            {msg.sender_name}
+          </div>
+          <div
+            className={classnames(
+              'flex max-w-[40vw] flex-row items-center space-x-4 whitespace-normal rounded-2xl px-3 py-2 pr-6 text-lg hover:cursor-pointer',
+              {
+                'bg-primary text-white': isSender,
+                'bg-grayColor text-black': !isSender
+              }
+            )}
+          >
+            <div
+              className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
+                'bg-blue-400': isSender,
+                'bg-stone-200': !isSender
+              })}
+            >
+              <VideocamIcon sx={{ fontSize: '24px', width: '100%' }} />
+            </div>
+            <div className='flex flex-1 flex-col justify-center'>
+              <div className='line-clamp-2 overflow-ellipsis text-lg font-medium'>{msg.content}</div>
+              <div className='mb-1 text-sm font-normal'>Tham gia hoặc bắt đầu cuộc gọi mới</div>
+            </div>
           </div>
         </div>
       </div>
@@ -317,4 +409,4 @@ const FileMsg = ({ msg, room_type }: Props) => {
   }
 }
 
-export { TextMsg, Timeline, SystemMsg, ImageMsg, FileMsg }
+export { TextMsg, Timeline, SystemMsg, ImageMsg, FileMsg, StartCallVideoMsg }

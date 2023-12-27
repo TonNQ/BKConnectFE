@@ -12,6 +12,7 @@ import { AppContext } from './contexts/app.context'
 import ForgetPassword from './pages/ForgetPassword'
 import SetNewPassword from './pages/SetNewPassword'
 import MainLayout from './layouts/MainLayout'
+import VideoCallRoom from './pages/VideoCallRoom'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -42,18 +43,14 @@ export default function useRouteElements({ setIsOverlayVisible, setIsViewImageVi
               <Chatting setIsOverlayVisible={setIsOverlayVisible} setIsViewImageVisible={setIsViewImageVisible} />
             </MainLayout>
           )
+        },
+        {
+          path: `${path.video_call}/:roomId`,
+          index: true,
+          element: <VideoCallRoom />
         }
       ]
     },
-    // {
-    //   path: '',
-    //   index: true,
-    //   element: (
-    //     <MainLayout>
-    //       <Chatting />
-    //     </MainLayout>
-    //   )
-    // },
     {
       path: '',
       element: <RejectedRoute />,
