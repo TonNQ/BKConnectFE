@@ -11,8 +11,9 @@ import { MemberOfRoom } from 'src/types/user.type'
 import { toast } from 'react-toastify'
 import messageApi from 'src/apis/messages.api'
 import roomApi from 'src/apis/rooms.api'
+import Peer from 'peerjs'
 
-const BaseConfig = {
+export const BaseConfig = {
   // socket has four state
   webSocketState: {
     CONNECTING: 0,
@@ -57,6 +58,10 @@ interface SocketContextInterface {
   setFiles: React.Dispatch<React.SetStateAction<string[]>>
   documents: string[]
   setDocuments: React.Dispatch<React.SetStateAction<string[]>>
+  isReadyToCall: boolean
+  setIsReadyToCall: React.Dispatch<React.SetStateAction<boolean>>
+  myPeer: Peer | null
+  setMyPeer: React.Dispatch<React.SetStateAction<Peer | null>>
 }
 
 const initialSocketContext: SocketContextInterface = {
@@ -87,7 +92,11 @@ const initialSocketContext: SocketContextInterface = {
   files: [],
   setFiles: () => [],
   documents: [],
-  setDocuments: () => []
+  setDocuments: () => [],
+  isReadyToCall: false,
+  setIsReadyToCall: () => false,
+  myPeer: null,
+  setMyPeer: () => null
 }
 
 export const SocketContext = createContext<SocketContextInterface>(initialSocketContext)
@@ -115,6 +124,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   const [files, setFiles] = useState<string[]>(initialSocketContext.files)
   // Files list in class room (documents)
   const [documents, setDocuments] = useState<string[]>(initialSocketContext.documents)
+  const [isReadyToCall, setIsReadyToCall] = useState<boolean>(initialSocketContext.isReadyToCall)
+  // Tạo peer cho user
+  const [myPeer, setMyPeer] = useState<Peer | null>(initialSocketContext.myPeer)
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectCount = useRef<number>(0)
   const maxReconnectAttempts = 20 // Số lần tái kết nối tối đa
@@ -136,12 +148,13 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   // start web socket connection in this function
   const connectWs = () => {
     setWsState(BaseConfig.webSocketState.CONNECTING)
-
+    setIsReadyToCall(false)
     wsRef.current = new WebSocket(url + accessToken)
 
     wsRef.current.onopen = () => {
       console.log('socket open')
       setWsState(BaseConfig.webSocketState.OPEN)
+      setIsReadyToCall(true)
     }
 
     wsRef.current.onmessage = async (e) => {
@@ -164,6 +177,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
               const indexToUpdate = prevMessages.findIndex(
                 (message) => message.message_id === 0 && message.temp_id === receiveMsg.message.temp_id
               )
+              console.log('index', indexToUpdate)
               if (indexToUpdate !== -1) {
                 const updatedMessages = [
                   ...prevMessages.slice(0, indexToUpdate),
@@ -172,7 +186,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
                 ]
                 return updatedMessages
               } else {
-                return prevMessages
+                return [receiveMsg.message, ...prevMessages]
               }
             }
           })
@@ -418,7 +432,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
         files,
         setFiles,
         documents,
-        setDocuments
+        setDocuments,
+        isReadyToCall,
+        setIsReadyToCall,
+        myPeer,
+        setMyPeer
       }}
     >
       {children}
