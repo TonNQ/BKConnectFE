@@ -6,6 +6,10 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   server: {
+    // https: {
+    //   key: './bkconnectfe-privateKey.key',
+    //   cert: './bkconnectfe.crt'
+    // },
     port: 5173
   },
   css: {
