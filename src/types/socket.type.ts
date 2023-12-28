@@ -24,11 +24,6 @@ export enum VideoCallDataType {
   IsLeaveCall = 'IsLeaveCall'
 }
 
-export enum SignalType {
-  IsAccept = 'IsAccept',
-  IsCall = 'IsCall'
-}
-
 export interface ChangedRoomInfo {
   room_id: number
   total_member: number
@@ -46,7 +41,7 @@ export interface ReceiveSocketData {
   room_info: RoomInfo
   video_call: VideoCallData
   error_message: string
-  signal_info: SignalPeer
+  signal_info: null
 }
 
 export interface SendSocketData {
@@ -54,7 +49,7 @@ export interface SendSocketData {
   message?: any
   notification?: NotificationSocket
   video_call?: VideoCallData
-  signal_info?: SignalPeer
+  signal_info?: null
 }
 
 export interface NotificationSocket {
@@ -73,10 +68,4 @@ interface SimpleUserInfo {
   id: string
   name: string
   avatar: string
-}
-
-interface SignalPeer {
-  signal_type: SignalType
-  to: string
-  from?: string
 }

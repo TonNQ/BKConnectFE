@@ -18,7 +18,21 @@ export default function VideoCallRoom() {
     if (isReadyToCall && wsState === BaseConfig.webSocketState.OPEN) {
       // gửi msg qua socket: join call
       const myPeerId = uuidV4()
-      const peer = new Peer(myPeerId)
+      const peer = new Peer(myPeerId, {
+        host: 'peerjs.92k.de',
+        port: 443,
+        config: {
+          iceServers: [
+            { url: 'stun:stun.l.google.com:19302' },
+            { url: 'stun:stun1.l.google.com:19302' },
+            { url: 'stun:stun2.l.google.com:19302' },
+            { url: 'stun:stun3.l.google.com:19302' },
+            { url: 'stun:stun4.l.google.com:19302' }
+          ]
+        },
+        debug: 3,
+        secure: true
+      })
       setMyPeer(peer)
       // console.log('peer', peer)
       const message: SendSocketData = {
