@@ -20,16 +20,7 @@ export default function VideoCallRoom() {
       const myPeerId = uuidV4()
       const peer = new Peer(myPeerId, {
         host: '40.81.24.206',
-        port: 80,
-        config: {
-          iceServers: [
-            { url: 'stun:stun.l.google.com:19302' },
-            { url: 'stun:stun1.l.google.com:19302' },
-            { url: 'stun:stun2.l.google.com:19302' },
-            { url: 'stun:stun3.l.google.com:19302' },
-            { url: 'stun:stun4.l.google.com:19302' }
-          ]
-        }
+        port: 80
       })
       setMyPeer(peer)
       // console.log('peer', peer)
