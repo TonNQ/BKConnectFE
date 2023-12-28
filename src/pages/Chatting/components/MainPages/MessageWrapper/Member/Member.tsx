@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined'
+// import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined'
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove'
 import classnames from 'classnames'
 import { MemberOfRoom } from 'src/types/user.type'
@@ -127,9 +127,9 @@ export default function Member({ isAddButton, isLeaveRoom, member, isAdmin, setI
       </div>
       {!isAddButton && !isLeaveRoom && profile?.user_id !== member?.id && (
         <>
-          <div className='mx-1 flex h-[32px] min-w-[32px] items-center justify-center rounded-md hover:cursor-pointer hover:bg-slate-200 hover:text-primary'>
+          {/* <div className='mx-1 flex h-[32px] min-w-[32px] items-center justify-center rounded-md hover:cursor-pointer hover:bg-slate-200 hover:text-primary'>
             <Person2OutlinedIcon sx={{ fontSize: '24px' }} />
-          </div>
+          </div> */}
           {isAdmin && !member?.is_admin && (
             <div
               className='mx-1 flex h-[32px] min-w-[32px] items-center justify-center rounded-md hover:cursor-pointer hover:bg-slate-200 hover:text-red-600'

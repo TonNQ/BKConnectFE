@@ -1,9 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import dut from 'src/assets/images/logo.jpg'
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+// import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+// import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import VideoCameraFrontOutlinedIcon from '@mui/icons-material/VideoCameraFrontOutlined'
-import PhoneOutlinedIcon from '@mui/icons-material/PhoneOutlined'
 import MoreHorizOutlinedIcon from '@mui/icons-material/MoreHorizOutlined'
 import classNames from 'classnames'
 import { useContext, useEffect, useState } from 'react'
@@ -61,17 +61,11 @@ export default function Header({ showRoomInfo, setShowRoomInfo }: Props) {
         </div>
       </div>
       <div className='flex items-center space-x-4'>
-        <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'>
-          <PhoneOutlinedIcon sx={{ fontSize: '24px' }} />
-        </div>
         <div
           className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'
           onClick={() => openVideoCall(roomInfo?.id as number)}
         >
           <VideoCameraFrontOutlinedIcon sx={{ fontSize: '24px' }} />
-        </div>
-        <div className='ml-4 flex h-[24px] w-[24px] items-center justify-center rounded-md p-4 text-gray-500 hover:cursor-pointer hover:bg-stone-200'>
-          <SearchOutlinedIcon sx={{ fontSize: '24px' }} />
         </div>
         <div
           className={classNames(

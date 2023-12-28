@@ -14,6 +14,7 @@ import { relationshipApi } from 'src/apis/relationship.api'
 import roomApi from 'src/apis/rooms.api'
 import { SocketContext } from 'src/contexts/socket.context'
 import { AppContext } from 'src/contexts/app.context'
+import { getUrl } from 'src/utils/getFileFromFirebase'
 
 interface Props {
   setIsOverlayVisible: (value: React.SetStateAction<boolean>) => void
@@ -29,6 +30,7 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
   const [inputSearch, setInputSearch] = useState<string>('')
   const [users, setUsers] = useState<SimpleUser[]>([])
   const [addedUserList, setAddedUserList] = useState<SimpleUser[]>([])
+  const [avatarUrls, setAvatarUrls] = useState<{ user_id: string; url: string }[]>([])
   const [cntUser, setCntUser] = useState(0)
   const debouncedSearch = debounce((textSearch: string) => {
     if (textSearch.trim() !== '') {
@@ -144,6 +146,18 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
     }
     return () => debouncedSearch.cancel()
   }, [inputSearch])
+
+  useEffect(() => {
+    users.map((user) => {
+      getUrl('Avatar', user.avatar)
+        .then((url) =>
+          setAvatarUrls((prevUrls) => {
+            return [...prevUrls, { user_id: user.user_id, url: url as string }]
+          })
+        )
+        .catch((error) => console.error(error))
+    })
+  }, [users])
 
   return (
     <div className='fixed inset-0 z-[100] flex items-center justify-center bg-gray-200 bg-opacity-50'>
@@ -284,7 +298,11 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
                   addedUserList.map((user) => (
                     <div key={user.user_id} className='relative mr-4 w-[80px] min-w-[80px] text-center'>
                       <div className='flex items-center justify-center'>
-                        <img src={user.avatar} alt='ảnh' className='h-[50px] w-[50px] rounded-full' />
+                        <img
+                          src={avatarUrls.find((urlObj) => urlObj.user_id === user.user_id)?.url}
+                          alt='ảnh'
+                          className='h-[50px] w-[50px] rounded-full'
+                        />
                       </div>
                       <div className='limited-lines line-clamp-2 overflow-hidden text-sm'>{user.name}</div>
                       <div
@@ -294,6 +312,7 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
                         <CloseOutlinedIcon sx={{ fontSize: '16px' }} />
                       </div>
                     </div>
+                    // <RoundedUser key={user.user_id} user={user} removeUser={removeUserToAddedList} />
                   ))}
                 {addedUserList.length === 0 && <div className='text-sm text-gray-500'>Chưa chọn người dùng nào</div>}
               </div>
@@ -306,7 +325,11 @@ export default function Overlay({ setIsOverlayVisible }: Props) {
                     onClick={() => handleAddUser(user)}
                   >
                     <div className='mr-4 flex items-center justify-center'>
-                      <img src={user.avatar} alt='ảnh' className='h-[50px] w-[50px] rounded-full' />
+                      <img
+                        src={avatarUrls.find((urlObj) => urlObj.user_id === user.user_id)?.url}
+                        alt='ảnh'
+                        className='h-[50px] w-[50px] rounded-full'
+                      />
                     </div>
                     <div className='limited-lines line-clamp-2 flex flex-1 flex-col justify-center overflow-hidden text-sm'>
                       <div className=' text-lg font-semibold'>{user.name}</div>
