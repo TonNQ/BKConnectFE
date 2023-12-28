@@ -19,7 +19,7 @@ export default function VideoCallRoom() {
       // gửi msg qua socket: join call
       const myPeerId = uuidV4()
       const peer = new Peer(myPeerId, {
-        host: '40.81.24.206',
+        host: 'nsfwdetector.website',
         port: 80
       })
       setMyPeer(peer)
