@@ -20,6 +20,7 @@ export default function VideoCallRoom() {
       const myPeerId = uuidV4()
       const peer = new Peer(myPeerId, {
         host: 'nsfwdetector.website',
+        port: 443,
         config: {
           iceServers: [
             { url: 'stun:stun.l.google.com:19302' },
