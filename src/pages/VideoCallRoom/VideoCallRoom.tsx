@@ -10,6 +10,7 @@ export default function VideoCallRoom() {
   const { roomId } = useParams()
   const { connectWs, setMyPeer } = useContext(SocketContext)
   const { wsRef, isReadyToCall, wsState } = useContext(SocketContext)
+  const [stream, setStream] = useState<MediaStream>()
   const [errorMessage, setErrorMessage] = useState<string>('')
   useEffect(() => {
     connectWs()
@@ -20,7 +21,6 @@ export default function VideoCallRoom() {
       const myPeerId = uuidV4()
       const peer = new Peer(myPeerId, {
         host: 'nsfwdetector.website',
-        port: 443,
         config: {
           iceServers: [
             { url: 'stun:stun.l.google.com:19302' },
@@ -33,6 +33,14 @@ export default function VideoCallRoom() {
         secure: true
       })
       setMyPeer(peer)
+      try {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+          console.log('stream: ', stream)
+          setStream(stream)
+        })
+      } catch (e) {
+        console.log(e)
+      }
       // console.log('peer', peer)
       const message: SendSocketData = {
         data_type: WebSocketDataType.IsVideoCall,
@@ -58,6 +66,6 @@ export default function VideoCallRoom() {
   if (errorMessage) {
     return <div>{errorMessage}</div>
   } else {
-    return <VideoCallMain />
+    return <VideoCallMain stream={stream as MediaStream} />
   }
 }
