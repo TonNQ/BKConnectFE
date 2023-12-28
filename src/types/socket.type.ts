@@ -68,4 +68,5 @@ interface SimpleUserInfo {
   id: string
   name: string
   avatar: string
+  peer_id: string
 }

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useReducer, useState } from 'react'
+import { useContext, useEffect, useReducer } from 'react'
 import { useParams } from 'react-router-dom'
 import { SocketContext } from 'src/contexts/socket.context'
 import VideoPlayer from '../VideoPlayer'
@@ -6,21 +6,10 @@ import { ReceiveSocketData, VideoCallDataType, WebSocketDataType } from 'src/typ
 import { PeerState, peersReducer } from '../../reducers/peerReducer'
 import { addPeerAction, removePeerAction } from '../../reducers/peerActions'
 
-export default function VideoCallMain() {
+export default function VideoCallMain({ stream }: { stream: MediaStream }) {
   const { roomId } = useParams()
   const { wsRef, myPeer } = useContext(SocketContext)
-  const [stream, setStream] = useState<MediaStream>()
   const [peers, dispatch] = useReducer(peersReducer, {})
-  useEffect(() => {
-    try {
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-        console.log('stream: ', stream)
-        setStream(stream)
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }, [])
   useEffect(() => {
     if (!myPeer) return
     if (!stream) return
@@ -33,18 +22,23 @@ export default function VideoCallMain() {
         if (receiveMsg.data_type === WebSocketDataType.IsVideoCall) {
           if (receiveMsg.video_call.video_call_type === VideoCallDataType.IsJoinCall) {
             console.log('joincall')
-            const call = myPeer.call(receiveMsg.video_call.peer_id, stream as MediaStream)
-            console.log('call ', call)
-            call.on('stream', (peerStream) => {
-              console.log('peerId: ', receiveMsg.video_call.peer_id)
-              dispatch(addPeerAction(receiveMsg.video_call.peer_id, peerStream))
-            })
-            myPeer.on('call', (call) => {
-              call.answer(stream)
-              call.on('stream', (peerStream) => {
-                console.log('call on ')
-                dispatch(addPeerAction(call.peer, peerStream))
-              })
+            console.log(receiveMsg.video_call.participants)
+            receiveMsg.video_call.participants?.map((peer) => {
+              if (peer.peer_id !== myPeer.id) {
+                const call = myPeer.call(peer.peer_id, stream as MediaStream)
+                console.log('call ', call)
+                call.on('stream', (peerStream) => {
+                  console.log('peerId: ', peer.peer_id)
+                  dispatch(addPeerAction(peer.peer_id, peerStream))
+                })
+                myPeer.on('call', (call) => {
+                  call.answer(stream)
+                  call.on('stream', (peerStream) => {
+                    console.log('call on ')
+                    dispatch(addPeerAction(call.peer, peerStream))
+                  })
+                })
+              }
             })
           } else if (receiveMsg.video_call.video_call_type === VideoCallDataType.IsLeaveCall) {
             dispatch(removePeerAction(receiveMsg.video_call.peer_id))
@@ -53,15 +47,16 @@ export default function VideoCallMain() {
       }
       console.log('peers:', peers)
     }
-  }, [myPeer, stream])
+  }, [myPeer, stream, peers, wsRef])
   console.log('myPeer: ', myPeer)
+
   return (
     <>
       <div>RoomID: {roomId}</div>
       <div className='grid grid-cols-4 gap-4'>
-        <VideoPlayer stream={stream} />
+        <VideoPlayer stream={stream} peerId={myPeer?.id || ''} />
         {Object.values(peers as PeerState).map((peer, index) => (
-          <VideoPlayer key={index} stream={peer.stream} />
+          <VideoPlayer key={index} stream={peer.stream} peerId={peer.stream.id} />
         ))}
       </div>
     </>
