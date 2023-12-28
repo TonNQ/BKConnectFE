@@ -20,7 +20,7 @@ export default function VideoCallRoom() {
       const myPeerId = uuidV4()
       const peer = new Peer(myPeerId, {
         host: 'nsfwdetector.website',
-        port: 80
+        port: 443
       })
       setMyPeer(peer)
       // console.log('peer', peer)
