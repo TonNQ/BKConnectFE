@@ -31,12 +31,10 @@ export default function VideoCallMain({ stream }: { stream: MediaStream }) {
                   console.log('peerId: ', peer.peer_id)
                   dispatch(addPeerAction(peer.peer_id, peerStream))
                 })
-                myPeer.on('call', (call) => {
-                  call.answer(stream)
-                  call.on('stream', (peerStream) => {
-                    console.log('call on ')
-                    dispatch(addPeerAction(call.peer, peerStream))
-                  })
+                console.log('myPeer: ', myPeer)
+                myPeer.on('call', (caller) => {
+                  console.log('caller: ', caller.peer)
+                  caller.answer(stream)
                 })
               }
             })
