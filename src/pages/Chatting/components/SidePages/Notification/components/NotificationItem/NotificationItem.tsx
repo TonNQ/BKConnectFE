@@ -69,11 +69,11 @@ export default function NotificationItem({ notificationInfo }: Props) {
         'bg-blue-100': !notificationInfo.is_read
       })}
     >
-      <div className='relative h-[60px] w-[60px] min-w-[60px]'>
+      <div className='relative h-[60px] min-h-[60px] w-[60px] min-w-[60px]'>
         <img
           src={avatarUrl ?? dut}
           alt='avatar'
-          className='absolute left-0 top-0 mx-auto rounded-full border-[1px] border-gray-100 object-cover'
+          className='absolute left-0 top-0 mx-auto h-full w-full rounded-full border-[1px] border-gray-100 object-cover'
         />
       </div>
       <div className='ml-2 flex grow flex-col items-start'>

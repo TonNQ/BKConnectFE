@@ -15,11 +15,16 @@ import VideocamIcon from '@mui/icons-material/Videocam'
 import { toast } from 'react-toastify'
 import { getUrl } from 'src/utils/getFileFromFirebase'
 import dut from 'src/assets/images/logo.jpg'
+import path from 'src/constants/path'
 
 interface Props {
   msg: Message
   room_type: 'PublicRoom' | 'PrivateRoom' | 'ClassRoom' | undefined
   setIsViewImageVisible?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const openVideoCall = (roomId: number) => {
+  window.open(`${path.video_call}/${roomId}`, '_blank')
 }
 
 const Timeline = ({ date }: { date: string }) => {
@@ -124,6 +129,7 @@ const StartCallVideoMsg = ({ msg, room_type }: Props) => {
               'bg-grayColor text-black': !isSender
             }
           )}
+          onClick={() => openVideoCall(msg.room_id)}
         >
           <div
             className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
@@ -171,6 +177,7 @@ const StartCallVideoMsg = ({ msg, room_type }: Props) => {
                 'bg-grayColor text-black': !isSender
               }
             )}
+            onClick={() => openVideoCall(msg.room_id)}
           >
             <div
               className={classnames('jusitfy-center p-auto flex h-[40px] min-w-[40px] items-center rounded-full', {
