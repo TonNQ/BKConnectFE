@@ -8,5 +8,10 @@ export default function VideoPlayer({ stream }: { stream: MediaStream | undefine
       videoRef.current.srcObject = stream
     }
   }, [stream])
-  return <video ref={videoRef} autoPlay muted={true} />
+  return (
+    <>
+      <video ref={videoRef} autoPlay muted={true} />
+      <div>stream: {stream?.id}</div>
+    </>
+  )
 }
