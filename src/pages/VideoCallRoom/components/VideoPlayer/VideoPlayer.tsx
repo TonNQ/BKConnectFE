@@ -11,8 +11,8 @@ export default function VideoPlayer({ stream, peerId }: { stream: MediaStream | 
   }, [stream])
   return (
     <>
-      <video ref={videoRef} autoPlay muted={true} />
-      <div>peerId: {peerId}</div>
+      <video ref={videoRef} autoPlay />
+      {/* <div>peerId: {peerId}</div> */}
     </>
   )
 }
