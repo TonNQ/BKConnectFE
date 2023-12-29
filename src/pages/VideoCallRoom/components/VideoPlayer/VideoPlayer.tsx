@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/media-has-caption */
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
+import { SocketContext } from 'src/contexts/socket.context'
 
 export default function VideoPlayer({ stream, peerId }: { stream: MediaStream | undefined; peerId: string }) {
+  const { myPeer } = useContext(SocketContext)
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
     console.log('peerId', peerId)
@@ -11,7 +13,7 @@ export default function VideoPlayer({ stream, peerId }: { stream: MediaStream | 
   }, [stream])
   return (
     <>
-      <video ref={videoRef} autoPlay />
+      <video ref={videoRef} autoPlay muted={myPeer?.id === peerId ? true : false} />
       {/* <div>peerId: {peerId}</div> */}
     </>
   )
