@@ -75,29 +75,20 @@ export default function VideoCallMain() {
 
     try {
       navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-        console.log('stream: ', stream)
         setStream(stream)
 
         const message: SendSocketData = {
           data_type: WebSocketDataType.IsVideoCall,
           video_call: {
             room_id: Number(roomId),
-            peer_id: myPeerId, // Use myPeerId from the local scope instead of myPeer?.id
+            peer_id: myPeerId,
             video_call_type: VideoCallDataType.IsJoinCall
           }
         }
 
-        console.log(message)
-        console.log('wsRef ', wsRef)
-        console.log('wsRef.current ', wsRef.current)
-
-        // Move the message sending logic inside the getUserMedia promise resolution
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
           wsRef.current.send(JSON.stringify(message))
         } else {
-          // Handle the case when WebSocket is not yet open
-          // You might want to set up a listener for onopen event and send the message there
-          // or queue messages to be sent once WebSocket connection is established
           console.log('WebSocket connection is not open yet.')
         }
       })
@@ -111,26 +102,19 @@ export default function VideoCallMain() {
     if (!myPeer) return
     if (!stream) return
     if (!wsRef) return
-    // console.log('myPeer', myPeer)
-    // console.log('stream: ', stream)
     if (wsRef.current) {
       wsRef.current.onmessage = (e) => {
         const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
         console.log('Received message from server:', receiveMsg)
         if (receiveMsg.data_type === WebSocketDataType.IsVideoCall) {
           if (receiveMsg.video_call.video_call_type === VideoCallDataType.IsJoinCall) {
-            // console.log('joincall')
-            // console.log(receiveMsg.video_call.participants)
             receiveMsg.video_call.participants?.forEach((peer) => {
               if (peer.peer_id !== myPeer.id) {
                 const call = myPeer.call(peer.peer_id, stream as MediaStream)
-                // console.log('call ', call)
                 call.on('stream', (peerStream) => {
                   console.log('peerId: ', peer.peer_id)
                   dispatch(addPeerAction(peer.peer_id, peerStream))
                 })
-
-                // console.log('myPeer: ', myPeer)
               }
             })
           } else if (receiveMsg.video_call.video_call_type === VideoCallDataType.IsLeaveCall) {
@@ -140,14 +124,12 @@ export default function VideoCallMain() {
       }
     }
     myPeer.on('call', (call) => {
-      // console.log('call: ', call.peer)
       call.answer(stream)
       call.on('stream', (peerStream) => {
         dispatch(addPeerAction(call.peer, peerStream))
       })
     })
   }, [myPeer, stream, wsRef])
-  console.log('re-renderrrrrrrrrrrrrrrrrrrrrrrrr')
   return (
     <>
       <div>RoomID: {roomId}</div>

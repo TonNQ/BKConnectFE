@@ -4,15 +4,15 @@ import { useEffect, useRef } from 'react'
 export default function VideoPlayer({ stream, peerId }: { stream: MediaStream | undefined; peerId: string }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   useEffect(() => {
-    console.log('stream: ', stream)
+    console.log('peerId', peerId)
     if (videoRef.current && stream !== undefined) {
       videoRef.current.srcObject = stream
     }
   }, [stream])
   return (
     <>
-      <video ref={videoRef} autoPlay muted={true} />
-      <div>peerId: {peerId}</div>
+      <video ref={videoRef} autoPlay />
+      {/* <div>peerId: {peerId}</div> */}
     </>
   )
 }

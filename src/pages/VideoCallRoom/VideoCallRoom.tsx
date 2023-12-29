@@ -1,70 +1,11 @@
-// import Peer from 'peerjs'
-// import { v4 as uuidV4 } from 'uuid'
-// import { useContext, useEffect, useState } from 'react'
-// import VideoCallMain from './components/VideoCallMain'
-// import { BaseConfig, SocketContext } from 'src/contexts/socket.context'
-// import { ReceiveSocketData, SendSocketData, VideoCallDataType, WebSocketDataType } from 'src/types/socket.type'
-// import { useParams } from 'react-router-dom'
 import { useContext, useEffect } from 'react'
 import VideoCallMain from './components/VideoCallMain'
 import { SocketContext } from 'src/contexts/socket.context'
 
 export default function VideoCallRoom() {
-  // const { roomId } = useParams()
-  // const { connectWs, setMyPeer } = useContext(SocketContext)
-  // const { wsRef, isReadyToCall, wsState } = useContext(SocketContext)
-  // const [stream, setStream] = useState<MediaStream>()
-  // const [errorMessage, setErrorMessage] = useState<string>('')
   const { connectWs } = useContext(SocketContext)
   useEffect(() => {
     connectWs()
   }, [])
-  // useEffect(() => {
-  //   if (isReadyToCall && wsState === BaseConfig.webSocketState.OPEN) {
-  //     // gửi msg qua socket: join call
-  //     const myPeerId = uuidV4()
-  //     const peer = new Peer(myPeerId, {
-  //       debug: 3,
-  //       host: 'nsfwdetector.website',
-  //       config: {
-  //         iceServers: [{ url: 'stun:stun.l.google.com:19302' }]
-  //       },
-  //       secure: true
-  //     })
-  //     setMyPeer(peer)
-  //     try {
-  //       navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-  //         console.log('stream: ', stream)
-  //         setStream(stream)
-  //       })
-  //     } catch (e) {
-  //       console.log(e)
-  //     }
-  //     // console.log('peer', peer)
-  //     const message: SendSocketData = {
-  //       data_type: WebSocketDataType.IsVideoCall,
-  //       video_call: {
-  //         room_id: Number(roomId),
-  //         peer_id: myPeerId,
-  //         video_call_type: VideoCallDataType.IsJoinCall
-  //       }
-  //     }
-  //     wsRef.current?.send(JSON.stringify(message))
-  //     // console.log('send')
-  //     if (wsRef.current) {
-  //       wsRef.current.onmessage = (e) => {
-  //         const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
-  //         // console.log('Received message from server:', receiveMsg)
-  //         if (receiveMsg.data_type === WebSocketDataType.IsError) {
-  //           setErrorMessage(receiveMsg.error_message)
-  //         }
-  //       }
-  //     }
-  //   }
-  // }, [wsState])
-  // if (errorMessage) {
-  //   return <div>{errorMessage}</div>
-  // } else {
   return <VideoCallMain />
-  // }
 }
