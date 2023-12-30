@@ -198,3 +198,12 @@ export function convertBytes(bytes: number) {
 
   return `${convertedSize} ${sizes[i]}`
 }
+
+export function calculateGridSize(totalItems: number): { columns: number; rows: number } {
+  if (totalItems > 1) {
+    const ratio: number = 16 / 9 // Tỉ lệ 16:9
+    const columns: number = Math.ceil(Math.sqrt(totalItems * ratio)) // Số cột là căn bậc hai của tổng số thẻ nhân với tỷ lệ
+    const rows: number = Math.ceil(totalItems / columns) // Số hàng là tổng số thẻ chia cho số cột
+    return { columns, rows }
+  } else return { columns: 1, rows: 1 }
+}
