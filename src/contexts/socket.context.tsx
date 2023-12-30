@@ -145,6 +145,216 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
     }
   }, [])
 
+  const handleMessage = async (receiveMsg: ReceiveSocketData) => {
+    await new Promise<void>((resolve) => {
+      setRoom((prevRoom) => {
+        roomData = prevRoom
+        resolve() // Gọi resolve để tiếp tục sau khi setRoom hoàn thành
+        return prevRoom
+      })
+    })
+    setMessages((prevMessages) => {
+      if (receiveMsg.message.room_id !== roomData?.id) return prevMessages
+      if (receiveMsg.message.sender_id !== profile?.user_id || receiveMsg.message.message_type === 'System') {
+        // Sử dụng prevMessages để đảm bảo rằng bạn đang cập nhật trên trạng thái mới nhất
+        return [receiveMsg.message, ...prevMessages]
+      } else {
+        const indexToUpdate = prevMessages.findIndex(
+          (message) => message.message_id === 0 && message.temp_id === receiveMsg.message.temp_id
+        )
+        console.log('index', indexToUpdate)
+        if (indexToUpdate !== -1) {
+          const updatedMessages = [
+            ...prevMessages.slice(0, indexToUpdate),
+            receiveMsg.message,
+            ...prevMessages.slice(indexToUpdate + 1)
+          ]
+          return updatedMessages
+        } else {
+          return [receiveMsg.message, ...prevMessages]
+        }
+      }
+    })
+    setRoomList((prevRoomList) => {
+      if (prevRoomList === null) return null
+      let indexOfChangedRoom = -1
+      // new_last_message để cho BE xử lý bằng cách gửi thêm trường last_message qua socket
+      prevRoomList = prevRoomList?.map((roomItem, index) => {
+        if (receiveMsg.message.room_id === roomItem.id) {
+          indexOfChangedRoom = index
+          const newRoom: RoomInfo = {
+            ...roomItem,
+            last_message: receiveMsg.message.last_message,
+            last_message_time: receiveMsg.message.send_time
+          }
+          return newRoom
+        } else {
+          return roomItem
+        }
+      })
+      if (indexOfChangedRoom !== -1) {
+        const newRoomList = [
+          prevRoomList[indexOfChangedRoom],
+          ...prevRoomList.slice(0, indexOfChangedRoom),
+          ...prevRoomList.slice(indexOfChangedRoom + 1)
+        ]
+        return newRoomList
+      } else {
+        return prevRoomList
+      }
+    })
+  }
+  const handleNotification = (receiveMsg: ReceiveSocketData) => {
+    if (receiveMsg.notification.notification_type === NotificationType.IsOutRoom) {
+      setRoomList((prevRoomList) => {
+        if (prevRoomList === null) return null
+        return prevRoomList?.filter((r) => r.id !== receiveMsg.notification.room_message?.room_id)
+      })
+      setRoomInfo((prevRoomInfo) => {
+        if (prevRoomInfo?.id === receiveMsg.notification.room_message?.room_id) {
+          setMessages([])
+          setMembers([])
+          return null
+        } else {
+          return prevRoomInfo
+        }
+      })
+    } else if (receiveMsg.notification.notification_type === NotificationType.IsPostFile)
+      setNotifications((prevNotifications) => {
+        return [receiveMsg.notification, ...prevNotifications]
+      })
+    setDocuments((prevDocuments) => {
+      return [receiveMsg.notification.post_file?.file_name as string, ...prevDocuments]
+    })
+  }
+  const handleOnline = (receiveMsg: ReceiveSocketData) => {
+    setRoomInfo((prevRoomInfo) => {
+      if (prevRoomInfo?.friend_id === receiveMsg.user_id) {
+        return {
+          ...prevRoomInfo,
+          is_online: true
+        }
+      } else {
+        return prevRoomInfo
+      }
+    })
+    setRoomList((prevRoomList) => {
+      if (prevRoomList === null) return null
+      return prevRoomList?.map((room) => {
+        if (room.friend_id === receiveMsg.user_id) {
+          return {
+            ...room,
+            is_online: true
+          }
+        } else {
+          return room
+        }
+      })
+    })
+  }
+  const handleOffline = (receiveMsg: ReceiveSocketData) => {
+    setRoomInfo((prevRoomInfo) => {
+      if (prevRoomInfo?.friend_id === receiveMsg.user_id) {
+        return {
+          ...prevRoomInfo,
+          is_online: false,
+          last_online: getDateTimeNow()
+        }
+      } else {
+        return prevRoomInfo
+      }
+    })
+    setRoomList((prevRoomList) => {
+      if (prevRoomList === null) return prevRoomList
+      return prevRoomList?.map((room) => {
+        if (room.friend_id === receiveMsg.user_id) {
+          return {
+            ...room,
+            is_online: false,
+            last_online: convertToDateTimeServer(new Date())
+          }
+        } else {
+          return room
+        }
+      })
+    })
+  }
+  const handleChangeRoomInfo = (receiveMsg: ReceiveSocketData) => {
+    setRoomInfo((prevRoomInfo) => {
+      if (prevRoomInfo === null) return null
+
+      if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
+        setMembers((prevMembers) => {
+          if (receiveMsg.changed_room_info.left_member_id !== null) {
+            return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
+          } else if (receiveMsg.changed_room_info.new_member_list !== null) {
+            return [...prevMembers, ...(receiveMsg.changed_room_info.new_member_list as MemberOfRoom[])]
+          } else {
+            return prevMembers
+          }
+        })
+        if (receiveMsg.changed_room_info.new_name || receiveMsg.changed_room_info.new_avatar) {
+          setRoomList((prevRoomList) => {
+            if (prevRoomList === null) return null
+            else {
+              return prevRoomList.map((room) => {
+                if (room.id === receiveMsg.changed_room_info.room_id) {
+                  return {
+                    ...room,
+                    name: receiveMsg.changed_room_info.new_name ?? room.name,
+                    avatar: receiveMsg.changed_room_info.new_avatar ?? room.avatar
+                  }
+                } else {
+                  return room
+                }
+              })
+            }
+          })
+        }
+        return {
+          ...prevRoomInfo,
+          total_member: receiveMsg.changed_room_info.total_member,
+          name: receiveMsg.changed_room_info.new_name ?? prevRoomInfo.name,
+          avatar: receiveMsg.changed_room_info.new_avatar ?? prevRoomInfo.avatar
+        }
+      } else {
+        return prevRoomInfo
+      }
+    })
+  }
+  const handleCreateGroupRoom = (receiveMsg: ReceiveSocketData) => {
+    setRoomList((prevRoomList) => {
+      if (prevRoomList === null) return prevRoomList
+      return [receiveMsg.room_info, ...prevRoomList]
+    })
+    if (receiveMsg.user_id === profile?.user_id) {
+      setRoomInfo(receiveMsg.room_info)
+      // Get all messages of new group
+      const fetchMessages = async () => {
+        try {
+          const response = await messageApi.getMessagesByRoom({ SearchKey: receiveMsg.room_info.id })
+          const newMessages = response.data.data
+          setMessages(newMessages)
+        } catch (error: any) {
+          const typedError: Error = error as Error
+          toast.error(typedError.message)
+        }
+      }
+      // Get all members of new group
+      const fetchMembers = async () => {
+        try {
+          const response = await roomApi.getListOfMembersInRoom({ SearchKey: receiveMsg.room_info.id })
+          const newMemberList = response.data.data
+          setMembers(newMemberList)
+        } catch (error: any) {
+          const typedError: Error = error as Error
+          toast.error(typedError.message)
+        }
+      }
+      fetchMessages()
+      fetchMembers()
+    }
+  }
   // start web socket connection in this function
   const connectWs = () => {
     setWsState(BaseConfig.webSocketState.CONNECTING)
@@ -161,219 +371,31 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
       const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
       switch (receiveMsg.data_type) {
         case WebSocketDataType.IsMessage: {
-          await new Promise<void>((resolve) => {
-            setRoom((prevRoom) => {
-              roomData = prevRoom
-              resolve() // Gọi resolve để tiếp tục sau khi setRoom hoàn thành
-              return prevRoom
+          handleMessage(receiveMsg)
+            .then(() => {})
+            .catch(() => {
+              console.log('Error in socket: IsMessage')
             })
-          })
-          setMessages((prevMessages) => {
-            if (receiveMsg.message.room_id !== roomData?.id) return prevMessages
-            if (receiveMsg.message.sender_id !== profile?.user_id || receiveMsg.message.message_type === 'System') {
-              // Sử dụng prevMessages để đảm bảo rằng bạn đang cập nhật trên trạng thái mới nhất
-              return [receiveMsg.message, ...prevMessages]
-            } else {
-              const indexToUpdate = prevMessages.findIndex(
-                (message) => message.message_id === 0 && message.temp_id === receiveMsg.message.temp_id
-              )
-              console.log('index', indexToUpdate)
-              if (indexToUpdate !== -1) {
-                const updatedMessages = [
-                  ...prevMessages.slice(0, indexToUpdate),
-                  receiveMsg.message,
-                  ...prevMessages.slice(indexToUpdate + 1)
-                ]
-                return updatedMessages
-              } else {
-                return [receiveMsg.message, ...prevMessages]
-              }
-            }
-          })
-          setRoomList((prevRoomList) => {
-            if (prevRoomList === null) return null
-            let indexOfChangedRoom = -1
-            // new_last_message để cho BE xử lý bằng cách gửi thêm trường last_message qua socket
-            prevRoomList = prevRoomList?.map((roomItem, index) => {
-              if (receiveMsg.message.room_id === roomItem.id) {
-                indexOfChangedRoom = index
-                const newRoom: RoomInfo = {
-                  ...roomItem,
-                  last_message: receiveMsg.message.last_message,
-                  last_message_time: receiveMsg.message.send_time
-                }
-                return newRoom
-              } else {
-                return roomItem
-              }
-            })
-            if (indexOfChangedRoom !== -1) {
-              const newRoomList = [
-                prevRoomList[indexOfChangedRoom],
-                ...prevRoomList.slice(0, indexOfChangedRoom),
-                ...prevRoomList.slice(indexOfChangedRoom + 1)
-              ]
-              return newRoomList
-            } else {
-              return prevRoomList
-            }
-          })
           break
         }
         case WebSocketDataType.IsNotification: {
-          if (receiveMsg.notification.notification_type === NotificationType.IsOutRoom) {
-            setRoomList((prevRoomList) => {
-              if (prevRoomList === null) return null
-              return prevRoomList?.filter((r) => r.id !== receiveMsg.notification.room_message?.room_id)
-            })
-            setRoomInfo((prevRoomInfo) => {
-              if (prevRoomInfo?.id === receiveMsg.notification.room_message?.room_id) {
-                setMessages([])
-                setMembers([])
-                return null
-              } else {
-                return prevRoomInfo
-              }
-            })
-          } else if (receiveMsg.notification.notification_type === NotificationType.IsPostFile)
-            setNotifications((prevNotifications) => {
-              return [receiveMsg.notification, ...prevNotifications]
-            })
-          setDocuments((prevDocuments) => {
-            return [receiveMsg.notification.post_file?.file_name as string, ...prevDocuments]
-          })
+          handleNotification(receiveMsg)
           break
         }
         case WebSocketDataType.IsOnline: {
-          setRoomInfo((prevRoomInfo) => {
-            if (prevRoomInfo?.friend_id === receiveMsg.user_id) {
-              return {
-                ...prevRoomInfo,
-                is_online: true
-              }
-            } else {
-              return prevRoomInfo
-            }
-          })
-          setRoomList((prevRoomList) => {
-            if (prevRoomList === null) return null
-            return prevRoomList?.map((room) => {
-              if (room.friend_id === receiveMsg.user_id) {
-                return {
-                  ...room,
-                  is_online: true
-                }
-              } else {
-                return room
-              }
-            })
-          })
+          handleOnline(receiveMsg)
           break
         }
         case WebSocketDataType.IsOffline: {
-          setRoomInfo((prevRoomInfo) => {
-            if (prevRoomInfo?.friend_id === receiveMsg.user_id) {
-              return {
-                ...prevRoomInfo,
-                is_online: false,
-                last_online: getDateTimeNow()
-              }
-            } else {
-              return prevRoomInfo
-            }
-          })
-          setRoomList((prevRoomList) => {
-            if (prevRoomList === null) return prevRoomList
-            return prevRoomList?.map((room) => {
-              if (room.friend_id === receiveMsg.user_id) {
-                return {
-                  ...room,
-                  is_online: false,
-                  last_online: convertToDateTimeServer(new Date())
-                }
-              } else {
-                return room
-              }
-            })
-          })
+          handleOffline(receiveMsg)
           break
         }
         case WebSocketDataType.IsChangedRoomInfo: {
-          setRoomInfo((prevRoomInfo) => {
-            if (prevRoomInfo === null) return null
-
-            if (receiveMsg.changed_room_info.room_id === prevRoomInfo?.id) {
-              setMembers((prevMembers) => {
-                if (receiveMsg.changed_room_info.left_member_id !== null) {
-                  return prevMembers.filter((m) => m.id !== receiveMsg.changed_room_info.left_member_id)
-                } else if (receiveMsg.changed_room_info.new_member_list !== null) {
-                  return [...prevMembers, ...(receiveMsg.changed_room_info.new_member_list as MemberOfRoom[])]
-                } else {
-                  return prevMembers
-                }
-              })
-              if (receiveMsg.changed_room_info.new_name || receiveMsg.changed_room_info.new_avatar) {
-                setRoomList((prevRoomList) => {
-                  if (prevRoomList === null) return null
-                  else {
-                    return prevRoomList.map((room) => {
-                      if (room.id === receiveMsg.changed_room_info.room_id) {
-                        return {
-                          ...room,
-                          name: receiveMsg.changed_room_info.new_name ?? room.name,
-                          avatar: receiveMsg.changed_room_info.new_avatar ?? room.avatar
-                        }
-                      } else {
-                        return room
-                      }
-                    })
-                  }
-                })
-              }
-              return {
-                ...prevRoomInfo,
-                total_member: receiveMsg.changed_room_info.total_member,
-                name: receiveMsg.changed_room_info.new_name ?? prevRoomInfo.name,
-                avatar: receiveMsg.changed_room_info.new_avatar ?? prevRoomInfo.avatar
-              }
-            } else {
-              return prevRoomInfo
-            }
-          })
+          handleChangeRoomInfo(receiveMsg)
           break
         }
         case WebSocketDataType.IsCreateGroupRoom: {
-          setRoomList((prevRoomList) => {
-            if (prevRoomList === null) return prevRoomList
-            return [receiveMsg.room_info, ...prevRoomList]
-          })
-          if (receiveMsg.user_id === profile?.user_id) {
-            setRoomInfo(receiveMsg.room_info)
-            // Get all messages of new group
-            const fetchMessages = async () => {
-              try {
-                const response = await messageApi.getMessagesByRoom({ SearchKey: receiveMsg.room_info.id })
-                const newMessages = response.data.data
-                setMessages(newMessages)
-              } catch (error: any) {
-                const typedError: Error = error as Error
-                toast.error(typedError.message)
-              }
-            }
-            // Get all members of new group
-            const fetchMembers = async () => {
-              try {
-                const response = await roomApi.getListOfMembersInRoom({ SearchKey: receiveMsg.room_info.id })
-                const newMemberList = response.data.data
-                setMembers(newMemberList)
-              } catch (error: any) {
-                const typedError: Error = error as Error
-                toast.error(typedError.message)
-              }
-            }
-            fetchMessages()
-            fetchMembers()
-          }
+          handleCreateGroupRoom(receiveMsg)
           break
         }
         default: {
