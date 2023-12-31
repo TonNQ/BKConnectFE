@@ -205,6 +205,9 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
     })
   }
   const handleNotification = (receiveMsg: ReceiveSocketData) => {
+    setNotifications((prevNotifications) => {
+      return [receiveMsg.notification, ...prevNotifications]
+    })
     if (receiveMsg.notification.notification_type === NotificationType.IsOutRoom) {
       setRoomList((prevRoomList) => {
         if (prevRoomList === null) return null
@@ -219,13 +222,11 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           return prevRoomInfo
         }
       })
-    } else if (receiveMsg.notification.notification_type === NotificationType.IsPostFile)
-      setNotifications((prevNotifications) => {
-        return [receiveMsg.notification, ...prevNotifications]
+    } else if (receiveMsg.notification.notification_type === NotificationType.IsPostFile) {
+      setDocuments((prevDocuments) => {
+        return [receiveMsg.notification.post_file?.file_name as string, ...prevDocuments]
       })
-    setDocuments((prevDocuments) => {
-      return [receiveMsg.notification.post_file?.file_name as string, ...prevDocuments]
-    })
+    }
   }
   const handleOnline = (receiveMsg: ReceiveSocketData) => {
     setRoomInfo((prevRoomInfo) => {
