@@ -26,7 +26,7 @@ export default function VideoCallMain() {
   const [peers, dispatch] = useReducer(peersReducer, {})
   const { setMyPeer } = useContext(SocketContext)
   const [stream, setStream] = useState<MediaStream>()
-  const [isViewed, setIsViewed] = useState<boolean>(true)
+  const [callOutMessage, setCallOutMessage] = useState<string>('')
   const [showParticipants, setShowParticipants] = useState<boolean>(true)
   const [myAvatarUrl, setMyAvatarUrl] = useState<string>('')
   const [avatarUrlList, setAvatarUrlList] = useState<{ user_id: string; peer_id: string; url: string }[]>([])
@@ -50,7 +50,7 @@ export default function VideoCallMain() {
     wsRef.current?.send(JSON.stringify(message))
     stopStream()
     myPeer?.destroy()
-    setIsViewed(false)
+    setCallOutMessage('Bạn đã rời khỏi cuộc gọi này')
   }
   useEffect(() => {
     getUrl('Avatar', profile?.avatar as string)
@@ -142,8 +142,7 @@ export default function VideoCallMain() {
             })
           }
         } else if (receiveMsg.data_type === WebSocketDataType.IsError) {
-          console.log('error ne')
-          return <CallOut message={receiveMsg.error_message} />
+          setCallOutMessage(receiveMsg.error_message)
         }
       }
     }
@@ -160,7 +159,7 @@ export default function VideoCallMain() {
       })
     })
   }, [myPeer, stream, wsRef])
-  if (isViewed)
+  if (!callOutMessage)
     return (
       <Fragment>
         <div className='flex h-[calc(100%-80px)] max-h-[calc(100%-80px)] w-[100%] flex-row bg-lightBlackColor'>
@@ -267,6 +266,6 @@ export default function VideoCallMain() {
       </Fragment>
     )
   else {
-    return <CallOut message='Bạn đã rời khỏi cuộc gọi này' />
+    return <CallOut message={callOutMessage} />
   }
 }
