@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { Fragment, useContext, useEffect, useReducer, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { SocketContext } from 'src/contexts/socket.context'
 import VideoPlayer from '../VideoPlayer'
 import { ReceiveSocketData, SendSocketData, VideoCallDataType, WebSocketDataType } from 'src/types/socket.type'
@@ -15,10 +15,9 @@ import CallEndIcon from '@mui/icons-material/CallEnd'
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined'
 import PeopleIcon from '@mui/icons-material/People'
 import { calculateGridSize } from 'src/utils/utils'
-import NotifyLayout from 'src/layouts/NotifyLayout'
-import path from 'src/constants/path'
 import { getUrl } from 'src/utils/getFileFromFirebase'
 import dut from 'src/assets/images/logo.jpg'
+import CallOut from '../CallOut'
 
 export default function VideoCallMain() {
   const { roomId } = useParams()
@@ -103,7 +102,9 @@ export default function VideoCallMain() {
       wsRef.current.onmessage = (e) => {
         const receiveMsg: ReceiveSocketData = JSON.parse(e.data)
         console.log('Received message from server:', receiveMsg)
+        console.log(receiveMsg.data_type)
         if (receiveMsg.data_type === WebSocketDataType.IsVideoCall) {
+          console.log('video call')
           if (receiveMsg.video_call.video_call_type === VideoCallDataType.IsJoinCall) {
             receiveMsg.video_call.participants?.forEach((peer) => {
               if (peer.peer_id !== myPeer.id) {
@@ -140,6 +141,9 @@ export default function VideoCallMain() {
               return prev.filter((peer) => peer.peer_id !== receiveMsg.video_call.peer_id)
             })
           }
+        } else if (receiveMsg.data_type === WebSocketDataType.IsError) {
+          console.log('error ne')
+          return <CallOut message={receiveMsg.error_message} />
         }
       }
     }
@@ -263,16 +267,6 @@ export default function VideoCallMain() {
       </Fragment>
     )
   else {
-    return (
-      <NotifyLayout>
-        <div className='text-center text-2xl font-medium text-primary'>Bạn đã rời khỏi cuộc gọi này</div>
-        <Link
-          to={path.home}
-          className='rounded-md bg-primary px-10 py-1 text-center text-lg uppercase text-white hover:border-secondary hover:bg-secondary hover:text-white'
-        >
-          Quay lại trang chủ
-        </Link>
-      </NotifyLayout>
-    )
+    return <CallOut message='Bạn đã rời khỏi cuộc gọi này' />
   }
 }
