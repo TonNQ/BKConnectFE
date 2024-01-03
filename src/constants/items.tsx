@@ -3,6 +3,7 @@ import MessageIcon from '@mui/icons-material/Message'
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined'
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt'
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
+import NotificationsIcon from '@mui/icons-material/Notifications'
 
 export const DashboardOutlinedIcon = [
   {
@@ -40,6 +41,6 @@ export const DashboardFilledIcon = [
   {
     index: 2,
     title: 'Thông báo',
-    icon: <NotificationsNoneIcon sx={{ color: 'white', fontSize: '30px' }} />
+    icon: <NotificationsIcon sx={{ color: 'white', fontSize: '30px' }} />
   }
 ]
