@@ -41,7 +41,7 @@ export default function MainLayout({ children }: Props) {
     isSettingVisible,
     setIsSettingVisible
   } = useContext(AppContext)
-  const { setRoom, setRoomInfo, setMessages, setNotifications } = useContext(SocketContext)
+  const { notifications, setRoom, setRoomInfo, setMessages, setNotifications } = useContext(SocketContext)
   const navigate = useNavigate()
   const divRef = useRef<HTMLDivElement | null>(null)
   const [showSettingMenu, setShowSettingMenu] = useState(false)
@@ -80,18 +80,19 @@ export default function MainLayout({ children }: Props) {
           setIsSettingVisible(null)
         }
         // gọi API get tất cả thông báo
-        notificationApi
-          .getListOfNotifications()
-          .then((data) => {
-            setNotifications(data.data.data)
-          })
-          .catch((error) => toast.error(error))
+        if (!notifications) {
+          notificationApi
+            .getListOfNotifications()
+            .then((data) => {
+              setNotifications(data.data.data)
+            })
+            .catch((error) => toast.error(error))
+        }
         // click vào thông báo thì xem như đã đọc thông báo
         notificationApi
           .updateNotifications()
           .then(() => {})
           .catch((error) => toast.error(error))
-
         break
       }
       case 'setting': {
@@ -153,6 +154,12 @@ export default function MainLayout({ children }: Props) {
     setIndexPage(0)
   }
   useEffect(() => {
+    notificationApi
+      .getListOfNotifications()
+      .then((data) => {
+        setNotifications(data.data.data)
+      })
+      .catch((error) => toast.error(error))
     // Đặt lắng nghe sự kiện click trên toàn bộ tài liệu
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
@@ -178,11 +185,11 @@ export default function MainLayout({ children }: Props) {
           {DashboardOutlinedIcon.map((element) => (
             <Tooltip title={element.title} key={element.index} placement='right'>
               <div
-                className={classNames('flex h-[50px] w-[50px] items-center justify-center rounded-xl ', {
+                className={classNames('relative flex h-[50px] w-[50px] items-center justify-center rounded-xl', {
                   'hover:cursor-pointer hover:bg-blue-400': indexPage !== element.index,
                   'bg-blue-400': indexPage === element.index
                 })}
-                key={element.index}
+                key={element.title}
                 onClick={() => {
                   if (element.onlySideComponent) {
                     toggleComponent(element.toggleComponent as string)
@@ -193,6 +200,11 @@ export default function MainLayout({ children }: Props) {
               >
                 {indexPage !== element.index && element.icon}
                 {indexPage === element.index && DashboardFilledIcon[indexPage].icon}
+                {element.toggleComponent === 'notification' &&
+                  notifications.filter((notification) => !notification.is_read).length > 0 &&
+                  !isNotificationVisible && (
+                    <div className='absolute bottom-[5px] right-[7px] h-[14px] w-[14px] rounded-full bg-red-500 shadow-md blur-[1px]'></div>
+                  )}
               </div>
             </Tooltip>
           ))}
