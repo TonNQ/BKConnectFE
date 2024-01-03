@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 import messageApi from 'src/apis/messages.api'
 import roomApi from 'src/apis/rooms.api'
 import Peer from 'peerjs'
+import backgroundJobsApi from 'src/apis/backgroundjobs.api'
 
 export const BaseConfig = {
   // socket has four state
@@ -146,12 +147,44 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
   }, [])
 
   const handleMessage = async (receiveMsg: ReceiveSocketData) => {
+    const status = { isRead: false }
     await new Promise<void>((resolve) => {
       setRoom((prevRoom) => {
         roomData = prevRoom
         resolve() // Gọi resolve để tiếp tục sau khi setRoom hoàn thành
         return prevRoom
       })
+    })
+    setRoomInfo((prevRoomInfo) => {
+      if (receiveMsg.message.room_id === prevRoomInfo?.id) {
+        backgroundJobsApi
+          .setReadMessageOfRoom({ message_id: receiveMsg.message.message_id })
+          .then(() => {
+            status.isRead = true
+            setRoomList((prevRoomList) => {
+              if (prevRoomList === null) return null
+              return prevRoomList?.map((room) => {
+                if (room.id === receiveMsg.message.room_id) {
+                  return { ...room, is_read: true }
+                } else return room
+              })
+            })
+          })
+          .catch(() => {
+            status.isRead = false
+          })
+        return { ...prevRoomInfo, is_read: status.isRead }
+      } else {
+        setRoomList((prevRoomList) => {
+          if (prevRoomList === null) return null
+          return prevRoomList?.map((room) => {
+            if (room.id === receiveMsg.message.room_id) {
+              return { ...room, is_read: false }
+            } else return room
+          })
+        })
+        return prevRoomInfo
+      }
     })
     setMessages((prevMessages) => {
       if (receiveMsg.message.room_id !== roomData?.id) return prevMessages
@@ -192,6 +225,7 @@ export const SocketProvider = ({ url, accessToken, children }: Props) => {
           return roomItem
         }
       })
+
       if (indexOfChangedRoom !== -1) {
         const newRoomList = [
           prevRoomList[indexOfChangedRoom],

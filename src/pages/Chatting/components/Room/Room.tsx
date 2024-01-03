@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { SocketContext } from 'src/contexts/socket.context'
 import { getUrl } from 'src/utils/getFileFromFirebase'
+import backgroundJobsApi from 'src/apis/backgroundjobs.api'
 
 interface Props {
   room: RoomInfo
@@ -37,6 +38,14 @@ export default function Room({ room, setInputSearch }: Props) {
       })
       setInputSearch('')
       setAddMemberToRoomId(room.id)
+      backgroundJobsApi
+        .setReadMessageOfRoom({ message_id: room.last_message_id })
+        .then(() => {
+          // nothing
+        })
+        .catch(() => {
+          // nothing
+        })
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -47,7 +56,10 @@ export default function Room({ room, setInputSearch }: Props) {
     })
   }, [room])
   return (
-    <div className='flex w-full rounded-md bg-stone-50 px-3 py-2 hover:cursor-pointer' onClick={handleClick}>
+    <div
+      className={`flex w-full rounded-md ${room.is_read ? 'bg-stone-50' : 'bg-blue-50'} px-3 py-2 hover:cursor-pointer`}
+      onClick={handleClick}
+    >
       <div className='relative h-[50px] w-[50px] min-w-[50px]'>
         <img
           src={avatarUrl ?? dut}
